@@ -1,0 +1,9 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="stars">
+<g id="Vector">
+<path d="M9.33333 5.33333L10.5213 8.81206L14 10L10.5213 11.1879L9.33333 14.6667L8.14539 11.1879L4.66667 10L8.14539 8.81206L9.33333 5.33333Z" fill="var(--fill-0, #FFC676)"/>
+<path d="M8.33333 1.33333L8.7576 2.57574L10 3L8.7576 3.42426L8.33333 4.66667L7.90907 3.42426L6.66667 3L7.90907 2.57574L8.33333 1.33333Z" fill="var(--fill-0, #FFC676)"/>
+<path d="M5 4L5.59397 5.73936L7.33333 6.33333L5.59397 6.9273L5 8.66667L4.40603 6.9273L2.66667 6.33333L4.40603 5.73936L5 4Z" fill="var(--fill-0, #FFC676)"/>
+</g>
+</g>
+</svg>

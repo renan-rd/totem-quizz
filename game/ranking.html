@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ranking · Game · Agent Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700;9..40,900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --totem-w: 1080px;
+      --totem-h: 1920px;
+      --color-surface: #ffffff;
+      --color-surface-low: #eceeef;
+      --color-surface-high: #e5e8ea;
+      --color-border: #d6dbde;
+      --color-text-high: #002233;
+      --color-text-low: #405466;
+      --color-link: #0077b2;
+      --color-primary: #00dbff;
+      --color-primary-low: #b2f4ff;
+      --color-btn-dark: #003d5c;
+      --color-warning-low: #fff3d0;
+      --color-warning: #e8a017;
+      --color-gold: #e8a017;
+      --color-silver: #8a96a0;
+      --color-bronze: #c47a3a;
+      --font: 'DM Sans', sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    .viewport {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .totem {
+      width: var(--totem-w);
+      height: var(--totem-h);
+      position: relative;
+      flex-shrink: 0;
+      transform-origin: center center;
+      background: var(--color-surface);
+      overflow: hidden;
+    }
+
+    .screen {
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ───────────────────────────────────────── */
+    .ranking-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+      padding: 80px 48px 40px;
+    }
+
+    .title-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .trophy-badge {
+      width: 64px;
+      height: 64px;
+      border-radius: 32px;
+      background: var(--color-warning-low);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .trophy-badge img {
+      width: 32px;
+      height: 32px;
+      display: block;
+    }
+
+    .ranking-title {
+      color: var(--color-text-high);
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.28px;
+      text-align: center;
+    }
+
+    .ranking-subtitle {
+      color: var(--color-text-low);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      text-align: center;
+    }
+
+    .summary-stats {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      padding: 16px 24px;
+      background: var(--color-surface-low);
+      border-radius: 16px;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      min-width: 167px;
+    }
+
+    .stat-label {
+      color: var(--color-text-low);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .stat-value {
+      color: var(--color-text-high);
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.28px;
+    }
+
+    .stat-divider {
+      width: 1px;
+      align-self: stretch;
+      background: var(--color-border);
+    }
+
+    /* ── Podium ───────────────────────────────────────── */
+    .podium {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      width: 100%;
+      padding: 0 48px 48px;
+    }
+
+    .podium-label {
+      color: var(--color-text-low);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      text-transform: uppercase;
+    }
+
+    .podium-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 24px;
+      width: 100%;
+    }
+
+    .podium-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      width: 280px;
+    }
+
+    .podium-item--gold {
+      width: 320px;
+    }
+
+    .podium-avatar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 120px;
+      height: 120px;
+      border-radius: 60px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+    }
+
+    .podium-item--gold .podium-avatar {
+      width: 140px;
+      height: 140px;
+      border-radius: 70px;
+    }
+
+    .podium-avatar .rank-icon {
+      width: 48px;
+      height: 48px;
+      display: block;
+      object-fit: contain;
+    }
+
+    .podium-item--gold .podium-avatar .rank-icon {
+      width: 56px;
+      height: 56px;
+    }
+
+    .podium-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+    }
+
+    .podium-name {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      max-width: 260px;
+    }
+
+    .podium-score {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .podium-score .medal {
+      width: 24px;
+      height: 24px;
+      display: block;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .podium-votes {
+      color: var(--color-text-low);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      white-space: nowrap;
+    }
+
+    /* ── Ranking list ─────────────────────────────────── */
+    .ranking-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      padding: 0 48px 48px;
+    }
+
+    .list-title {
+      color: var(--color-text-high);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.2px;
+    }
+
+    .rank-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .rank-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      min-height: 84px;
+      padding: 16px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+    }
+
+    .rank-pos {
+      width: 40px;
+      flex-shrink: 0;
+      text-align: center;
+      color: var(--color-text-low);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .rank-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .rank-name {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .rank-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: var(--color-surface-low);
+      color: var(--color-text-high);
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .rank-votes {
+      flex-shrink: 0;
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      white-space: nowrap;
+    }
+
+    .progress {
+      width: 120px;
+      height: 4px;
+      flex-shrink: 0;
+      border-radius: 8px;
+      background: var(--color-surface-high);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 8px;
+      background: var(--color-primary);
+    }
+
+    /* ── Footer CTA ───────────────────────────────────── */
+    .ranking-footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      padding: 48px 48px 80px;
+    }
+
+    .cta-card {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 32px;
+      background: var(--color-primary-low);
+      border-radius: 16px;
+    }
+
+    .cta-title {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      text-align: center;
+    }
+
+    .cta-desc {
+      width: 400px;
+      max-width: 100%;
+      color: var(--color-text-low);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      text-align: center;
+    }
+
+    .btn-qr {
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--color-btn-dark);
+      color: var(--color-primary);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+    }
+
+    .btn-qr:hover {
+      filter: brightness(1.08);
+    }
+
+    .btn-restart {
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px 8px 12px;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--color-link);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+    }
+
+    .btn-restart:hover {
+      background: rgba(0, 119, 178, 0.06);
+    }
+
+    .btn-restart .icon {
+      width: 24px;
+      height: 24px;
+      display: block;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .empty-state {
+      padding: 48px;
+      text-align: center;
+      color: var(--color-text-low);
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .confetti-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 40;
+    }
+  </style>
+</head>
+<body>
+  <div class="viewport">
+    <div class="totem" id="totem" data-screen="ranking">
+      <canvas class="confetti-canvas" id="confetti-canvas" aria-hidden="true"></canvas>
+      <div class="screen">
+        <header class="ranking-header">
+          <div class="title-group">
+            <div class="trophy-badge" aria-hidden="true">
+              <img src="assets/trophy.svg" width="32" height="32" alt="">
+            </div>
+            <h1 class="ranking-title">Ranking de Modelos</h1>
+            <p class="ranking-subtitle">Os modelos mais utilizados no Mundo RD</p>
+          </div>
+
+          <div class="summary-stats">
+            <div class="stat">
+              <p class="stat-label">Total de modelos votados</p>
+              <p class="stat-value" id="stat-models">0</p>
+            </div>
+            <div class="stat-divider" aria-hidden="true"></div>
+            <div class="stat">
+              <p class="stat-label">Total de votos registrados</p>
+              <p class="stat-value" id="stat-votes">0</p>
+            </div>
+          </div>
+        </header>
+
+        <section class="podium" id="podium-section" hidden>
+          <p class="podium-label">O podium</p>
+          <div class="podium-row" id="podium-row"></div>
+        </section>
+
+        <section class="ranking-list" id="list-section" hidden>
+          <h2 class="list-title">Ranking Completo</h2>
+          <div class="rank-rows" id="rank-rows"></div>
+        </section>
+
+        <p class="empty-state" id="empty-state" hidden>Nenhum modelo selecionado.</p>
+
+        <footer class="ranking-footer">
+          <div class="cta-card">
+            <p class="cta-title">Tenha prioridade para experimentar nossos agentes</p>
+            <p class="cta-desc">Faça seu cadastro para ter acesso antecipado as novidades de inteligência artificial da RD Station</p>
+            <button type="button" class="btn-qr" id="btn-qr">Ver QR-Code</button>
+            <button type="button" class="btn-restart" id="btn-restart">
+              <img class="icon" src="assets/refresh.svg" width="24" height="24" alt="">
+              Reiniciar Quizz
+            </button>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script>
+    (function () {
+      const TOTEM_W = 1080;
+      const TOTEM_H = 1920;
+      const totem = document.getElementById('totem');
+      const confettiCanvas = document.getElementById('confetti-canvas');
+      const CONFETTI_COLORS = ['#00DBFF', '#8800F7', '#0ED869', '#E8A017', '#FFFFFF', '#002233'];
+      const VOTES_COMMIT_KEY = 'gameVotesCommitted';
+
+      var fireConfetti = null;
+      if (typeof confetti === 'function') {
+        fireConfetti = confetti.create(confettiCanvas, {
+          resize: true,
+          useWorker: true
+        });
+      }
+
+      function createSupabaseClient() {
+        const config = window.AGENT_BUILDER_SUPABASE_CONFIG || {};
+        if (!window.supabase || !config.url || !config.publishableKey) return null;
+        return window.supabase.createClient(config.url, config.publishableKey, {
+          auth: { persistSession: false, autoRefreshToken: false }
+        });
+      }
+
+      function escapeHtml(value) {
+        return String(value == null ? '' : value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function fitTotem() {
+        const scale = Math.min(window.innerWidth / TOTEM_W, window.innerHeight / TOTEM_H);
+        totem.style.transform = 'scale(' + scale + ')';
+      }
+
+      function getSelectedIds() {
+        try {
+          var raw = sessionStorage.getItem('gameSelectedModels');
+          var parsed = raw ? JSON.parse(raw) : [];
+          return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function selectionFingerprint(ids) {
+        return ids.slice().sort().join(',');
+      }
+
+      function votesAlreadyCommitted(ids) {
+        try {
+          return sessionStorage.getItem(VOTES_COMMIT_KEY) === selectionFingerprint(ids);
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function markVotesCommitted(ids) {
+        try {
+          sessionStorage.setItem(VOTES_COMMIT_KEY, selectionFingerprint(ids));
+        } catch (e) { /* ignore */ }
+      }
+
+      async function registerVotes(client, selectedIds) {
+        if (!selectedIds.length || votesAlreadyCommitted(selectedIds)) return;
+
+        var rows = selectedIds.map(function (id) {
+          return { agente_id: id };
+        });
+
+        var result = await client.from('ranking_votos').insert(rows);
+        if (result.error) {
+          console.error('Erro ao registrar votos:', result.error);
+          throw result.error;
+        }
+
+        markVotesCommitted(selectedIds);
+      }
+
+      async function fetchRanking(client) {
+        var result = await client
+          .from('ranking_modelos')
+          .select('agente_id, nome, tag, votos')
+          .order('votos', { ascending: false })
+          .order('nome', { ascending: true });
+
+        if (result.error) {
+          console.error('Erro ao carregar ranking:', result.error);
+          throw result.error;
+        }
+
+        return (result.data || []).map(function (row) {
+          return {
+            id: row.agente_id,
+            title: row.nome || 'Modelo sem nome',
+            tag: row.tag || 'Produto',
+            votes: Number(row.votos) || 0
+          };
+        });
+      }
+
+      async function fetchSelectedNamesFallback(client, selectedIds) {
+        if (!selectedIds.length) return [];
+
+        var result = await client
+          .from('lista_agentes')
+          .select('ID, Nome, Tag')
+          .in('ID', selectedIds);
+
+        if (result.error) {
+          console.error('Erro ao carregar modelos selecionados:', result.error);
+          return selectedIds.map(function (id) {
+            return { id: id, title: 'Modelo selecionado', tag: 'Produto', votes: 1 };
+          });
+        }
+
+        var byId = {};
+        (result.data || []).forEach(function (row) {
+          byId[row.ID] = {
+            id: row.ID,
+            title: row.Nome || 'Modelo sem nome',
+            tag: row.Tag || 'Produto',
+            votes: 1
+          };
+        });
+
+        return selectedIds.map(function (id) {
+          return byId[id] || { id: id, title: 'Modelo selecionado', tag: 'Produto', votes: 1 };
+        });
+      }
+
+      function votesLabel(n) {
+        return n + (n === 1 ? ' voto' : ' votos');
+      }
+
+      function renderPodium(top3) {
+        var podiumSection = document.getElementById('podium-section');
+        var podiumRow = document.getElementById('podium-row');
+
+        if (!top3.length) {
+          podiumSection.hidden = true;
+          return;
+        }
+
+        var medalSrc = ['assets/award.svg', 'assets/medal.svg', 'assets/medal-bronze.svg'];
+        var rankSrc = ['assets/square-1.svg', 'assets/square-2.svg', 'assets/square-3.svg'];
+        var placeClass = ['podium-item--gold', 'podium-item--silver', 'podium-item--bronze'];
+
+        // Ordem visual: 2º | 1º | 3º
+        var visualOrder = [];
+        if (top3[1]) visualOrder.push({ item: top3[1], place: 2 });
+        if (top3[0]) visualOrder.push({ item: top3[0], place: 1 });
+        if (top3[2]) visualOrder.push({ item: top3[2], place: 3 });
+
+        podiumRow.innerHTML = visualOrder.map(function (entry) {
+          var place = entry.place;
+          var item = entry.item;
+          var size = place === 1 ? 56 : 48;
+          return (
+            '<article class="podium-item ' + placeClass[place - 1] + '">' +
+              '<div class="podium-avatar">' +
+                '<img class="rank-icon" src="' + rankSrc[place - 1] + '" width="' + size + '" height="' + size + '" alt="' + place + 'º">' +
+              '</div>' +
+              '<div class="podium-info">' +
+                '<p class="podium-name">' + escapeHtml(item.title) + '</p>' +
+                '<div class="podium-score">' +
+                  '<img class="medal" src="' + medalSrc[place - 1] + '" width="24" height="24" alt="">' +
+                  '<span class="podium-votes">' + votesLabel(item.votes) + '</span>' +
+                '</div>' +
+              '</div>' +
+            '</article>'
+          );
+        }).join('');
+
+        podiumSection.hidden = false;
+      }
+
+      function renderList(rest, maxVotes) {
+        var listSection = document.getElementById('list-section');
+        var rankRows = document.getElementById('rank-rows');
+
+        if (!rest.length) {
+          listSection.hidden = true;
+          return;
+        }
+
+        rankRows.innerHTML = rest.map(function (item, index) {
+          var position = index + 4;
+          var pct = maxVotes > 0 ? Math.round((item.votes / maxVotes) * 100) : 0;
+          return (
+            '<article class="rank-row">' +
+              '<span class="rank-pos">' + position + '</span>' +
+              '<div class="rank-info">' +
+                '<p class="rank-name">' + escapeHtml(item.title) + '</p>' +
+                '<span class="rank-tag">' + escapeHtml(item.tag) + '</span>' +
+              '</div>' +
+              '<span class="rank-votes">' + votesLabel(item.votes) + '</span>' +
+              '<div class="progress" aria-hidden="true">' +
+                '<div class="progress-fill" style="width:' + pct + '%"></div>' +
+              '</div>' +
+            '</article>'
+          );
+        }).join('');
+
+        listSection.hidden = false;
+      }
+
+      function renderRanking(ranking) {
+        var empty = document.getElementById('empty-state');
+
+        if (!ranking.length) {
+          empty.hidden = false;
+          document.getElementById('podium-section').hidden = true;
+          document.getElementById('list-section').hidden = true;
+          document.getElementById('stat-models').textContent = '0';
+          document.getElementById('stat-votes').textContent = '0';
+          return;
+        }
+
+        empty.hidden = true;
+
+        var totalVotes = ranking.reduce(function (sum, item) { return sum + item.votes; }, 0);
+        var maxVotes = ranking[0] ? ranking[0].votes : 0;
+
+        document.getElementById('stat-models').textContent = String(ranking.length);
+        document.getElementById('stat-votes').textContent = String(totalVotes);
+
+        renderPodium(ranking.slice(0, 3));
+        renderList(ranking.slice(3), maxVotes);
+      }
+
+      function celebrate() {
+        if (!fireConfetti) return;
+
+        var defaults = {
+          colors: CONFETTI_COLORS,
+          disableForReducedMotion: true
+        };
+
+        fireConfetti(Object.assign({}, defaults, {
+          particleCount: 90,
+          spread: 55,
+          startVelocity: 45,
+          origin: { x: 0.28, y: 0.32 }
+        }));
+        fireConfetti(Object.assign({}, defaults, {
+          particleCount: 120,
+          spread: 70,
+          startVelocity: 55,
+          origin: { x: 0.5, y: 0.28 }
+        }));
+        fireConfetti(Object.assign({}, defaults, {
+          particleCount: 90,
+          spread: 55,
+          startVelocity: 45,
+          origin: { x: 0.72, y: 0.32 }
+        }));
+
+        setTimeout(function () {
+          fireConfetti(Object.assign({}, defaults, {
+            particleCount: 60,
+            spread: 100,
+            decay: 0.92,
+            origin: { x: 0.5, y: 0.2 }
+          }));
+        }, 280);
+      }
+
+      async function init() {
+        var empty = document.getElementById('empty-state');
+        empty.textContent = 'Carregando ranking…';
+        empty.hidden = false;
+
+        var client = createSupabaseClient();
+        if (!client) {
+          empty.textContent = 'Supabase não configurado.';
+          return;
+        }
+
+        var selectedIds = getSelectedIds();
+
+        try {
+          if (selectedIds.length) {
+            await registerVotes(client, selectedIds);
+          }
+
+          var ranking = await fetchRanking(client);
+
+          // Se os votos acabaram de ser registrados mas a view ainda não refletiu,
+          // mostra ao menos os modelos desta rodada com os nomes do Supabase.
+          if (!ranking.length && selectedIds.length) {
+            ranking = await fetchSelectedNamesFallback(client, selectedIds);
+          }
+
+          if (!ranking.length) {
+            empty.textContent = 'Nenhum modelo votado ainda.';
+          }
+
+          renderRanking(ranking);
+        } catch (err) {
+          console.error(err);
+          empty.textContent = 'Não foi possível carregar o ranking.';
+          empty.hidden = false;
+          document.getElementById('podium-section').hidden = true;
+          document.getElementById('list-section').hidden = true;
+        }
+      }
+
+      document.getElementById('btn-qr').addEventListener('click', function () {
+        // placeholder: modal / tela de QR-Code
+      });
+
+      document.getElementById('btn-restart').addEventListener('click', function () {
+        sessionStorage.removeItem('gameSelectedModels');
+        sessionStorage.removeItem(VOTES_COMMIT_KEY);
+        window.location.href = 'index.html';
+      });
+
+      fitTotem();
+      window.addEventListener('resize', fitTotem);
+      init().then(function () {
+        requestAnimationFrame(function () {
+          setTimeout(celebrate, 200);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

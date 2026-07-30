@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modelos · Game · Agent Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700;9..40,900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --totem-w: 1080px;
+      --totem-h: 1920px;
+      --color-surface: #ffffff;
+      --color-border: #d6dbde;
+      --color-border-interactive: #b2bcc1;
+      --color-text-high: #002233;
+      --color-text-low: #405466;
+      --color-link: #0077b2;
+      --color-primary: #00dbff;
+      --color-tag-marketing: #8800f7;
+      --color-tag-atendimento: #0ed869;
+      --color-tag-vendas: #00dbff;
+      --color-tag-produtividade: #eceeef;
+      --font: 'DM Sans', sans-serif;
+      --radius-xs: 4px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    .viewport {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .totem {
+      width: var(--totem-w);
+      height: var(--totem-h);
+      position: relative;
+      flex-shrink: 0;
+      transform-origin: center center;
+      background: var(--color-surface);
+      overflow: hidden;
+    }
+
+    .screen {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      padding: 32px;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    /* ── Hero / prompt ────────────────────────────────── */
+    .prompt-block {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 48px 0 24px;
+      flex-shrink: 0;
+    }
+
+    .prompt-glow {
+      position: absolute;
+      left: 50%;
+      top: -4px;
+      width: 1302px;
+      height: 227px;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .prompt-glow img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    .prompt-title {
+      position: relative;
+      z-index: 1;
+      width: 864px;
+      color: var(--color-text-high);
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.28px;
+      text-align: center;
+      font-variation-settings: "opsz" 14;
+    }
+
+    .prompt-input-wrap {
+      position: relative;
+      z-index: 1;
+      width: 864px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .prompt-field {
+      width: 100%;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 24px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 112px;
+      overflow: hidden;
+    }
+
+    .prompt-field input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: var(--color-text-high);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      font-variation-settings: "opsz" 14;
+    }
+
+    .prompt-field input::placeholder {
+      color: var(--color-text-low);
+    }
+
+    .prompt-submit {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      color: var(--color-text-high);
+    }
+
+    .prompt-submit:hover {
+      background: #f5f7f8;
+    }
+
+    .prompt-submit svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .suggestion-chips {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .chip {
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 12px;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-link);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-variation-settings: "opsz" 14;
+    }
+
+    .chip:hover,
+    .chip.is-active {
+      background: rgba(0, 119, 178, 0.06);
+      border-color: var(--color-link);
+    }
+
+    /* ── Models section ───────────────────────────────── */
+    .models-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      flex-shrink: 0;
+    }
+
+    .models-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .models-title {
+      flex: 1;
+      min-width: 0;
+      color: var(--color-text-high);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.2px;
+      font-variation-settings: "opsz" 14;
+    }
+
+    .filter-btn {
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px 8px 12px;
+      border: 0;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--color-link);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-variation-settings: "opsz" 14;
+    }
+
+    .filter-btn:hover {
+      background: rgba(0, 119, 178, 0.06);
+    }
+
+    .filter-btn img,
+    .filter-btn svg {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      fill: currentColor;
+    }
+
+    .models-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+      width: 100%;
+    }
+
+    .model-card {
+      height: 320px;
+      display: flex;
+      flex-direction: column;
+      padding: 4px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      text-align: left;
+      font: inherit;
+      color: inherit;
+      overflow: hidden;
+    }
+
+    .model-card:hover {
+      border-color: var(--color-border-interactive);
+    }
+
+    .model-card.is-selected {
+      border: 2px solid #00DBFF;
+      box-shadow: none;
+    }
+
+    .model-card-inner {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 16px 24px;
+    }
+
+    .model-tag {
+      display: inline-flex;
+      align-items: center;
+      align-self: flex-start;
+      width: fit-content;
+      padding: 4px 8px;
+      border-radius: var(--radius-xs);
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+      white-space: nowrap;
+      font-variation-settings: "opsz" 14;
+    }
+
+    .model-tag--marketing {
+      background: var(--color-tag-marketing);
+      color: #ffffff;
+    }
+
+    .model-tag--atendimento {
+      background: var(--color-tag-atendimento);
+      color: var(--color-text-high);
+    }
+
+    .model-tag--vendas {
+      background: var(--color-tag-vendas);
+      color: var(--color-text-high);
+    }
+
+    .model-tag--produtividade {
+      background: var(--color-tag-produtividade);
+      color: var(--color-text-high);
+    }
+
+    .model-body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      color: var(--color-text-high);
+    }
+
+    .model-card-title {
+      flex-shrink: 0;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      font-variation-settings: "opsz" 14;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+
+    .model-card-desc {
+      flex: 1;
+      min-height: 0;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      font-variation-settings: "opsz" 14;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 7;
+      overflow: hidden;
+    }
+
+    .model-divider {
+      width: 100%;
+      height: 1px;
+      margin: 4px 0;
+      background: var(--color-border);
+      flex-shrink: 0;
+    }
+
+    .model-select {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    .model-checkbox {
+      width: 18px;
+      height: 18px;
+      margin-top: 3px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: 4px;
+      background: #ffffff;
+      display: block;
+      flex-shrink: 0;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .model-card.is-selected .model-checkbox {
+      background: #00DBFF;
+      border-color: #00DBFF;
+    }
+
+    .model-checkbox svg {
+      width: 24px;
+      height: 24px;
+      position: absolute;
+      left: -3px;
+      top: -3px;
+      fill: #002233;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .model-card.is-selected .model-checkbox svg {
+      opacity: 1;
+    }
+
+    .model-select-label {
+      flex: 1;
+      min-width: 0;
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      font-variation-settings: "opsz" 14;
+    }
+
+    /* ── Bottom actions bar ───────────────────────────── */
+    .actions-bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 143px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      background: #002131;
+      z-index: 30;
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
+    }
+
+    .actions-bar.is-visible {
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .screen.has-actions-bar {
+      padding-bottom: 175px;
+    }
+
+    .actions-bar-btn {
+      width: 403px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      border-radius: 16px;
+      font-family: var(--font);
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 0.15s ease, filter 0.15s ease, background 0.15s ease;
+      font-variation-settings: "opsz" 14;
+      white-space: nowrap;
+    }
+
+    .actions-bar-btn:active {
+      transform: scale(0.98);
+    }
+
+    .actions-bar-btn--cancel {
+      background: transparent;
+      border: 2px solid #00dbff;
+      color: #00dbff;
+    }
+
+    .actions-bar-btn--cancel:hover {
+      background: rgba(0, 219, 255, 0.08);
+    }
+
+    .actions-bar-btn--finish {
+      background: #00dbff;
+      border: 2px solid #00dbff;
+      color: #002233;
+    }
+
+    .actions-bar-btn--finish:hover {
+      filter: brightness(1.06);
+    }
+    .models-grid-status {
+      grid-column: 1 / -1;
+      color: var(--color-text-low);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      text-align: center;
+      padding: 32px 16px;
+      font-variation-settings: "opsz" 14;
+    }
+  </style>
+</head>
+<body>
+  <div class="viewport">
+    <div class="totem" id="totem" data-screen="modelos">
+      <div class="screen">
+        <section class="prompt-block">
+          <div class="prompt-glow" aria-hidden="true">
+            <img src="assets/title-glow.svg" alt="">
+          </div>
+
+          <h1 class="prompt-title">O que seu agente deve fazer?</h1>
+
+          <div class="prompt-input-wrap">
+            <div class="prompt-field">
+              <input
+                type="text"
+                id="prompt-input"
+                placeholder="Descreva o que você quer que seu agente faça."
+                autocomplete="off"
+              >
+              <button type="button" class="prompt-submit" id="prompt-submit" aria-label="Enviar">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5.93793 13.0475L5.22607 12.3539C4.92464 12.0601 4.92464 11.5852 5.22607 11.2946L11.4565 5.22029C11.7579 4.92657 12.2453 4.92657 12.5435 5.22029L18.7739 11.2915C19.0754 11.5852 19.0754 12.0602 18.7739 12.3507L18.0621 13.0444C17.7574 13.3413 17.2604 13.335 16.9622 13.0319L13.2842 9.26984V18.2501C13.2842 18.6657 12.9411 19 12.5147 19H11.4885C11.0621 19 10.719 18.6657 10.719 18.2501V9.26984L7.03779 13.035C6.73958 13.3413 6.24256 13.3475 5.93793 13.0475Z"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="suggestion-chips" id="suggestion-chips">
+              <button type="button" class="chip" data-prompt="Qualificar Leads novos">Qualificar Leads novos</button>
+              <button type="button" class="chip" data-prompt="Preparar reuniões de vendas">Preparar reuniões de vendas</button>
+              <button type="button" class="chip" data-prompt="Resumir reuniões">Resumir reuniões</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="models-section">
+          <div class="models-header">
+            <h2 class="models-title">Começar com um modelo</h2>
+            <button type="button" class="filter-btn" id="btn-filter">
+              <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                <path d="M4.5 8.25H19.5C19.7762 8.25 20 8.02616 20 7.75V6.5C20 6.22384 19.7762 6 19.5 6H4.5C4.22384 6 4 6.22384 4 6.5V7.75C4 8.02616 4.22384 8.25 4.5 8.25ZM6.5 13.25H17.5C17.7762 13.25 18 13.0262 18 12.75V11.5C18 11.2238 17.7762 11 17.5 11H6.5C6.22384 11 6 11.2238 6 11.5V12.75C6 13.0262 6.22384 13.25 6.5 13.25ZM8.5 18.25H15.5C15.7762 18.25 16 18.0262 16 17.75V16.5C16 16.2238 15.7762 16 15.5 16H8.5C8.22384 16 8 16.2238 8 16.5V17.75C8 18.0262 8.22384 18.25 8.5 18.25Z"/>
+              </svg>
+              Filtrar por produto
+            </button>
+          </div>
+
+          <div class="models-grid" id="models-grid" aria-label="Lista de modelos"></div>
+        </section>
+      </div>
+
+      <div class="actions-bar" id="actions-bar" aria-hidden="true">
+        <button type="button" class="actions-bar-btn actions-bar-btn--cancel" id="btn-cancel">
+          Cancelar
+        </button>
+        <button type="button" class="actions-bar-btn actions-bar-btn--finish" id="btn-finish">
+          Finalizar e ver ranking
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script>
+    (function () {
+      const TOTEM_W = 1080;
+      const TOTEM_H = 1920;
+      const totem = document.getElementById('totem');
+      const modelsGrid = document.getElementById('models-grid');
+      const promptInput = document.getElementById('prompt-input');
+
+      let models = [];
+      const selectedIds = new Set();
+      const actionsBar = document.getElementById('actions-bar');
+      const screen = document.querySelector('.screen');
+
+      const TAG_CLASS_MAP = {
+        marketing: 'model-tag--marketing',
+        atendimento: 'model-tag--atendimento',
+        vendas: 'model-tag--vendas',
+        produtividade: 'model-tag--produtividade'
+      };
+
+      function escapeHtml(value) {
+        return String(value == null ? '' : value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function tagClassFor(tag) {
+        const key = String(tag || '').trim().toLowerCase();
+        return TAG_CLASS_MAP[key] || 'model-tag--produtividade';
+      }
+
+      function mapAgentRow(row) {
+        const tag = row.Tag || '';
+        return {
+          id: row.ID,
+          tag: tag,
+          tagClass: tagClassFor(tag),
+          title: row.Nome || '',
+          description: row['Descrição'] || ''
+        };
+      }
+
+      function createSupabaseClient() {
+        const config = window.AGENT_BUILDER_SUPABASE_CONFIG || {};
+        if (!window.supabase || !config.url || !config.publishableKey) return null;
+        return window.supabase.createClient(config.url, config.publishableKey, {
+          auth: { persistSession: false, autoRefreshToken: false }
+        });
+      }
+
+      async function loadModels() {
+        modelsGrid.innerHTML = '<p class="models-grid-status">Carregando modelos…</p>';
+
+        const client = createSupabaseClient();
+        if (!client) {
+          modelsGrid.innerHTML = '<p class="models-grid-status">Supabase não configurado.</p>';
+          return;
+        }
+
+        const { data, error } = await client
+          .from('lista_agentes')
+          .select('ID, Nome, Descrição, Tag')
+          .order('Nome', { ascending: true });
+
+        if (error) {
+          console.error('Erro ao carregar lista_agentes:', error);
+          modelsGrid.innerHTML = '<p class="models-grid-status">Não foi possível carregar os modelos.</p>';
+          return;
+        }
+
+        models = (data || []).map(mapAgentRow);
+        renderModels();
+      }
+
+      function fitTotem() {
+        const scale = Math.min(window.innerWidth / TOTEM_W, window.innerHeight / TOTEM_H);
+        totem.style.transform = 'scale(' + scale + ')';
+      }
+
+      function updateActionsBar() {
+        const hasSelection = selectedIds.size > 0;
+        actionsBar.classList.toggle('is-visible', hasSelection);
+        actionsBar.setAttribute('aria-hidden', hasSelection ? 'false' : 'true');
+        screen.classList.toggle('has-actions-bar', hasSelection);
+      }
+
+      function renderModels() {
+        if (!models.length) {
+          modelsGrid.innerHTML = '<p class="models-grid-status">Nenhum modelo encontrado.</p>';
+          updateActionsBar();
+          return;
+        }
+
+        modelsGrid.innerHTML = models.map(function (model) {
+          const selected = selectedIds.has(model.id);
+          return (
+            '<button type="button" class="model-card' + (selected ? ' is-selected' : '') + '" data-id="' + escapeHtml(model.id) + '" aria-pressed="' + selected + '">' +
+              '<div class="model-card-inner">' +
+                '<span class="model-tag ' + model.tagClass + '">' + escapeHtml(model.tag) + '</span>' +
+                '<div class="model-body">' +
+                  '<p class="model-card-title">' + escapeHtml(model.title) + '</p>' +
+                  '<p class="model-card-desc">' + escapeHtml(model.description) + '</p>' +
+                '</div>' +
+                '<div class="model-divider" aria-hidden="true"></div>' +
+                '<div class="model-select">' +
+                  '<span class="model-checkbox" aria-hidden="true">' +
+                    '<svg viewBox="0 0 24 24" width="24" height="24"><path d="M10.3964 15.3107L7.14644 12.0607C6.95119 11.8654 6.95119 11.5488 7.14644 11.3536L7.85353 10.6464C8.04879 10.4512 8.36539 10.4512 8.56064 10.6464L10.75 12.8358L15.4394 8.14644C15.6346 7.95119 15.9512 7.95119 16.1465 8.14644L16.8536 8.85355C17.0488 9.0488 17.0488 9.36539 16.8536 9.56066L11.1036 15.3107C10.9083 15.5059 10.5917 15.5059 10.3964 15.3107Z"/></svg>' +
+                  '</span>' +
+                  '<span class="model-select-label">Selecionar modelo</span>' +
+                '</div>' +
+              '</div>' +
+            '</button>'
+          );
+        }).join('');
+        updateActionsBar();
+      }
+
+      modelsGrid.addEventListener('click', function (event) {
+        const card = event.target.closest('.model-card');
+        if (!card) return;
+
+        const id = card.getAttribute('data-id');
+        if (selectedIds.has(id)) {
+          selectedIds.delete(id);
+        } else {
+          selectedIds.add(id);
+        }
+        renderModels();
+      });
+
+      document.getElementById('btn-cancel').addEventListener('click', function () {
+        selectedIds.clear();
+        renderModels();
+      });
+
+      document.getElementById('btn-finish').addEventListener('click', function () {
+        var selected = Array.from(selectedIds);
+        sessionStorage.setItem('gameSelectedModels', JSON.stringify(selected));
+        window.location.href = 'ranking.html';
+      });
+
+      document.getElementById('suggestion-chips').addEventListener('click', function (event) {
+        const chip = event.target.closest('.chip');
+        if (!chip) return;
+
+        promptInput.value = chip.getAttribute('data-prompt') || '';
+        promptInput.focus();
+
+        Array.prototype.forEach.call(document.querySelectorAll('.chip'), function (el) {
+          el.classList.toggle('is-active', el === chip);
+        });
+      });
+
+      document.getElementById('prompt-submit').addEventListener('click', function () {
+        // placeholder: futura geração / busca por prompt
+      });
+
+      document.getElementById('btn-filter').addEventListener('click', function () {
+        // placeholder: filtro por produto
+      });
+
+      fitTotem();
+      window.addEventListener('resize', fitTotem);
+      loadModels();
+    })();
+  </script>
+</body>
+</html>

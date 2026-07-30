@@ -1,0 +1,3405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anexos · Agent Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ─── TOKENS ─────────────────────────────────────── */
+    :root {
+      --color-nav-bg:      #001927;
+      --color-surface:     #ffffff;
+      --color-surface-low: #eceeef;
+      --color-text-high:   #002233;
+      --color-text-low:    #405466;
+      --color-danger:      #e60f57;
+      --radius-sm:  8px;
+      --radius-md:  12px;
+      --sp-2: 8px;
+      --sp-3: 12px;
+      --sp-4: 16px;
+      --sp-1: 4px;
+      --sp-5: 24px;
+      --sp-6: 32px;
+      --sp-7: 40px;
+      --color-border: #d6dbde;
+      --color-border-interactive: #b2bcc1;
+      --color-link: #0077b2;
+      --color-btn-inverse: #003d5c;
+      --color-btn-on-color: #00dbff;
+      --color-primary-soft: #b2f4ff;
+      --color-tag-bg: #eceeef;
+      --color-border-disabled: #e5e8ea;
+      --radius-xs: 4px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --font: 'DM Sans', sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--color-nav-bg);
+      min-height: 100vh;
+      color: var(--color-text-high);
+    }
+
+    /* ─── LAYOUT ─────────────────────────────────────── */
+    .layout {
+      display: grid;
+      grid-template-rows: 64px 1fr;
+      grid-template-columns: 64px 1fr;
+      grid-template-areas:
+        "navbar navbar"
+        "sidebar content";
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ─── NAVBAR ─────────────────────────────────────── */
+    .navbar {
+      grid-area: navbar;
+      background: var(--color-nav-bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--sp-3);
+      height: 64px;
+      position: relative;
+      z-index: 9600;
+    }
+
+    .navbar-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+    }
+
+    .navbar-logo img {
+      height: 32px;
+      width: auto;
+      flex-shrink: 0;
+    }
+
+    .navbar-secondary {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+
+    .navbar-icons {
+      display: flex;
+      align-items: center;
+    }
+
+    .navbar-icon-btn {
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .navbar-icon-btn svg { width: 24px; height: 24px; }
+    .navbar-icon-btn:hover { background: rgba(255,255,255,0.08); }
+
+    .badge-dot {
+      position: absolute;
+      top: 4px; right: 4px;
+      width: 8px; height: 8px;
+      background: var(--color-danger);
+      border-radius: 50%;
+    }
+
+    .navbar-divider {
+      width: 1px; height: 32px;
+      background: rgba(255,255,255,0.15);
+      margin: 0 4px;
+    }
+
+    .account-menu {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: var(--sp-2);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .account-menu:hover { background: rgba(255,255,255,0.08); }
+
+    .account-avatar {
+      width: 24px; height: 24px;
+      border-radius: var(--radius-sm);
+      background: #00f2c9;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .account-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .account-name {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+      letter-spacing: -0.14px;
+    }
+
+    .account-menu > svg { fill: #fff; width: 16px; height: 16px; }
+
+    .account-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      right: 0;
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      min-width: 160px;
+      overflow: hidden;
+      z-index: 9700;
+    }
+
+    .account-menu.open .account-dropdown { display: block; }
+
+    .account-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: var(--sp-3) var(--sp-4);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-high);
+      cursor: pointer;
+    }
+
+    .account-dropdown-item:hover { background: var(--color-surface-low); }
+    .account-dropdown-item svg { width: 18px; height: 18px; fill: var(--color-text-low); }
+
+    /* ─── SIDEBAR ─────────────────────────────────────── */
+    .sidebar {
+      grid-area: sidebar;
+      background: var(--color-nav-bg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+      padding-top: var(--sp-3);
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-3);
+      position: relative;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .sidebar-item.active .sidebar-item-inner {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .sidebar-item svg,
+    .sidebar-item img { width: 24px; height: 24px; }
+
+    .sidebar-item-inner {
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ─── CONTENT ─────────────────────────────────────── */
+    .content {
+      grid-area: content;
+      background: var(--color-surface);
+      padding: 16px var(--sp-6) var(--sp-6);
+      border-top-left-radius: 20px;
+      overflow-y: auto;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+      min-height: 0;
+    }
+
+    /* ─── ANEXOS / BASE DE CONHECIMENTO ─────────────────── */
+    .page-header {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-3);
+      padding: var(--sp-2) 0 var(--sp-7);
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    .page-header-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-4);
+      width: 100%;
+    }
+
+    .page-header-action[hidden] {
+      display: none;
+    }
+
+    .page-header-title {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.28px;
+      color: var(--color-text-high);
+      padding: 2px 0;
+    }
+
+    .page-header-desc {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: var(--color-text-low);
+      max-width: 920px;
+    }
+
+    .empty-state {
+      flex: 1;
+      min-height: 320px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-6);
+      text-align: center;
+    }
+
+    .empty-state[hidden] {
+      display: none;
+    }
+
+    .knowledge-bases-view {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-5);
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .knowledge-bases-view[hidden] {
+      display: none;
+    }
+
+    .knowledge-list-header {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: var(--sp-4);
+      width: 100%;
+    }
+
+    .knowledge-list-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .knowledge-list-table {
+      width: 100%;
+      min-width: 820px;
+      border-collapse: collapse;
+      color: var(--color-text-high);
+    }
+
+    .knowledge-list-table th,
+    .knowledge-list-table td {
+      padding: var(--sp-3) var(--sp-4);
+      border-bottom: 1px solid var(--color-border);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .knowledge-list-table thead th {
+      border-bottom-color: var(--color-border-interactive);
+      color: var(--color-text-low);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+      text-transform: uppercase;
+    }
+
+    .knowledge-list-table td {
+      color: var(--color-text-high);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+    }
+
+    .knowledge-base-link {
+      border: 0;
+      background: transparent;
+      color: var(--color-link);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      cursor: pointer;
+    }
+
+    .knowledge-base-link:hover,
+    .knowledge-base-link:focus {
+      text-decoration: underline;
+      outline: none;
+    }
+
+    .access-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: var(--sp-1) var(--sp-2);
+      border-radius: var(--radius-xs);
+      background: var(--color-surface-low);
+      color: var(--color-text-high);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+    }
+
+    .knowledge-row-actions {
+      position: relative;
+      display: inline-flex;
+      justify-content: flex-end;
+    }
+
+    .knowledge-row-actions .knowledge-row-dropdown {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: auto;
+      z-index: 2000;
+    }
+
+    .knowledge-row-actions.open .knowledge-row-dropdown {
+      display: flex;
+    }
+
+    .empty-illustration {
+      width: min(476px, 100%);
+      height: auto;
+      max-height: 214px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .empty-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-4);
+      padding: var(--sp-5) 0;
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .empty-copy h2 {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.2px;
+      color: var(--color-text-high);
+    }
+
+    .empty-copy p {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: var(--color-text-high);
+    }
+
+    .btn-primary-inverse {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-2);
+      height: 40px;
+      padding: var(--sp-2) var(--sp-4) var(--sp-2) var(--sp-3);
+      border: 0;
+      border-radius: var(--radius-md);
+      background: var(--color-btn-inverse);
+      color: var(--color-btn-on-color);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-primary-inverse:hover {
+      filter: brightness(1.08);
+    }
+
+    .btn-primary-inverse img {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    .page-view {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .page-view[hidden] {
+      display: none;
+    }
+
+    .knowledge-detail {
+      gap: var(--sp-4);
+    }
+
+    .detail-header {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-3);
+      padding: var(--sp-7) 0;
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    .detail-header-section {
+      padding-left: 56px;
+      color: var(--color-text-low);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .detail-header-main {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-4);
+      width: 100%;
+    }
+
+    .btn-icon {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--color-link);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .btn-icon:hover {
+      background: var(--color-surface-low);
+    }
+
+    .btn-icon svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    .btn-icon img {
+      width: 24px;
+      height: 24px;
+      display: block;
+      filter: invert(33%) sepia(92%) saturate(1806%) hue-rotate(175deg) brightness(89%) contrast(101%);
+    }
+
+    .detail-actions {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .detail-actions-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      right: 0;
+      z-index: 1000;
+      width: max-content;
+      display: none;
+      flex-direction: column;
+      padding: var(--sp-2);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      box-shadow: 0 4px 12px rgba(0, 34, 51, 0.14);
+    }
+
+    .detail-actions.open .detail-actions-dropdown {
+      display: flex;
+    }
+
+    .detail-action-item {
+      width: 100%;
+      min-height: 40px;
+      display: flex;
+      align-items: flex-start;
+      padding: var(--sp-2) var(--sp-3);
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-text-high);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      text-align: left;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .detail-action-item:hover,
+    .detail-action-item:focus {
+      background: var(--color-surface-low);
+      outline: none;
+    }
+
+    .detail-action-item:disabled {
+      color: var(--color-text-disabled);
+      cursor: not-allowed;
+    }
+
+    .detail-action-item:disabled:hover,
+    .detail-action-item:disabled:focus {
+      background: transparent;
+    }
+
+    .detail-action-item.critical {
+      color: #cc0d4d;
+    }
+
+    .detail-title-wrap {
+      flex: 1;
+      min-width: 0;
+      padding: 2px 0;
+    }
+
+    .detail-title {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.28px;
+      color: var(--color-text-high);
+    }
+
+    .detail-description {
+      padding-left: 56px;
+      color: var(--color-text-low);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .btn-secondary-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-2);
+      height: 40px;
+      padding: var(--sp-2) var(--sp-4) var(--sp-2) var(--sp-3);
+      border: 0;
+      border-radius: var(--radius-md);
+      background: var(--color-primary-soft);
+      color: var(--color-link);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-secondary-action:hover {
+      filter: brightness(0.97);
+    }
+
+    .btn-secondary-action svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    .btn-secondary-action img {
+      width: 24px;
+      height: 24px;
+      display: block;
+      filter: invert(33%) sepia(92%) saturate(1806%) hue-rotate(175deg) brightness(89%) contrast(101%);
+    }
+
+    .detail-add-file[hidden] {
+      display: none;
+    }
+
+    .upload-empty-state {
+      flex: 1;
+      min-height: 420px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-6);
+      text-align: center;
+    }
+
+    .upload-empty-state[hidden] {
+      display: none;
+    }
+
+    .upload-illustration {
+      width: min(476px, 100%);
+      height: auto;
+      max-height: 214px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .upload-empty-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-4);
+      width: 100%;
+      max-width: 560px;
+      padding: var(--sp-5) 0;
+    }
+
+    .upload-empty-copy h2 {
+      color: var(--color-text-high);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.2px;
+    }
+
+    .upload-empty-copy p {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .knowledge-files-view {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-5);
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .knowledge-files-view[hidden] {
+      display: none;
+    }
+
+    .files-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-4);
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    .files-search {
+      width: 180px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: var(--sp-2);
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+    }
+
+    .files-search input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: var(--color-text-high);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+    }
+
+    .files-search img {
+      width: 20px;
+      height: 20px;
+      display: block;
+      filter: invert(31%) sepia(17%) saturate(747%) hue-rotate(166deg) brightness(92%) contrast(86%);
+    }
+
+    .files-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .files-table {
+      width: 100%;
+      min-width: 820px;
+      border-collapse: collapse;
+      color: var(--color-text-high);
+    }
+
+    .files-table th,
+    .files-table td {
+      padding: var(--sp-3) var(--sp-4);
+      border-bottom: 1px solid var(--color-border);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .files-table th {
+      color: var(--color-text-low);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+      text-transform: uppercase;
+    }
+
+    .files-table td {
+      color: var(--color-text-high);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+    }
+
+    .files-table thead th {
+      border-bottom-color: var(--color-border-interactive);
+    }
+
+    .table-checkbox {
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-xs);
+      background: var(--color-surface);
+    }
+
+    .file-name-link {
+      color: var(--color-link);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .file-type-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: var(--sp-1) var(--sp-2);
+      border-radius: var(--radius-xs);
+      background: var(--color-surface-low);
+      color: var(--color-text-high);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+      text-transform: uppercase;
+    }
+
+    .files-more-btn,
+    .files-config-btn {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .files-more-btn:hover,
+    .files-config-btn:hover {
+      background: var(--color-surface-low);
+    }
+
+    .files-more-btn img,
+    .files-config-btn img {
+      width: 20px;
+      height: 20px;
+      display: block;
+      filter: invert(33%) sepia(92%) saturate(1806%) hue-rotate(175deg) brightness(89%) contrast(101%);
+    }
+
+    .files-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-4);
+      padding: var(--sp-4);
+      color: var(--color-text-low);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+    }
+
+    .files-pagination-nav {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+
+    .pagination-btn {
+      min-width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 var(--sp-2);
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-link);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      cursor: pointer;
+    }
+
+    .pagination-btn:hover {
+      background: var(--color-surface-low);
+    }
+
+    .pagination-btn.is-current,
+    .pagination-btn.is-disabled {
+      color: var(--color-text-disabled);
+      cursor: default;
+    }
+
+    .pagination-btn.is-current:hover,
+    .pagination-btn.is-disabled:hover {
+      background: transparent;
+    }
+
+    .file-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ─── UPLOAD DRAWER ────────────────────────────────── */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 9850;
+      display: none;
+      justify-content: flex-end;
+      background: rgba(0, 0, 0, 0.86);
+    }
+
+    .drawer-backdrop.open {
+      display: flex;
+    }
+
+    body.drawer-open {
+      overflow: hidden;
+    }
+
+    .upload-drawer {
+      width: min(600px, 100%);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: var(--color-surface);
+      box-shadow: 0 8px 18px rgba(0, 34, 51, 0.16);
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-5);
+      padding: var(--sp-5);
+      border-bottom: 1px solid var(--color-border);
+      flex-shrink: 0;
+    }
+
+    .drawer-title {
+      flex: 1;
+      min-width: 0;
+      padding-top: var(--sp-1);
+      color: var(--color-text-high);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.2px;
+    }
+
+    .drawer-close {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--color-text-low);
+      cursor: pointer;
+    }
+
+    .drawer-close:hover {
+      background: var(--color-surface-low);
+    }
+
+    .drawer-close svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .drawer-close img {
+      width: 24px;
+      height: 24px;
+      display: block;
+      filter: invert(31%) sepia(17%) saturate(747%) hue-rotate(166deg) brightness(92%) contrast(86%);
+    }
+
+    .drawer-body {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: var(--sp-5);
+    }
+
+    .drawer-helper {
+      margin-bottom: var(--sp-4);
+      color: var(--color-text-low);
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.2px;
+    }
+
+    .drawer-step[hidden] {
+      display: none;
+    }
+
+    .upload-source-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+    }
+
+    .upload-source-card {
+      width: 100%;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      padding: var(--sp-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface);
+      color: var(--color-text-high);
+      font-family: var(--font);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .upload-source-card:hover,
+    .upload-source-card:focus {
+      border-color: var(--color-border-interactive);
+      outline: none;
+    }
+
+    .upload-source-card.selected {
+      border-color: var(--color-link);
+      box-shadow: 0 0 0 2px rgba(0, 119, 178, 0.16);
+    }
+
+    .source-radio {
+      width: 18px;
+      height: 18px;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: 50%;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .upload-source-card.selected .source-radio::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      background: var(--color-link);
+    }
+
+    .source-icon {
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-low);
+      flex-shrink: 0;
+    }
+
+    .source-icon svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    .source-icon img {
+      width: 24px;
+      height: 24px;
+      display: block;
+      filter: invert(31%) sepia(17%) saturate(747%) hue-rotate(166deg) brightness(92%) contrast(86%);
+    }
+
+    .source-label {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .upload-source-card.disabled {
+      background: var(--color-surface-low);
+      color: var(--color-text-disabled);
+      cursor: not-allowed;
+      opacity: 0.78;
+    }
+
+    .upload-source-card.disabled .source-label,
+    .upload-source-card.disabled .source-icon {
+      color: var(--color-text-disabled);
+    }
+
+    .upload-source-card.disabled .source-icon img {
+      filter: invert(56%) sepia(13%) saturate(486%) hue-rotate(166deg) brightness(93%) contrast(86%);
+    }
+
+    .soon-tag {
+      display: inline-flex;
+      align-items: center;
+      margin-left: auto;
+      padding: var(--sp-1) var(--sp-2);
+      border-radius: var(--radius-xs);
+      background: #8800f7;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+      white-space: nowrap;
+    }
+
+    .file-upload-dropzone {
+      width: 100%;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-6);
+      border: 1px dashed var(--color-border-interactive);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface);
+      color: var(--color-text-high);
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .file-upload-dropzone:hover,
+    .file-upload-dropzone:focus-within,
+    .file-upload-dropzone.is-dragging {
+      border-color: var(--color-link);
+      box-shadow: 0 0 0 2px rgba(0, 119, 178, 0.12);
+    }
+
+    .file-upload-dropzone.is-dragging {
+      background: rgba(178, 244, 255, 0.24);
+    }
+
+    .file-upload-dropzone.is-loading {
+      cursor: wait;
+    }
+
+    .file-upload-dropzone.is-attached {
+      border-style: solid;
+      border-color: #19c37d;
+      background: #f0fff7;
+    }
+
+    .dropzone-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--sp-4);
+    }
+
+    .dropzone-icon img {
+      width: 48px;
+      height: 48px;
+      display: block;
+      filter: invert(31%) sepia(17%) saturate(747%) hue-rotate(166deg) brightness(92%) contrast(86%);
+    }
+
+    .file-upload-dropzone.is-attached .dropzone-icon img {
+      filter: invert(55%) sepia(94%) saturate(415%) hue-rotate(103deg) brightness(89%) contrast(89%);
+    }
+
+    .dropzone-spinner {
+      width: 40px;
+      height: 40px;
+      display: block;
+      border: 3px solid var(--color-surface-low);
+      border-top-color: var(--color-link);
+      border-radius: 50%;
+      animation: dropzone-spin 0.8s linear infinite;
+    }
+
+    @keyframes dropzone-spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .dropzone-title {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .dropzone-title span {
+      color: var(--color-link);
+    }
+
+    .dropzone-helper {
+      margin-top: var(--sp-2);
+      color: var(--color-text-high);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+    }
+
+    .resource-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+      width: 100%;
+      margin-bottom: var(--sp-4);
+    }
+
+    .resource-form-card,
+    .resource-saved-card {
+      width: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface);
+    }
+
+    .resource-form-card {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+      padding: var(--sp-4);
+    }
+
+    .resource-saved-card {
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      padding: var(--sp-5);
+    }
+
+    .resource-saved-title {
+      flex: 1;
+      min-width: 0;
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .resource-edit-btn {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .resource-edit-btn:hover {
+      background: var(--color-surface-low);
+    }
+
+    .resource-edit-btn img {
+      width: 20px;
+      height: 20px;
+      display: block;
+      filter: invert(10%) sepia(50%) saturate(1202%) hue-rotate(160deg) brightness(92%) contrast(104%);
+    }
+
+    .resource-form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--sp-3);
+    }
+
+    .btn-tertiary-small,
+    .btn-secondary-small,
+    .btn-primary-small {
+      height: 32px;
+      padding: 6px 12px;
+      border: 0;
+      border-radius: var(--radius-sm);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-tertiary-small {
+      background: transparent;
+      color: var(--color-text-low);
+    }
+
+    .btn-secondary-small {
+      background: var(--color-primary-soft);
+      color: var(--color-link);
+    }
+
+    .btn-primary-small {
+      background: var(--color-btn-inverse);
+      color: var(--color-btn-on-color);
+    }
+
+    .resource-add-btn {
+      align-self: flex-start;
+      margin-top: var(--sp-4);
+    }
+
+    .drawer-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--sp-3);
+      padding: var(--sp-5);
+      border-top: 1px solid var(--color-border);
+      flex-shrink: 0;
+    }
+
+    /* ─── MODAL ────────────────────────────────────────── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 9900;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-5);
+      background: rgba(0, 0, 0, 0.86);
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    .knowledge-modal {
+      width: min(600px, 100%);
+      max-height: calc(100vh - 48px);
+      display: flex;
+      flex-direction: column;
+      padding: var(--sp-5);
+      overflow-y: auto;
+      border-radius: var(--radius-xl);
+      background: var(--color-surface);
+      box-shadow: 0 12px 24px rgba(0, 34, 51, 0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-3);
+      padding-bottom: var(--sp-4);
+    }
+
+    .modal-title {
+      flex: 1;
+      min-width: 0;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.28px;
+      color: var(--color-text-high);
+    }
+
+    .modal-close {
+      width: 40px;
+      height: 40px;
+      border: 0;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--color-text-low);
+      font-family: var(--font);
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .modal-close:hover {
+      background: var(--color-surface-low);
+    }
+
+    .modal-content {
+      display: flex;
+      flex-direction: column;
+      gap: 21px;
+    }
+
+    .modal-description {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: #212429;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+      width: 100%;
+    }
+
+    .form-label {
+      display: flex;
+      gap: var(--sp-1);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: var(--color-text-high);
+    }
+
+    .required-mark {
+      color: #cc0d4d;
+    }
+
+    .text-input,
+    .text-area {
+      width: 100%;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      color: var(--color-text-high);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      outline: none;
+    }
+
+    .text-input {
+      height: 40px;
+      padding: var(--sp-2) var(--sp-3);
+    }
+
+    .text-area {
+      min-height: 103px;
+      padding: var(--sp-2) var(--sp-3);
+      resize: vertical;
+    }
+
+    .text-area::placeholder {
+      color: var(--color-text-low);
+      opacity: 1;
+    }
+
+    .text-input:focus,
+    .text-area:focus,
+    .access-select:focus,
+    .access-select[aria-expanded="true"] {
+      border-color: var(--color-link);
+      box-shadow: 0 0 0 2px rgba(0, 119, 178, 0.16);
+    }
+
+    .access-select-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .access-select {
+      width: 100%;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-2);
+      padding: var(--sp-2) var(--sp-3);
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      color: var(--color-text-high);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      text-align: left;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .access-select-placeholder {
+      color: var(--color-text-low);
+    }
+
+    .access-select-value {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .access-caret {
+      width: 0;
+      height: 0;
+      flex-shrink: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid var(--color-text-low);
+    }
+
+    .access-select[aria-expanded="true"] .access-caret {
+      transform: rotate(180deg);
+    }
+
+    .access-dropdown {
+      position: fixed;
+      z-index: 10000;
+      display: none;
+      flex-direction: column;
+      gap: var(--sp-3);
+      padding: var(--sp-2);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      box-shadow: 0 4px 12px rgba(0, 34, 51, 0.14);
+    }
+
+    .access-select-wrap.open .access-dropdown {
+      display: flex;
+    }
+
+    .access-option {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      padding: var(--sp-2) var(--sp-3);
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      font-family: var(--font);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .access-option:hover,
+    .access-option:focus {
+      background: var(--color-surface-low);
+      outline: none;
+    }
+
+    .access-option-title {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .access-option-description {
+      color: var(--color-text-low);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--sp-3);
+      padding-top: var(--sp-5);
+    }
+
+    .btn-secondary,
+    .btn-modal-primary {
+      height: 40px;
+      padding: var(--sp-2) var(--sp-4);
+      border: 0;
+      border-radius: var(--radius-md);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      background: var(--color-primary-soft);
+      color: var(--color-link);
+    }
+
+    .btn-modal-primary {
+      background: var(--color-btn-inverse);
+      color: var(--color-btn-on-color);
+    }
+
+    .btn-secondary:hover,
+    .btn-modal-primary:hover {
+      filter: brightness(0.97);
+    }
+
+    @media (max-width: 640px) {
+      .modal-backdrop {
+        align-items: flex-start;
+        padding: var(--sp-4);
+      }
+
+      .knowledge-modal {
+        max-height: calc(100vh - 32px);
+      }
+
+      .modal-title {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ── NAVBAR ────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="navbar-logo">
+      <img src="../img/logo-rd-station.svg" width="146" height="32" alt="RD Station">
+      <!-- Chevron (troca pelo nome do produto se necessário) -->
+      <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;flex-shrink:0;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.61138 13.4077L5.16098 8.95728C4.94634 8.74264 4.94634 8.39466 5.16098 8.18004L5.68005 7.66097C5.89432 7.4467 6.24159 7.44629 6.45637 7.66006L10 11.1871L13.5436 7.66006C13.7584 7.44629 14.1057 7.4467 14.32 7.66097L14.839 8.18004C15.0537 8.39468 15.0537 8.74267 14.839 8.95728L10.3886 13.4077C10.174 13.6223 9.82602 13.6223 9.61138 13.4077Z" fill="white"/></svg>
+      </div>
+    </div>
+
+    <div class="navbar-secondary">
+      <div class="navbar-icons">
+        <!-- RD Station -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_382_2076)"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 0C12 6.62741 17.3726 12 24 12C17.3726 12 12 17.3726 12 24C12 17.3726 6.62744 12 0 12C6.62744 12 12 6.62741 12 0ZM12 5.80645C12 8.36104 8.33148 12 5.71429 12C8.33148 12 12 15.639 12 18.1935C12 15.639 15.6685 12 18.2857 12C15.6685 12 12 8.36104 12 5.80645Z" fill="white"/><path d="M2.28564 13.9852C2.89332 14.1253 3.47973 14.3209 4.03974 14.5659V15.6002L4.04234 15.7378C4.09244 17.0507 4.89237 18.2342 6.12642 18.8039L9.46273 20.344C9.70706 21.0151 9.88155 21.7196 9.97873 22.4488C9.93125 22.4304 9.88404 22.4111 9.83698 22.3914L9.69376 22.329L9.66474 22.3158L9.66176 22.3142L5.37009 20.333C3.54463 19.4903 2.36197 17.739 2.28936 15.7964L2.28899 15.785V15.7737L2.28602 15.6278L2.28564 15.6183V13.9852Z" fill="#00DBFF"/><path d="M21.7142 15.6066C21.7142 17.6243 20.5144 19.463 18.6298 20.333L14.3381 22.3142C14.2334 22.3626 14.1273 22.407 14.0204 22.4484C14.1176 21.7195 14.2922 21.0152 14.5364 20.3444L17.8734 18.8039C19.1485 18.2153 19.9601 16.9714 19.9601 15.6066V14.5659C20.5201 14.3209 21.1065 14.1253 21.7142 13.9852V15.6066Z" fill="#00DBFF"/><path d="M9.91585 1.55127C9.78336 2.30526 9.56674 3.03008 9.27672 3.71621L6.12642 5.17085C4.85136 5.75945 4.03975 7.00333 4.03974 8.36818V9.02141C3.47972 9.26639 2.89333 9.46203 2.28564 9.60205V8.36818C2.28566 6.35048 3.48547 4.5118 5.37009 3.64174L9.66176 1.66052L9.66474 1.65901L9.69376 1.64578L9.69487 1.6454L9.69636 1.64464C9.76892 1.61175 9.84221 1.58089 9.91585 1.55127Z" fill="#00DBFF"/><path d="M14.3039 1.64502L14.3381 1.66052L18.6298 3.64174C20.5144 4.51181 21.7142 6.35049 21.7142 8.36818V9.60205C21.1065 9.46202 20.5201 9.2664 19.9601 9.02141V8.36818C19.9601 7.01398 19.1611 5.77896 17.9032 5.18484L17.8734 5.17085L14.722 3.71584C14.4322 3.02992 14.2165 2.305 14.084 1.55127C14.1578 1.58093 14.2312 1.61207 14.3039 1.64502Z" fill="#00DBFF"/></g><defs><clipPath id="clip0_382_2076"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
+        </div>
+        <!-- Apps -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 15V19H9V15H5ZM3 15C3 13.9353 3.93527 13 5 13H9C10.0647 13 11 13.9353 11 15V19C11 20.0647 10.0647 21 9 21H5C3.93527 21 3 20.0647 3 19V15ZM19 5H15V9H19V5ZM15 3H19C20.0647 3 21 3.93527 21 5V9C21 10.0647 20.0647 11 19 11H15C13.9353 11 13 10.0647 13 9V5C13 3.93527 13.9353 3 15 3ZM15 15V19H19V15H15ZM13 15C13 13.9353 13.9353 13 15 13H19C20.0647 13 21 13.9353 21 15V19C21 20.0647 20.0647 21 19 21H15C13.9353 21 13 20.0647 13 19V15Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9 3C10.0647 3 11 3.93527 11 5V9C11 10.0647 10.0647 11 9 11H5C3.93527 11 3 10.0647 3 9V5C3 3.93527 3.93527 3 5 3H9ZM5 5V9H9V5H5Z" fill="#00DBFF"/></svg>
+        </div>
+        <!-- Notificações -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.9999 3.25C12.5976 3.25 13.1249 3.77734 13.1249 4.375V5.07812C15.6913 5.57031 17.6249 7.85547 17.6249 10.5625V11.4766C17.6249 13.0586 18.1522 14.6055 19.1366 15.8711L19.664 16.5039C19.8749 16.7852 19.9101 17.1367 19.7694 17.418C19.6288 17.6992 19.3476 17.875 19.0312 17.875H4.96865C4.61709 17.875 4.33584 17.6992 4.19521 17.418C4.05459 17.1367 4.08975 16.7852 4.30068 16.5039L4.82803 15.8711C5.8124 14.6055 6.3749 13.0586 6.3749 11.4766V10.5625C6.3749 7.85547 8.3085 5.57031 10.8749 5.07812V4.375C10.8749 3.77734 11.3671 3.25 11.9999 3.25ZM11.9999 6.625C9.82021 6.625 8.0624 8.41797 8.0624 10.5625V11.4766C8.0624 13.1641 7.57021 14.7812 6.65615 16.1875H17.3085C16.3944 14.7812 15.9374 13.1641 15.9374 11.4766V10.5625C15.9374 8.41797 14.1444 6.625 11.9999 6.625Z" fill="white"/><path d="M13.582 20.6172C14.0039 20.1953 14.25 19.5977 14.25 19H12H9.75C9.75 19.5977 9.96094 20.1953 10.3828 20.6172C10.8047 21.0391 11.4023 21.25 12 21.25C12.5977 21.25 13.1602 21.0391 13.582 20.6172Z" fill="#00DBFF"/></svg>
+          <div class="badge-dot"></div>
+        </div>
+        <!-- Configurações -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.25C12.5977 3.25 13.1602 3.32031 13.7227 3.42578C14.0039 3.49609 14.4961 3.63672 14.7773 4.12891C14.8477 4.26953 14.8828 4.41016 14.918 4.55078L15.2695 5.92188C15.3047 6.09766 15.6562 6.30859 15.8672 6.23828L17.2031 5.85156C17.3438 5.81641 17.4844 5.78125 17.625 5.78125C18.1875 5.78125 18.5742 6.13281 18.75 6.34375C19.5234 7.22266 20.1211 8.24219 20.5078 9.36719C20.6133 9.64844 20.7188 10.1406 20.4023 10.5977C20.332 10.7383 20.2266 10.8438 20.1211 10.9492L19.1367 11.9336C18.9609 12.0742 18.9609 12.4609 19.1367 12.6016L20.1211 13.5859C20.2266 13.6914 20.332 13.7969 20.4023 13.9375C20.6836 14.3945 20.5781 14.8867 20.5078 15.168C20.1211 16.293 19.5234 17.3125 18.75 18.1914C18.5742 18.4023 18.1875 18.7539 17.625 18.7539C17.4844 18.7539 17.3438 18.7188 17.2031 18.6836L15.8672 18.2617C15.6562 18.2266 15.3047 18.4023 15.2695 18.6133L14.918 19.9844C14.8828 20.125 14.8477 20.2656 14.7773 20.4062C14.4961 20.8984 14.0039 21.0391 13.7227 21.1094C13.1602 21.2148 12.5977 21.25 12 21.25C11.4023 21.25 10.8047 21.2148 10.2422 21.1094C9.96094 21.0391 9.46875 20.8984 9.1875 20.4062C9.11719 20.2656 9.08203 20.125 9.04688 19.9844L8.69531 18.6133C8.66016 18.4023 8.30859 18.2266 8.13281 18.2617L6.79688 18.6836C6.65625 18.7188 6.48047 18.7188 6.33984 18.7539C5.77734 18.7539 5.39062 18.4023 5.21484 18.1914C4.44141 17.3125 3.84375 16.293 3.45703 15.168C3.38672 14.8867 3.28125 14.3945 3.5625 13.9023C3.63281 13.7969 3.73828 13.6562 3.84375 13.5508L4.86328 12.6016C5.00391 12.4609 5.00391 12.0742 4.86328 11.9336L3.84375 10.9492C3.73828 10.8438 3.63281 10.7383 3.5625 10.5977C3.28125 10.1406 3.38672 9.64844 3.45703 9.36719C3.84375 8.24219 4.44141 7.22266 5.21484 6.34375C5.39062 6.13281 5.77734 5.78125 6.33984 5.78125C6.48047 5.78125 6.65625 5.81641 6.79688 5.85156L8.13281 6.23828C8.30859 6.30859 8.66016 6.09766 8.69531 5.92188L9.04688 4.55078C9.08203 4.41016 9.11719 4.26953 9.1875 4.12891C9.46875 3.63672 9.96094 3.49609 10.2422 3.42578C10.8047 3.32031 11.4023 3.25 12 3.25ZM10.6641 5.07812L10.3477 6.30859C10.0664 7.43359 8.76562 8.20703 7.64062 7.89062L6.41016 7.50391C5.84766 8.20703 5.39062 8.98047 5.07422 9.82422L6.02344 10.7031C6.86719 11.5117 6.86719 13.0234 6.02344 13.832L5.07422 14.7109C5.39062 15.5547 5.84766 16.3281 6.41016 17.0312L7.64062 16.6445C8.76562 16.3281 10.0664 17.1016 10.3477 18.2266L10.6641 19.457C11.5078 19.6328 12.457 19.6328 13.3359 19.457L13.6172 18.2266C13.8984 17.1016 15.1992 16.3281 16.3242 16.6445L17.5547 17.0312C18.1172 16.3281 18.5742 15.5547 18.8906 14.7109L17.9766 13.832C17.1328 13.0234 17.1328 11.5117 17.9766 10.7031L18.8906 9.82422C18.5742 8.98047 18.1172 8.20703 17.5547 7.50391L16.3242 7.89062C15.2344 8.20703 13.8984 7.43359 13.6172 6.30859L13.3359 5.07812C12.457 4.90234 11.5078 4.90234 10.6641 5.07812Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M12 8.875C13.1953 8.875 14.2852 9.54297 14.918 10.5625C15.5156 11.6172 15.5156 12.918 14.918 13.9375C14.2852 14.9922 13.1953 15.625 12 15.625C10.7695 15.625 9.67969 14.9922 9.04688 13.9375C8.44922 12.918 8.44922 11.6172 9.04688 10.5625C9.67969 9.54297 10.7695 8.875 12 8.875ZM12.8438 10.8086C12.3164 10.4922 11.6484 10.4922 11.1562 10.8086C10.6289 11.125 10.3125 11.6523 10.3125 12.25C10.3125 12.8828 10.6289 13.4102 11.1562 13.7266C11.6484 14.043 12.3164 14.043 12.8438 13.7266C13.3359 13.4102 13.6875 12.8828 13.6875 12.25C13.6875 11.6523 13.3359 11.125 12.8438 10.8086Z" fill="#00DBFF"/></svg>
+        </div>
+      </div>
+
+      <div class="navbar-divider"></div>
+
+      <div class="account-menu" id="account-menu">
+        <div class="account-avatar">
+          <!-- Substitua pelo src do avatar do usuário -->
+          <img src="" alt="Avatar" onerror="this.style.display='none'">
+        </div>
+        <span class="account-name" id="account-name">Usuário</span>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.61138 13.4077L5.16098 8.95728C4.94634 8.74264 4.94634 8.39466 5.16098 8.18004L5.68005 7.66097C5.89432 7.4467 6.24159 7.44629 6.45637 7.66006L10 11.1871L13.5436 7.66006C13.7584 7.44629 14.1057 7.4467 14.32 7.66097L14.839 8.18004C15.0537 8.39468 15.0537 8.74267 14.839 8.95728L10.3886 13.4077C10.174 13.6223 9.82602 13.6223 9.61138 13.4077Z" fill="white"/></svg>
+        <div class="account-dropdown" id="account-dropdown">
+          <div class="account-dropdown-item" id="logout-btn">
+            <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            Sair
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── SIDEBAR ────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <!-- Home -->
+    <a class="sidebar-item" href="../home/index.html" aria-label="Home" title="Home">
+      <div class="sidebar-item-inner">
+        <img src="../img/icon-home-default.svg" width="24" height="24" alt="Home">
+      </div>
+    </a>
+    <!-- Agentes -->
+    <a class="sidebar-item" href="../agentes/index.html" aria-label="Agentes" title="Agentes">
+      <div class="sidebar-item-inner">
+        <img src="../img/icon-agent-default.svg" width="24" height="24" alt="Agentes">
+      </div>
+    </a>
+    <!-- Conectores -->
+    <a class="sidebar-item" href="../conectores/index.html" aria-label="Conectores" title="Conectores">
+      <div class="sidebar-item-inner">
+        <img src="../img/icon-conectores-default.svg" width="24" height="24" alt="Conectores">
+      </div>
+    </a>
+    <!-- Anexos -->
+    <a class="sidebar-item active" href="../anexos/index.html" aria-label="Anexos" title="Anexos">
+      <div class="sidebar-item-inner">
+        <img src="../img/icon-anexo-active.svg" width="24" height="24" alt="Anexos">
+      </div>
+    </a>
+    <!-- Game -->
+    <a class="sidebar-item" href="../game/index.html" aria-label="Game" title="Game">
+      <div class="sidebar-item-inner">
+        <img src="../img/svg/bolt.svg" width="24" height="24" alt="Game">
+      </div>
+    </a>
+  </aside>
+  <!-- ── CONTENT ────────────────────────────────────────── -->
+  <main class="content">
+    <section class="page-view" id="knowledge-empty-view">
+      <header class="page-header">
+        <div class="page-header-main">
+          <h1 class="page-header-title">Base de conhecimento</h1>
+          <button type="button" class="btn-primary-inverse page-header-action" id="open-knowledge-modal-list" hidden>
+            <img src="../img/anexos/plus.svg" alt="">
+            Nova base de conhecimento
+          </button>
+        </div>
+        <p class="page-header-desc">As bases de conhecimento são compartilhadas entre agentes. Ao criar ou editar um agente, selecione quais bases ele deve consultar.</p>
+      </header>
+
+      <div class="empty-state">
+        <img class="empty-illustration" src="../img/anexos/empty-illustration.svg" width="476" height="214" alt="">
+        <div class="empty-copy">
+          <h2>Crie sua primeira base de conhecimento</h2>
+          <p>Uma base de conhecimento permite que o agente encontre informações relevantes mais rapidamente.</p>
+          <button type="button" class="btn-primary-inverse" id="open-knowledge-modal">
+            <img src="../img/anexos/plus.svg" alt="">
+            Criar base de conhecimento
+          </button>
+        </div>
+      </div>
+
+      <div class="knowledge-bases-view" id="knowledge-bases-view" hidden>
+        <div class="knowledge-list-header">
+          <label class="files-search">
+            <input type="search" placeholder="Buscar" aria-label="Buscar bases de conhecimento">
+            <img src="../img/svg/loupe.svg" alt="">
+          </label>
+        </div>
+
+        <div class="knowledge-list-table-wrap">
+          <table class="knowledge-list-table" aria-label="Bases de conhecimento">
+            <thead>
+              <tr>
+                <th scope="col"><span class="table-checkbox" aria-hidden="true"></span></th>
+                <th scope="col">Base de conhecimento</th>
+                <th scope="col">Acesso</th>
+                <th scope="col">Criação</th>
+                <th scope="col">Última atualização</th>
+                <th scope="col">
+                  <button type="button" class="files-config-btn" aria-label="Configurar tabela">
+                    <img src="../img/svg/cog.svg" alt="">
+                  </button>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="knowledge-bases-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-view knowledge-detail" id="knowledge-detail-view" hidden>
+      <header class="detail-header">
+        <div class="detail-header-section">Base de conhecimento</div>
+        <div class="detail-header-main">
+          <button type="button" class="btn-icon" id="back-to-empty-view" aria-label="Voltar para a lista de bases">
+            <img src="../img/svg/arrow-left.svg" alt="">
+          </button>
+          <div class="detail-title-wrap">
+            <h1 class="detail-title" id="knowledge-detail-title">Personas B2B</h1>
+          </div>
+          <button type="button" class="btn-secondary-action detail-add-file" id="open-upload-drawer-header" hidden>
+            <img src="../img/svg/plus.svg" alt="">
+            Adicionar
+          </button>
+          <div class="detail-actions" id="detail-actions">
+            <button type="button" class="btn-icon" id="detail-actions-toggle" aria-label="Mais opções" aria-haspopup="menu" aria-expanded="false" aria-controls="detail-actions-dropdown">
+              <img src="../img/svg/elipsis-v.svg" alt="">
+            </button>
+            <div class="detail-actions-dropdown" id="detail-actions-dropdown" role="menu">
+              <button type="button" class="detail-action-item" id="edit-knowledge-base" role="menuitem">Editar base de conhecimento</button>
+              <button type="button" class="detail-action-item critical" id="delete-knowledge-base" role="menuitem">Excluir</button>
+            </div>
+          </div>
+        </div>
+        <p class="detail-description" id="knowledge-detail-description">Sem descrição</p>
+      </header>
+
+      <div class="upload-empty-state">
+        <img class="upload-illustration" src="../img/anexos/empty-illustration.svg" width="476" height="214" alt="">
+        <div class="upload-empty-copy">
+          <h2>Adicione um arquivo para iniciar</h2>
+          <p>Uma base de conhecimento permite que o agente encontre informações relevantes mais rapidamente.</p>
+          <button type="button" class="btn-secondary-action" id="open-upload-drawer">
+            <img src="../img/svg/plus.svg" alt="">
+            Adicionar arquivo
+          </button>
+        </div>
+      </div>
+      <input class="file-input" id="knowledge-file-input" type="file" multiple>
+
+      <div class="knowledge-files-view" id="knowledge-files-view" hidden>
+        <div class="files-toolbar">
+          <label class="files-search">
+            <input type="search" placeholder="Buscar" aria-label="Buscar arquivos">
+            <img src="../img/svg/loupe.svg" alt="">
+          </label>
+        </div>
+
+        <div class="files-table-wrap">
+          <table class="files-table" aria-label="Arquivos adicionados">
+            <thead>
+              <tr>
+                <th scope="col"><span class="table-checkbox" aria-hidden="true"></span></th>
+                <th scope="col">Arquivo</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Tamanho</th>
+                <th scope="col">Última atualização</th>
+                <th scope="col">
+                  <button type="button" class="files-config-btn" aria-label="Configurar tabela">
+                    <img src="../img/svg/cog.svg" alt="">
+                  </button>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="knowledge-files-table-body"></tbody>
+          </table>
+        </div>
+
+        <footer class="files-pagination">
+          <span id="files-pagination-summary">Exibindo 0 de 0 arquivos</span>
+          <div class="files-pagination-nav" aria-label="Paginação">
+            <button type="button" class="pagination-btn is-disabled" disabled>Anterior</button>
+            <button type="button" class="pagination-btn is-current" aria-current="page">1</button>
+            <button type="button" class="pagination-btn">Próxima</button>
+          </div>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+</div><!-- /layout -->
+
+<div class="drawer-backdrop" id="upload-drawer-backdrop" aria-hidden="true">
+  <aside class="upload-drawer" role="dialog" aria-modal="true" aria-labelledby="upload-drawer-title">
+    <header class="drawer-header">
+      <h2 class="drawer-title" id="upload-drawer-title">Adicionar arquivos</h2>
+      <button type="button" class="drawer-close" id="close-upload-drawer" aria-label="Fechar drawer">
+        <img src="../img/svg/times.svg" alt="">
+      </button>
+    </header>
+
+    <div class="drawer-body">
+      <div class="drawer-step" id="upload-source-step">
+        <p class="drawer-helper">Escolha o tipo de arquivo que você deseja enviar</p>
+
+        <div class="upload-source-list" role="radiogroup" aria-label="Tipo de arquivo">
+          <button type="button" class="upload-source-card selected" role="radio" aria-checked="true" data-upload-source="file">
+            <span class="source-radio" aria-hidden="true"></span>
+            <span class="source-icon" aria-hidden="true">
+              <img src="../img/svg/paperclip.svg" alt="">
+            </span>
+            <span class="source-label">Carregar arquivo</span>
+          </button>
+
+          <button type="button" class="upload-source-card" role="radio" aria-checked="false" data-upload-source="qa">
+            <span class="source-radio" aria-hidden="true"></span>
+            <span class="source-icon" aria-hidden="true">
+              <img src="../img/svg/question.svg" alt="">
+            </span>
+            <span class="source-label">Adicionar perguntas e respostas</span>
+          </button>
+
+          <button type="button" class="upload-source-card" role="radio" aria-checked="false" data-upload-source="site">
+            <span class="source-radio" aria-hidden="true"></span>
+            <span class="source-icon" aria-hidden="true">
+              <img src="../img/svg/desktop.svg" alt="">
+            </span>
+            <span class="source-label">Adicionar site e blog</span>
+          </button>
+
+          <button type="button" class="upload-source-card" role="radio" aria-checked="false" data-upload-source="pages">
+            <span class="source-radio" aria-hidden="true"></span>
+            <span class="source-icon" aria-hidden="true">
+              <img src="../img/svg/page.svg" alt="">
+            </span>
+            <span class="source-label">Páginas individuais</span>
+          </button>
+
+          <button type="button" class="upload-source-card" role="radio" aria-checked="false" data-upload-source="youtube">
+            <span class="source-radio" aria-hidden="true"></span>
+            <span class="source-icon" aria-hidden="true">
+              <img src="../img/svg/youtube.svg" alt="">
+            </span>
+            <span class="source-label">YouTube</span>
+          </button>
+
+          <button type="button" class="upload-source-card disabled" role="radio" aria-checked="false" aria-disabled="true" data-upload-source="audio">
+            <span class="source-radio" aria-hidden="true"></span>
+            <span class="source-icon" aria-hidden="true">
+              <img src="../img/svg/microphone.svg" alt="">
+            </span>
+            <span class="source-label">Áudios</span>
+            <span class="soon-tag">EM BREVE</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="drawer-step" id="upload-file-step" hidden>
+        <p class="drawer-helper">Adicione arquivos à sua base de conhecimento.</p>
+        <label class="file-upload-dropzone" for="knowledge-file-input" tabindex="0">
+          <span class="dropzone-icon" id="dropzone-icon" aria-hidden="true">
+            <img src="../img/svg/import.svg" alt="">
+          </span>
+          <span class="dropzone-title" id="dropzone-title">Arraste e solte seu arquivo aqui ou <span>clique para selecionar</span></span>
+          <span class="dropzone-helper" id="dropzone-helper">Formatos aceitos: .xls .csv .xlsx</span>
+        </label>
+      </div>
+
+      <div class="drawer-step" id="upload-resource-step" hidden>
+        <p class="drawer-helper" id="resource-step-helper">Adicione informações à sua base de conhecimento.</p>
+
+        <div class="resource-list" id="resource-list"></div>
+
+        <div class="resource-form-card" id="resource-form-card">
+          <label class="form-field">
+            <span class="form-label" id="resource-primary-label">URL</span>
+            <input class="text-input" type="text" id="resource-primary-input" placeholder="Adicione a URL">
+          </label>
+
+          <label class="form-field">
+            <span class="form-label" id="resource-secondary-label">Nome</span>
+            <input class="text-input" type="text" id="resource-secondary-input" placeholder="Adicione um nome para exibir na listagem">
+          </label>
+
+          <div class="resource-form-actions">
+            <button type="button" class="btn-tertiary-small" id="remove-resource-entry">Remover</button>
+            <button type="button" class="btn-secondary-small" id="cancel-resource-entry">Cancelar</button>
+            <button type="button" class="btn-primary-small" id="save-resource-entry">Salvar</button>
+          </div>
+        </div>
+
+        <button type="button" class="btn-secondary-action resource-add-btn" id="add-resource-entry" hidden>
+          <img src="../img/svg/plus.svg" alt="">
+          Adicionar
+        </button>
+      </div>
+    </div>
+
+    <footer class="drawer-footer">
+      <button type="button" class="btn-secondary" id="cancel-upload-drawer">Cancelar</button>
+      <button type="button" class="btn-modal-primary" id="advance-upload-drawer">Avançar</button>
+    </footer>
+  </aside>
+</div>
+
+<div class="modal-backdrop" id="knowledge-modal-backdrop" aria-hidden="true">
+  <section class="knowledge-modal" role="dialog" aria-modal="true" aria-labelledby="knowledge-modal-title">
+    <form id="knowledge-modal-form">
+      <div class="modal-header">
+        <h2 class="modal-title" id="knowledge-modal-title">Nova base de conhecimento</h2>
+        <button type="button" class="modal-close" id="close-knowledge-modal" aria-label="Fechar modal">×</button>
+      </div>
+
+      <div class="modal-content">
+        <p class="modal-description">Uma base de conhecimento permite que o agente encontre informações relevantes mais rapidamente.</p>
+
+        <label class="form-field">
+          <span class="form-label">
+            Nome da base de conhecimento
+            <span class="required-mark" aria-hidden="true">*</span>
+          </span>
+          <input class="text-input" type="text" name="knowledge-name" placeholder="Informe um nome para essa base" required>
+        </label>
+
+        <label class="form-field">
+          <span class="form-label">Descrição</span>
+          <textarea class="text-area" name="knowledge-description" placeholder="Adicione a descrição dessa base"></textarea>
+        </label>
+
+        <div class="form-field">
+          <span class="form-label">Quem poderá acessar essa base?</span>
+          <div class="access-select-wrap" id="access-select-wrap">
+            <button type="button" class="access-select" id="access-select" aria-haspopup="listbox" aria-expanded="false" aria-controls="access-dropdown">
+              <span class="access-select-value access-select-placeholder" id="access-select-value">Selecione quem poderá acessar</span>
+              <span class="access-caret" aria-hidden="true"></span>
+            </button>
+            <input type="hidden" name="knowledge-access" id="knowledge-access">
+            <div class="access-dropdown" id="access-dropdown" role="listbox" aria-label="Quem poderá acessar essa base?">
+              <button type="button" class="access-option" role="option" data-value="publico">
+                <span class="access-option-title">Público</span>
+                <span class="access-option-description">Todas as pessoas da conta podem encontrar e usar esta base de conhecimento ao criar ou editar agentes de IA.</span>
+              </button>
+              <button type="button" class="access-option" role="option" data-value="privado">
+                <span class="access-option-title">Privado</span>
+                <span class="access-option-description">Somente você poderá acessar esta base para criar ou editar agentes de IA.</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="back-knowledge-modal">Voltar</button>
+        <button type="submit" class="btn-modal-primary">Criar</button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/knowledge-base-service.js"></script>
+<script>
+  // ── Account menu dropdown ─────────────────────────────
+  const accountMenu = document.getElementById('account-menu');
+  if (accountMenu) {
+    accountMenu.addEventListener('click', e => {
+      e.stopPropagation();
+      accountMenu.classList.toggle('open');
+    });
+    document.addEventListener('click', () => accountMenu.classList.remove('open'));
+  }
+
+  // ── Knowledge base modal ──────────────────────────────
+  const openKnowledgeModalBtn = document.getElementById('open-knowledge-modal');
+  const openKnowledgeModalListBtn = document.getElementById('open-knowledge-modal-list');
+  const knowledgeEmptyView = document.getElementById('knowledge-empty-view');
+  const knowledgeEmptyState = knowledgeEmptyView?.querySelector('.empty-state');
+  const knowledgeBasesView = document.getElementById('knowledge-bases-view');
+  const knowledgeBasesTableBody = document.getElementById('knowledge-bases-table-body');
+  const knowledgeDetailView = document.getElementById('knowledge-detail-view');
+  const backToEmptyViewBtn = document.getElementById('back-to-empty-view');
+  const detailActions = document.getElementById('detail-actions');
+  const detailActionsToggle = document.getElementById('detail-actions-toggle');
+  const editKnowledgeBaseBtn = document.getElementById('edit-knowledge-base');
+  const deleteKnowledgeBaseBtn = document.getElementById('delete-knowledge-base');
+  const knowledgeDetailTitle = document.getElementById('knowledge-detail-title');
+  const knowledgeDetailDescription = document.getElementById('knowledge-detail-description');
+  const openUploadDrawerBtn = document.getElementById('open-upload-drawer');
+  const openUploadDrawerHeaderBtn = document.getElementById('open-upload-drawer-header');
+  const uploadEmptyState = document.querySelector('.upload-empty-state');
+  const knowledgeFilesView = document.getElementById('knowledge-files-view');
+  const knowledgeFilesTableBody = document.getElementById('knowledge-files-table-body');
+  const filesPaginationSummary = document.getElementById('files-pagination-summary');
+  const uploadDrawerBackdrop = document.getElementById('upload-drawer-backdrop');
+  const uploadDrawerTitle = document.getElementById('upload-drawer-title');
+  const uploadSourceStep = document.getElementById('upload-source-step');
+  const uploadFileStep = document.getElementById('upload-file-step');
+  const uploadResourceStep = document.getElementById('upload-resource-step');
+  const resourceStepHelper = document.getElementById('resource-step-helper');
+  const resourceList = document.getElementById('resource-list');
+  const resourceFormCard = document.getElementById('resource-form-card');
+  const resourcePrimaryLabel = document.getElementById('resource-primary-label');
+  const resourcePrimaryInput = document.getElementById('resource-primary-input');
+  const resourceSecondaryLabel = document.getElementById('resource-secondary-label');
+  const resourceSecondaryInput = document.getElementById('resource-secondary-input');
+  const removeResourceEntryBtn = document.getElementById('remove-resource-entry');
+  const cancelResourceEntryBtn = document.getElementById('cancel-resource-entry');
+  const saveResourceEntryBtn = document.getElementById('save-resource-entry');
+  const addResourceEntryBtn = document.getElementById('add-resource-entry');
+  const closeUploadDrawerBtn = document.getElementById('close-upload-drawer');
+  const cancelUploadDrawerBtn = document.getElementById('cancel-upload-drawer');
+  const advanceUploadDrawerBtn = document.getElementById('advance-upload-drawer');
+  const uploadSourceCards = document.querySelectorAll('.upload-source-card');
+  const fileUploadDropzone = document.querySelector('.file-upload-dropzone');
+  const dropzoneIcon = document.getElementById('dropzone-icon');
+  const dropzoneTitle = document.getElementById('dropzone-title');
+  const dropzoneHelper = document.getElementById('dropzone-helper');
+  const knowledgeFileInput = document.getElementById('knowledge-file-input');
+  const knowledgeModalBackdrop = document.getElementById('knowledge-modal-backdrop');
+  const closeKnowledgeModalBtn = document.getElementById('close-knowledge-modal');
+  const backKnowledgeModalBtn = document.getElementById('back-knowledge-modal');
+  const knowledgeModalForm = document.getElementById('knowledge-modal-form');
+  const knowledgeModalTitle = document.getElementById('knowledge-modal-title');
+  const knowledgeModalSubmitBtn = knowledgeModalForm?.querySelector('.btn-modal-primary');
+  const knowledgeNameInput = knowledgeModalBackdrop?.querySelector('input[name="knowledge-name"]');
+  const knowledgeDescriptionInput = knowledgeModalBackdrop?.querySelector('textarea[name="knowledge-description"]');
+  const accessSelectWrap = document.getElementById('access-select-wrap');
+  const accessSelect = document.getElementById('access-select');
+  const accessSelectValue = document.getElementById('access-select-value');
+  const knowledgeAccessInput = document.getElementById('knowledge-access');
+  const accessDropdown = document.getElementById('access-dropdown');
+  const accessOptions = document.querySelectorAll('.access-option');
+  const knowledgeService = window.KnowledgeBaseService;
+  let knowledgeModalMode = 'create';
+  let knowledgeModalReturnView = 'list';
+  let currentKnowledgeBaseId = null;
+  const knowledgeBases = [];
+  const knowledgeFilesByBase = {};
+  let selectedUploadSource = 'file';
+  let selectedUploadFiles = [];
+  let dropzoneLoadingTimer = null;
+  let uploadDrawerStep = 'source';
+  let editingResourceIndex = null;
+  let editingKnowledgeFileIndex = null;
+  const uploadResourceConfigs = {
+    qa: {
+      title: 'Perguntas e respostas',
+      helper: 'Adicione perguntas e respostas para orientar os agentes de IA.',
+      primaryLabel: 'Pergunta',
+      primaryPlaceholder: 'Adicione a pergunta',
+      secondaryLabel: 'Resposta',
+      secondaryPlaceholder: 'Adicione a resposta',
+      fallbackTitle: 'Pergunta sem título'
+    },
+    site: {
+      title: 'Site e Blog',
+      helper: 'Adicione todas as páginas de um site ou blog na sua base de conhecimento.',
+      primaryLabel: 'URL',
+      primaryPlaceholder: 'Adicione a URL do site ou blog',
+      secondaryLabel: 'Nome',
+      secondaryPlaceholder: 'Adicione um nome para exibir na listagem',
+      fallbackTitle: 'Site sem nome'
+    },
+    pages: {
+      title: 'Páginas individuais',
+      helper: 'Adicione páginas específicas que devem entrar na base de conhecimento.',
+      primaryLabel: 'URL da página',
+      primaryPlaceholder: 'Adicione a URL da página',
+      secondaryLabel: 'Nome',
+      secondaryPlaceholder: 'Adicione um nome para exibir na listagem',
+      fallbackTitle: 'Página sem nome'
+    },
+    youtube: {
+      title: 'YouTube',
+      helper: 'Adicione vídeos do YouTube para compor a base de conhecimento.',
+      primaryLabel: 'URL do vídeo',
+      primaryPlaceholder: 'Adicione a URL do vídeo no YouTube',
+      secondaryLabel: 'Nome',
+      secondaryPlaceholder: 'Adicione um nome para exibir na listagem',
+      fallbackTitle: 'Vídeo sem nome'
+    },
+    audio: {
+      title: 'Áudios',
+      helper: 'Adicione áudios para compor a base de conhecimento.',
+      primaryLabel: 'URL do áudio',
+      primaryPlaceholder: 'Adicione a URL do áudio',
+      secondaryLabel: 'Nome',
+      secondaryPlaceholder: 'Adicione um nome para exibir na listagem',
+      fallbackTitle: 'Áudio sem nome'
+    }
+  };
+  const uploadResourceEntries = {
+    qa: [],
+    site: [],
+    pages: [],
+    youtube: [],
+    audio: []
+  };
+  const knowledgeBaseState = {
+    name: '',
+    description: '',
+    access: ''
+  };
+  const knowledgeFiles = [];
+  const uploadTypeLabels = {
+    file: 'Arquivo',
+    qa: 'Pergunta',
+    site: 'Site/Blog',
+    pages: 'Página',
+    youtube: 'YouTube',
+    audio: 'Áudio'
+  };
+
+  function positionAccessDropdown() {
+    if (!accessSelect || !accessDropdown) return;
+    const rect = accessSelect.getBoundingClientRect();
+    accessDropdown.style.left = `${rect.left}px`;
+    accessDropdown.style.top = `${rect.bottom + 8}px`;
+    accessDropdown.style.width = `${rect.width}px`;
+  }
+
+  function closeAccessDropdown() {
+    accessSelectWrap?.classList.remove('open');
+    accessSelect?.setAttribute('aria-expanded', 'false');
+  }
+
+  function toggleAccessDropdown() {
+    const isOpen = accessSelectWrap?.classList.toggle('open');
+    accessSelect?.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    if (isOpen) positionAccessDropdown();
+  }
+
+  function setAccessSelectValue(value) {
+    const selectedOption = Array.from(accessOptions).find(option => option.dataset.value === value);
+
+    if (!selectedOption) {
+      accessSelectValue.textContent = 'Selecione quem poderá acessar';
+      accessSelectValue.classList.add('access-select-placeholder');
+      knowledgeAccessInput.value = '';
+      accessOptions.forEach(option => option.setAttribute('aria-selected', 'false'));
+      return;
+    }
+
+    const optionTitle = selectedOption.querySelector('.access-option-title')?.textContent || '';
+    accessSelectValue.textContent = optionTitle;
+    accessSelectValue.classList.remove('access-select-placeholder');
+    knowledgeAccessInput.value = value;
+    accessOptions.forEach(option => option.setAttribute('aria-selected', 'false'));
+    selectedOption.setAttribute('aria-selected', 'true');
+  }
+
+  function closeDetailActionsDropdown() {
+    detailActions?.classList.remove('open');
+    detailActionsToggle?.setAttribute('aria-expanded', 'false');
+  }
+
+  function toggleDetailActionsDropdown() {
+    const isOpen = detailActions?.classList.toggle('open');
+    detailActionsToggle?.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  }
+
+  function getCurrentResourceConfig() {
+    return uploadResourceConfigs[selectedUploadSource] || uploadResourceConfigs.site;
+  }
+
+  function getCurrentResourceEntries() {
+    return uploadResourceEntries[selectedUploadSource] || [];
+  }
+
+  function getResourceDisplayTitle(entry) {
+    const config = getCurrentResourceConfig();
+    return entry.secondary || entry.primary || config.fallbackTitle;
+  }
+
+  function normalizeSourceTypeForDrawer(type) {
+    if (type === 'page') return 'pages';
+    return type || 'file';
+  }
+
+  function getSourceTypeFromKnowledgeFile(file) {
+    if (file?.sourceType) return normalizeSourceTypeForDrawer(file.sourceType);
+    if (file?.sourceInput?.type) return normalizeSourceTypeForDrawer(file.sourceInput.type);
+
+    const labelToSource = {
+      Arquivo: 'file',
+      Pergunta: 'qa',
+      'Site/Blog': 'site',
+      Página: 'pages',
+      YouTube: 'youtube',
+      Áudio: 'audio'
+    };
+
+    return labelToSource[file?.type] || 'file';
+  }
+
+  function isFileKnowledgeSource(file) {
+    return getSourceTypeFromKnowledgeFile(file) === 'file';
+  }
+
+  function getResourceEntryFromKnowledgeFile(file) {
+    const metadata = file?.metadata || file?.sourceInput?.metadata || {};
+    const sourceType = getSourceTypeFromKnowledgeFile(file);
+
+    if (sourceType === 'qa') {
+      return {
+        primary: metadata.primary || '',
+        secondary: metadata.secondary || file?.name || ''
+      };
+    }
+
+    return {
+      primary: metadata.primary || file?.sourceUrl || file?.sourceInput?.sourceUrl || '',
+      secondary: metadata.secondary || file?.name || ''
+    };
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function formatCurrentDate() {
+    return new Intl.DateTimeFormat('pt-BR').format(new Date());
+  }
+
+  function formatFileSize(bytes) {
+    if (!bytes) return '1.2 MB';
+    const sizeInMb = bytes / (1024 * 1024);
+    return `${sizeInMb.toFixed(1)} MB`;
+  }
+
+  function getSelectedFileLabel(files) {
+    if (!files?.length) return '';
+    if (files.length === 1) return files[0].name;
+    return `${files[0].name} + ${files.length - 1} ${files.length === 2 ? 'arquivo' : 'arquivos'}`;
+  }
+
+  function resetDropzoneState() {
+    selectedUploadFiles = [];
+    if (dropzoneLoadingTimer) {
+      clearTimeout(dropzoneLoadingTimer);
+      dropzoneLoadingTimer = null;
+    }
+    if (knowledgeFileInput) knowledgeFileInput.value = '';
+    fileUploadDropzone?.classList.remove('is-dragging', 'is-loading', 'is-attached');
+    if (dropzoneIcon) dropzoneIcon.innerHTML = '<img src="../img/svg/import.svg" alt="">';
+    if (dropzoneTitle) dropzoneTitle.innerHTML = 'Arraste e solte seu arquivo aqui ou <span>clique para selecionar</span>';
+    if (dropzoneHelper) dropzoneHelper.textContent = 'Formatos aceitos: .xls .csv .xlsx';
+  }
+
+  function setDropzoneLoading(files) {
+    fileUploadDropzone?.classList.remove('is-dragging', 'is-attached');
+    fileUploadDropzone?.classList.add('is-loading');
+    if (dropzoneIcon) dropzoneIcon.innerHTML = '<span class="dropzone-spinner"></span>';
+    if (dropzoneTitle) dropzoneTitle.textContent = 'Carregando arquivo...';
+    if (dropzoneHelper) dropzoneHelper.textContent = getSelectedFileLabel(files);
+  }
+
+  function setDropzoneAttached(files) {
+    fileUploadDropzone?.classList.remove('is-dragging', 'is-loading');
+    fileUploadDropzone?.classList.add('is-attached');
+    if (dropzoneIcon) dropzoneIcon.innerHTML = '<img src="../img/svg/checkmark-circle.svg" alt="">';
+    if (dropzoneTitle) dropzoneTitle.textContent = 'Arquivo anexado com sucesso, clique em adicionar para concluir';
+    if (dropzoneHelper) dropzoneHelper.textContent = getSelectedFileLabel(files);
+  }
+
+  function handleSelectedUploadFiles(files) {
+    selectedUploadFiles = Array.from(files || []);
+    if (!selectedUploadFiles.length) {
+      resetDropzoneState();
+      return;
+    }
+
+    setDropzoneLoading(selectedUploadFiles);
+    if (dropzoneLoadingTimer) clearTimeout(dropzoneLoadingTimer);
+    dropzoneLoadingTimer = window.setTimeout(() => {
+      setDropzoneAttached(selectedUploadFiles);
+      dropzoneLoadingTimer = null;
+    }, 700);
+  }
+
+  function getDefaultFileName(source) {
+    const defaults = {
+      file: 'FAQ',
+      qa: 'Perguntas e respostas',
+      site: 'Site institucional',
+      pages: 'Página individual',
+      youtube: 'Vídeo do YouTube',
+      audio: 'Áudio'
+    };
+
+    return defaults[source] || 'Arquivo adicionado';
+  }
+
+  function getSelectedVisibility() {
+    return knowledgeAccessInput?.value === 'publico' ? 'public' : 'private';
+  }
+
+  function getAccessValueFromVisibility(visibility) {
+    return visibility === 'public' ? 'publico' : 'privado';
+  }
+
+  function getVisibilityFromAccessValue(accessValue) {
+    return accessValue === 'publico' ? 'public' : 'private';
+  }
+
+  function getAccessLabel(visibility) {
+    return visibility === 'public' ? 'Público' : 'Privado';
+  }
+
+  function formatDisplayDate(value) {
+    if (!value) return formatCurrentDate();
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    return new Intl.DateTimeFormat('pt-BR').format(date);
+  }
+
+  function createLocalKnowledgeBaseFromForm(existingBase = null) {
+    const now = new Date().toISOString();
+    return {
+      id: existingBase?.id || currentKnowledgeBaseId || `local-${Date.now()}`,
+      name: knowledgeNameInput?.value.trim() || 'Nova base de conhecimento',
+      description: knowledgeDescriptionInput?.value.trim() || '',
+      visibility: getVisibilityFromAccessValue(knowledgeAccessInput?.value || 'privado'),
+      status: 'active',
+      createdAt: existingBase?.createdAt || now,
+      updatedAt: now
+    };
+  }
+
+  function upsertKnowledgeBase(base) {
+    if (!base?.id) return;
+    const index = knowledgeBases.findIndex(item => item.id === base.id);
+    if (index >= 0) {
+      knowledgeBases[index] = { ...knowledgeBases[index], ...base };
+    } else {
+      knowledgeBases.unshift(base);
+    }
+  }
+
+  function removeKnowledgeBaseFromList(id) {
+    const index = knowledgeBases.findIndex(item => item.id === id);
+    if (index >= 0) knowledgeBases.splice(index, 1);
+  }
+
+  function closeKnowledgeRowActionsDropdowns(except = null) {
+    document.querySelectorAll('.knowledge-row-actions.open').forEach(actions => {
+      if (actions === except) return;
+      actions.classList.remove('open');
+      actions.querySelector('.knowledge-row-actions-toggle')?.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  function positionKnowledgeRowDropdown(actions) {
+    const button = actions?.querySelector('.knowledge-row-actions-toggle');
+    const dropdown = actions?.querySelector('.knowledge-row-dropdown');
+    if (!button || !dropdown) return;
+
+    const rect = button.getBoundingClientRect();
+    const dropdownWidth = dropdown.offsetWidth || 220;
+    const left = Math.max(16, Math.min(rect.right - dropdownWidth, window.innerWidth - dropdownWidth - 16));
+    dropdown.style.top = `${rect.bottom + 4}px`;
+    dropdown.style.left = `${left}px`;
+  }
+
+  function toggleKnowledgeRowActions(button) {
+    const actions = button.closest('.knowledge-row-actions');
+    if (!actions) return;
+
+    const isOpen = actions.classList.toggle('open');
+    button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    closeKnowledgeRowActionsDropdowns(actions);
+    if (isOpen) positionKnowledgeRowDropdown(actions);
+  }
+
+  function setCurrentKnowledgeBase(base) {
+    if (!base) return;
+    currentKnowledgeBaseId = base.id;
+    knowledgeBaseState.name = base.name;
+    knowledgeBaseState.description = base.description || '';
+    knowledgeBaseState.access = getAccessValueFromVisibility(base.visibility);
+  }
+
+  function renderKnowledgeBases() {
+    if (!knowledgeEmptyState || !knowledgeBasesView || !knowledgeBasesTableBody) return;
+
+    const hasBases = knowledgeBases.length > 0;
+    knowledgeEmptyState.hidden = hasBases;
+    knowledgeBasesView.hidden = !hasBases;
+    if (openKnowledgeModalListBtn) openKnowledgeModalListBtn.hidden = !hasBases;
+
+    knowledgeBasesTableBody.innerHTML = knowledgeBases.map(base => `
+      <tr>
+        <td><span class="table-checkbox" aria-hidden="true"></span></td>
+        <td>
+          <button type="button" class="knowledge-base-link" data-knowledge-base-id="${escapeHtml(base.id)}">
+            ${escapeHtml(base.name)}
+          </button>
+        </td>
+        <td><span class="access-tag">${escapeHtml(getAccessLabel(base.visibility))}</span></td>
+        <td>${escapeHtml(formatDisplayDate(base.createdAt))}</td>
+        <td>${escapeHtml(formatDisplayDate(base.updatedAt))}</td>
+        <td>
+          <div class="knowledge-row-actions">
+            <button type="button" class="files-more-btn knowledge-row-actions-toggle" data-knowledge-base-id="${escapeHtml(base.id)}" aria-label="Mais opções para ${escapeHtml(base.name)}" aria-haspopup="menu" aria-expanded="false">
+              <img src="../img/svg/elipsis-v.svg" alt="">
+            </button>
+            <div class="detail-actions-dropdown knowledge-row-dropdown" role="menu">
+              <button type="button" class="detail-action-item knowledge-row-edit" data-knowledge-base-id="${escapeHtml(base.id)}" role="menuitem">Editar</button>
+              <button type="button" class="detail-action-item critical knowledge-row-delete" data-knowledge-base-id="${escapeHtml(base.id)}" role="menuitem">Excluir</button>
+            </div>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+
+    knowledgeBasesTableBody.querySelectorAll('.knowledge-base-link').forEach(button => {
+      button.addEventListener('click', () => {
+        const base = knowledgeBases.find(item => item.id === button.dataset.knowledgeBaseId);
+        if (base) showKnowledgeDetail(base);
+      });
+    });
+
+    knowledgeBasesTableBody.querySelectorAll('.knowledge-row-actions-toggle').forEach(button => {
+      button.addEventListener('click', event => {
+        event.stopPropagation();
+        toggleKnowledgeRowActions(button);
+      });
+    });
+
+    knowledgeBasesTableBody.querySelectorAll('.knowledge-row-edit').forEach(button => {
+      button.addEventListener('click', event => {
+        event.stopPropagation();
+        const base = knowledgeBases.find(item => item.id === button.dataset.knowledgeBaseId);
+        if (!base) return;
+        closeKnowledgeRowActionsDropdowns();
+        showKnowledgeDetail(base);
+      });
+    });
+
+    knowledgeBasesTableBody.querySelectorAll('.knowledge-row-delete').forEach(button => {
+      button.addEventListener('click', async event => {
+        event.stopPropagation();
+        const base = knowledgeBases.find(item => item.id === button.dataset.knowledgeBaseId);
+        if (!base) return;
+        closeKnowledgeRowActionsDropdowns();
+        setCurrentKnowledgeBase(base);
+        await deleteKnowledgeBase();
+      });
+    });
+  }
+
+  async function persistKnowledgeBaseFromForm() {
+    if (!knowledgeService?.isConfigured()) return null;
+
+    const payload = {
+      name: knowledgeNameInput?.value.trim() || 'Nova base de conhecimento',
+      description: knowledgeDescriptionInput?.value.trim() || '',
+      visibility: getSelectedVisibility()
+    };
+
+    try {
+      const savedBase = knowledgeModalMode === 'edit' && currentKnowledgeBaseId
+        ? await knowledgeService.updateKnowledgeBase(currentKnowledgeBaseId, payload)
+        : await knowledgeService.createKnowledgeBase(payload);
+
+      currentKnowledgeBaseId = savedBase.id;
+      return savedBase;
+    } catch (error) {
+      console.warn('Supabase persistence skipped:', error);
+      return null;
+    }
+  }
+
+  function renderKnowledgeFiles() {
+    if (!knowledgeFilesTableBody || !knowledgeFilesView || !uploadEmptyState) return;
+
+    uploadEmptyState.hidden = knowledgeFiles.length > 0;
+    knowledgeFilesView.hidden = knowledgeFiles.length === 0;
+    if (openUploadDrawerHeaderBtn) openUploadDrawerHeaderBtn.hidden = knowledgeFiles.length === 0;
+
+    knowledgeFilesTableBody.innerHTML = knowledgeFiles.map((file, index) => {
+      const isFileSource = isFileKnowledgeSource(file);
+      return `
+      <tr>
+        <td><span class="table-checkbox" aria-hidden="true"></span></td>
+        <td><a class="file-name-link" href="#">${escapeHtml(file.name)}</a></td>
+        <td><span class="file-type-tag">${escapeHtml(file.type)}</span></td>
+        <td>${escapeHtml(file.size)}</td>
+        <td>${escapeHtml(file.updatedAt)}</td>
+        <td>
+          <div class="knowledge-row-actions">
+            <button type="button" class="files-more-btn knowledge-row-actions-toggle" data-file-index="${index}" aria-label="Mais opções para ${escapeHtml(file.name)}" aria-haspopup="menu" aria-expanded="false">
+              <img src="../img/svg/elipsis-v.svg" alt="">
+            </button>
+            <div class="detail-actions-dropdown knowledge-row-dropdown" role="menu">
+              <button type="button" class="detail-action-item knowledge-file-edit" data-file-index="${index}" role="menuitem"${isFileSource ? ' disabled aria-disabled="true"' : ''}>Editar</button>
+              <button type="button" class="detail-action-item critical knowledge-file-delete" data-file-index="${index}" role="menuitem">Excluir</button>
+            </div>
+          </div>
+        </td>
+      </tr>
+    `;
+    }).join('');
+
+    knowledgeFilesTableBody.querySelectorAll('.knowledge-row-actions-toggle').forEach(button => {
+      button.addEventListener('click', event => {
+        event.stopPropagation();
+        toggleKnowledgeRowActions(button);
+      });
+    });
+
+    knowledgeFilesTableBody.querySelectorAll('.knowledge-file-edit').forEach(button => {
+      button.addEventListener('click', event => {
+        event.stopPropagation();
+        if (button.disabled) return;
+        openKnowledgeFileEdit(Number(button.dataset.fileIndex));
+      });
+    });
+
+    knowledgeFilesTableBody.querySelectorAll('.knowledge-file-delete').forEach(button => {
+      button.addEventListener('click', async event => {
+        event.stopPropagation();
+        await deleteKnowledgeFile(Number(button.dataset.fileIndex));
+      });
+    });
+
+    if (filesPaginationSummary) {
+      const total = knowledgeFiles.length;
+      filesPaginationSummary.textContent = `Exibindo ${Math.min(total, 10)} de ${total} ${total === 1 ? 'arquivo' : 'arquivos'}`;
+    }
+  }
+
+  function syncCurrentKnowledgeFiles() {
+    if (!currentKnowledgeBaseId) return;
+    knowledgeFilesByBase[currentKnowledgeBaseId] = knowledgeFiles.map(file => ({ ...file }));
+  }
+
+  function setKnowledgeFilesForBase(baseId, files = []) {
+    knowledgeFiles.splice(0, knowledgeFiles.length, ...files.map(file => ({ ...file })));
+    if (baseId) knowledgeFilesByBase[baseId] = knowledgeFiles.map(file => ({ ...file }));
+    renderKnowledgeFiles();
+  }
+
+  function mapSourceToKnowledgeFile(source) {
+    return {
+      id: source.id,
+      name: source.name,
+      type: knowledgeService?.getSourceLabel?.(source.type) || uploadTypeLabels[source.type] || 'Arquivo',
+      size: source.size || '-',
+      updatedAt: formatDisplayDate(source.updatedAt),
+      sourceType: source.type,
+      sourceUrl: source.sourceUrl,
+      storagePath: source.storagePath,
+      metadata: source.metadata || {},
+      sourceInput: null
+    };
+  }
+
+  function createKnowledgeFileFromResourceEntry(entry, updatedAt, existingFile = null) {
+    const title = getResourceDisplayTitle(entry);
+    const sourceType = selectedUploadSource === 'pages' ? 'page' : selectedUploadSource;
+    const metadata = {
+      primary: entry.primary || '',
+      secondary: entry.secondary || ''
+    };
+
+    return {
+      ...existingFile,
+      name: title,
+      type: uploadTypeLabels[selectedUploadSource] || 'Arquivo',
+      size: existingFile?.size || (selectedUploadSource === 'qa' ? '0.9 MB' : '1.1 MB'),
+      updatedAt,
+      sourceType,
+      sourceUrl: selectedUploadSource === 'qa' ? null : entry.primary || null,
+      metadata,
+      sourceInput: {
+        type: sourceType,
+        title,
+        sourceUrl: selectedUploadSource === 'qa' ? null : entry.primary || null,
+        status: selectedUploadSource === 'qa' ? 'ready' : 'queued',
+        metadata
+      }
+    };
+  }
+
+  function addKnowledgeFilesFromCurrentStep() {
+    const updatedAt = formatCurrentDate();
+    let filesToAdd = [];
+
+    if (selectedUploadSource === 'file') {
+      const selectedFiles = selectedUploadFiles.length ? selectedUploadFiles : Array.from(knowledgeFileInput?.files || []);
+      filesToAdd = selectedFiles.length
+        ? selectedFiles.map(file => ({
+          name: file.name.replace(/\.[^/.]+$/, '') || file.name,
+          type: uploadTypeLabels.file,
+          size: formatFileSize(file.size),
+          updatedAt,
+          sourceType: 'file',
+          sourceInput: {
+            type: 'file',
+            title: file.name.replace(/\.[^/.]+$/, '') || file.name,
+            mimeType: file.type || null,
+            sizeBytes: file.size || null,
+            status: 'queued',
+            metadata: {
+              original_filename: file.name
+            }
+          }
+        }))
+        : [{
+          name: getDefaultFileName('file'),
+          type: uploadTypeLabels.file,
+          size: '1.2 MB',
+          updatedAt,
+          sourceType: 'file',
+          sourceInput: {
+            type: 'file',
+            title: getDefaultFileName('file'),
+            status: 'queued',
+            metadata: {
+              prototype: true
+            }
+          }
+        }];
+
+      knowledgeFiles.push(...filesToAdd);
+      resetDropzoneState();
+      syncCurrentKnowledgeFiles();
+      return filesToAdd;
+    }
+
+    const entries = getCurrentResourceEntries();
+    if (editingKnowledgeFileIndex !== null && resourceFormCard && !resourceFormCard.hidden) {
+      const pendingEntry = {
+        primary: resourcePrimaryInput?.value.trim() || '',
+        secondary: resourceSecondaryInput?.value.trim() || ''
+      };
+
+      if (editingResourceIndex !== null && entries[editingResourceIndex]) {
+        entries[editingResourceIndex] = pendingEntry;
+      } else if (entries.length) {
+        entries[0] = pendingEntry;
+      } else {
+        entries.push(pendingEntry);
+      }
+    }
+
+    if (!entries.length) {
+      const primaryValue = resourcePrimaryInput?.value.trim() || '';
+      const secondaryValue = resourceSecondaryInput?.value.trim() || '';
+      if (primaryValue || secondaryValue) entries.push({ primary: primaryValue, secondary: secondaryValue });
+    }
+
+    if (editingKnowledgeFileIndex !== null) {
+      const existingFile = knowledgeFiles[editingKnowledgeFileIndex];
+      const entryToUpdate = entries[0] || getResourceEntryFromKnowledgeFile(existingFile);
+      const updatedFile = createKnowledgeFileFromResourceEntry(entryToUpdate, updatedAt, existingFile);
+      knowledgeFiles[editingKnowledgeFileIndex] = updatedFile;
+      uploadResourceEntries[selectedUploadSource] = [];
+      editingKnowledgeFileIndex = null;
+      resetResourceForm();
+      renderResourceEntries();
+      syncCurrentKnowledgeFiles();
+      return [updatedFile];
+    }
+
+    const entriesToAdd = entries.length ? entries : [{ primary: '', secondary: getDefaultFileName(selectedUploadSource) }];
+    filesToAdd = entriesToAdd.map(entry => createKnowledgeFileFromResourceEntry(entry, updatedAt));
+
+    knowledgeFiles.push(...filesToAdd);
+
+    uploadResourceEntries[selectedUploadSource] = [];
+    resetResourceForm();
+    renderResourceEntries();
+    syncCurrentKnowledgeFiles();
+    return filesToAdd;
+  }
+
+  async function persistAddedSources(addedFiles) {
+    if (!currentKnowledgeBaseId || !knowledgeService?.isConfigured() || !addedFiles?.length) return;
+
+    for (const file of addedFiles) {
+      if (!file.sourceInput) continue;
+
+      try {
+        const savedSource = file.id
+          ? await knowledgeService.updateSource(file.id, file.sourceInput)
+          : await knowledgeService.createSource(currentKnowledgeBaseId, file.sourceInput);
+        Object.assign(file, mapSourceToKnowledgeFile(savedSource));
+      } catch (error) {
+        console.warn('Supabase source persistence skipped:', error);
+      }
+    }
+
+    syncCurrentKnowledgeFiles();
+  }
+
+  async function loadSourcesForBase(baseId) {
+    if (!baseId || !knowledgeService?.isConfigured() || String(baseId).startsWith('local-')) return;
+
+    try {
+      const sources = await knowledgeService.listSources(baseId);
+      setKnowledgeFilesForBase(baseId, sources.map(mapSourceToKnowledgeFile));
+    } catch (error) {
+      console.warn('Supabase source list skipped:', error);
+    }
+  }
+
+  function openKnowledgeFileEdit(index) {
+    const file = knowledgeFiles[index];
+    if (!file || isFileKnowledgeSource(file)) return;
+
+    const source = getSourceTypeFromKnowledgeFile(file);
+    closeKnowledgeRowActionsDropdowns();
+    setSelectedUploadSource(source);
+    uploadResourceEntries[source] = [getResourceEntryFromKnowledgeFile(file)];
+    editingKnowledgeFileIndex = index;
+    editingResourceIndex = 0;
+
+    uploadDrawerBackdrop?.classList.add('open');
+    uploadDrawerBackdrop?.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('drawer-open');
+    closeDetailActionsDropdown();
+    setUploadDrawerStep('resource');
+    openResourceForm(0);
+  }
+
+  async function deleteKnowledgeFile(index) {
+    const file = knowledgeFiles[index];
+    if (!file) return;
+
+    closeKnowledgeRowActionsDropdowns();
+
+    if (file.id && currentKnowledgeBaseId && knowledgeService?.isConfigured() && !String(currentKnowledgeBaseId).startsWith('local-')) {
+      try {
+        await knowledgeService.deleteSource(file.id);
+      } catch (error) {
+        console.warn('Supabase source delete failed:', error);
+        window.alert('Não foi possível excluir o item no Supabase. Verifique se você está autenticado e tente novamente.');
+        return;
+      }
+    }
+
+    knowledgeFiles.splice(index, 1);
+    syncCurrentKnowledgeFiles();
+    renderKnowledgeFiles();
+  }
+
+  function renderResourceEntries() {
+    if (!resourceList) return;
+    const entries = getCurrentResourceEntries();
+    const config = getCurrentResourceConfig();
+
+    if (editingKnowledgeFileIndex !== null) {
+      resourceList.innerHTML = '';
+      return;
+    }
+
+    resourceList.innerHTML = entries.map((entry, index) => {
+      if (editingResourceIndex === index) {
+        return `
+      <article class="resource-form-card" data-editing-resource-index="${index}">
+        <label class="form-field">
+          <span class="form-label">${escapeHtml(config.primaryLabel)}</span>
+          <input class="text-input inline-resource-primary" type="text" value="${escapeHtml(entry.primary)}" placeholder="${escapeHtml(config.primaryPlaceholder)}">
+        </label>
+
+        <label class="form-field">
+          <span class="form-label">${escapeHtml(config.secondaryLabel)}</span>
+          <input class="text-input inline-resource-secondary" type="text" value="${escapeHtml(entry.secondary)}" placeholder="${escapeHtml(config.secondaryPlaceholder)}">
+        </label>
+
+        <div class="resource-form-actions">
+          <button type="button" class="btn-tertiary-small inline-resource-remove">Remover</button>
+          <button type="button" class="btn-secondary-small inline-resource-cancel">Cancelar</button>
+          <button type="button" class="btn-primary-small inline-resource-save">Salvar</button>
+        </div>
+      </article>
+    `;
+      }
+
+      const title = getResourceDisplayTitle(entry);
+      return `
+      <article class="resource-saved-card">
+        <h3 class="resource-saved-title">${escapeHtml(title)}</h3>
+        <button type="button" class="resource-edit-btn" data-resource-index="${index}" aria-label="Editar ${escapeHtml(title)}">
+          <img src="../img/svg/pen.svg" alt="">
+        </button>
+      </article>
+    `;
+    }).join('');
+
+    resourceList.querySelectorAll('.resource-edit-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const index = Number(button.dataset.resourceIndex);
+        openInlineResourceForm(index);
+      });
+    });
+
+    const inlineForm = resourceList.querySelector('[data-editing-resource-index]');
+    if (inlineForm) {
+      const index = Number(inlineForm.dataset.editingResourceIndex);
+      inlineForm.querySelector('.inline-resource-save')?.addEventListener('click', () => saveInlineResourceEntry(index));
+      inlineForm.querySelector('.inline-resource-cancel')?.addEventListener('click', cancelInlineResourceEdit);
+      inlineForm.querySelector('.inline-resource-remove')?.addEventListener('click', () => removeInlineResourceEntry(index));
+      inlineForm.querySelector('.inline-resource-primary')?.focus();
+    }
+  }
+
+  function resetResourceForm() {
+    if (resourcePrimaryInput) resourcePrimaryInput.value = '';
+    if (resourceSecondaryInput) resourceSecondaryInput.value = '';
+    editingResourceIndex = null;
+  }
+
+  function openResourceForm(index = null) {
+    const entries = getCurrentResourceEntries();
+    editingResourceIndex = index;
+
+    if (index !== null && entries[index]) {
+      if (resourcePrimaryInput) resourcePrimaryInput.value = entries[index].primary;
+      if (resourceSecondaryInput) resourceSecondaryInput.value = entries[index].secondary;
+    } else {
+      resetResourceForm();
+    }
+
+    if (resourceFormCard) resourceFormCard.hidden = false;
+    if (addResourceEntryBtn) addResourceEntryBtn.hidden = true;
+    renderResourceEntries();
+    resourcePrimaryInput?.focus();
+  }
+
+  function openInlineResourceForm(index) {
+    editingResourceIndex = index;
+    if (resourceFormCard) resourceFormCard.hidden = true;
+    if (addResourceEntryBtn) addResourceEntryBtn.hidden = true;
+    renderResourceEntries();
+  }
+
+  function cancelInlineResourceEdit() {
+    editingResourceIndex = null;
+    renderResourceEntries();
+    if (addResourceEntryBtn) addResourceEntryBtn.hidden = false;
+  }
+
+  function saveInlineResourceEntry(index) {
+    const inlineForm = resourceList?.querySelector(`[data-editing-resource-index="${index}"]`);
+    const entries = getCurrentResourceEntries();
+
+    if (!inlineForm || !entries[index]) return;
+
+    entries[index] = {
+      primary: inlineForm.querySelector('.inline-resource-primary')?.value.trim() || '',
+      secondary: inlineForm.querySelector('.inline-resource-secondary')?.value.trim() || ''
+    };
+
+    editingResourceIndex = null;
+    renderResourceEntries();
+    if (addResourceEntryBtn) addResourceEntryBtn.hidden = false;
+  }
+
+  function removeInlineResourceEntry(index) {
+    const entries = getCurrentResourceEntries();
+    if (entries[index]) entries.splice(index, 1);
+
+    editingResourceIndex = null;
+    renderResourceEntries();
+
+    if (entries.length) {
+      if (addResourceEntryBtn) addResourceEntryBtn.hidden = false;
+      if (resourceFormCard) resourceFormCard.hidden = true;
+    } else {
+      openResourceForm();
+    }
+  }
+
+  function closeResourceForm() {
+    resetResourceForm();
+    if (resourceFormCard) resourceFormCard.hidden = true;
+    if (addResourceEntryBtn) addResourceEntryBtn.hidden = false;
+  }
+
+  function configureResourceStep() {
+    const config = getCurrentResourceConfig();
+    const entries = getCurrentResourceEntries();
+
+    if (resourceStepHelper) resourceStepHelper.textContent = config.helper;
+    if (resourcePrimaryLabel) resourcePrimaryLabel.textContent = config.primaryLabel;
+    if (resourcePrimaryInput) resourcePrimaryInput.placeholder = config.primaryPlaceholder;
+    if (resourceSecondaryLabel) resourceSecondaryLabel.textContent = config.secondaryLabel;
+    if (resourceSecondaryInput) resourceSecondaryInput.placeholder = config.secondaryPlaceholder;
+
+    renderResourceEntries();
+
+    if (entries.length) {
+      closeResourceForm();
+    } else {
+      openResourceForm();
+    }
+  }
+
+  function saveResourceEntry() {
+    const entries = getCurrentResourceEntries();
+    const entry = {
+      primary: resourcePrimaryInput?.value.trim() || '',
+      secondary: resourceSecondaryInput?.value.trim() || ''
+    };
+
+    if (editingResourceIndex !== null && entries[editingResourceIndex]) {
+      entries[editingResourceIndex] = entry;
+    } else {
+      entries.push(entry);
+    }
+
+    renderResourceEntries();
+    if (editingKnowledgeFileIndex !== null) return;
+    closeResourceForm();
+  }
+
+  function removeResourceEntry() {
+    const entries = getCurrentResourceEntries();
+
+    if (editingResourceIndex !== null && entries[editingResourceIndex]) {
+      entries.splice(editingResourceIndex, 1);
+      renderResourceEntries();
+      if (entries.length) {
+        closeResourceForm();
+      } else {
+        openResourceForm();
+      }
+      return;
+    }
+
+    closeResourceForm();
+  }
+
+  function setUploadDrawerStep(step) {
+    uploadDrawerStep = step;
+    const isFileStep = step === 'file';
+    const isResourceStep = step === 'resource';
+    const resourceConfig = getCurrentResourceConfig();
+
+    if (uploadDrawerTitle) {
+      uploadDrawerTitle.textContent = isFileStep ? 'Carregar arquivo' : (isResourceStep ? resourceConfig.title : 'Adicionar arquivos');
+    }
+    if (uploadSourceStep) uploadSourceStep.hidden = isFileStep || isResourceStep;
+    if (uploadFileStep) uploadFileStep.hidden = !isFileStep;
+    if (uploadResourceStep) uploadResourceStep.hidden = !isResourceStep;
+    if (cancelUploadDrawerBtn) cancelUploadDrawerBtn.textContent = isFileStep || isResourceStep ? 'Voltar' : 'Cancelar';
+    if (advanceUploadDrawerBtn) advanceUploadDrawerBtn.textContent = isFileStep || isResourceStep ? 'Adicionar na base' : 'Avançar';
+
+    if (isFileStep) {
+      resetDropzoneState();
+      fileUploadDropzone?.focus();
+    } else if (isResourceStep) {
+      configureResourceStep();
+    } else {
+      uploadSourceCards[0]?.focus();
+    }
+  }
+
+  function openUploadDrawer() {
+    editingKnowledgeFileIndex = null;
+    uploadDrawerBackdrop?.classList.add('open');
+    uploadDrawerBackdrop?.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('drawer-open');
+    closeDetailActionsDropdown();
+    setUploadDrawerStep('source');
+  }
+
+  function closeUploadDrawer(restoreFocus = true) {
+    uploadDrawerBackdrop?.classList.remove('open');
+    uploadDrawerBackdrop?.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('drawer-open');
+    resetDropzoneState();
+    if (editingKnowledgeFileIndex !== null) {
+      uploadResourceEntries[selectedUploadSource] = [];
+      editingKnowledgeFileIndex = null;
+      resetResourceForm();
+    }
+    setUploadDrawerStep('source');
+    if (restoreFocus) {
+      const focusTarget = openUploadDrawerHeaderBtn && !openUploadDrawerHeaderBtn.hidden
+        ? openUploadDrawerHeaderBtn
+        : openUploadDrawerBtn;
+      focusTarget?.focus();
+    }
+  }
+
+  function handleUploadDrawerSecondaryAction() {
+    if (uploadDrawerStep === 'file' || uploadDrawerStep === 'resource') {
+      if (editingKnowledgeFileIndex !== null) {
+        closeUploadDrawer();
+        return;
+      }
+      if (uploadDrawerStep === 'file') resetDropzoneState();
+      setUploadDrawerStep('source');
+      return;
+    }
+
+    closeUploadDrawer();
+  }
+
+  function setSelectedUploadSource(source) {
+    selectedUploadSource = source;
+    uploadSourceCards.forEach(card => {
+      const isSelected = card.dataset.uploadSource === source;
+      card.classList.toggle('selected', isSelected);
+      card.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+    });
+  }
+
+  async function advanceUploadFlow() {
+    if (uploadDrawerStep === 'source') {
+      if (selectedUploadSource === 'file') {
+        setUploadDrawerStep('file');
+      } else {
+        setUploadDrawerStep('resource');
+      }
+      return;
+    }
+
+    if (uploadDrawerStep === 'file') {
+      const addedFiles = addKnowledgeFilesFromCurrentStep();
+      await persistAddedSources(addedFiles);
+      renderKnowledgeFiles();
+      closeUploadDrawer();
+      return;
+    }
+
+    if (uploadDrawerStep === 'resource') {
+      const addedFiles = addKnowledgeFilesFromCurrentStep();
+      await persistAddedSources(addedFiles);
+      renderKnowledgeFiles();
+      closeUploadDrawer();
+    }
+  }
+
+  function openKnowledgeModal(mode = 'create', returnView = 'list') {
+    knowledgeModalMode = mode;
+    knowledgeModalReturnView = returnView;
+    closeDetailActionsDropdown();
+    closeKnowledgeRowActionsDropdowns();
+
+    if (knowledgeModalMode === 'edit') {
+      if (knowledgeModalTitle) knowledgeModalTitle.textContent = 'Editar base de conhecimento';
+      if (knowledgeModalSubmitBtn) knowledgeModalSubmitBtn.textContent = 'Salvar';
+      if (knowledgeNameInput) knowledgeNameInput.value = knowledgeBaseState.name;
+      if (knowledgeDescriptionInput) knowledgeDescriptionInput.value = knowledgeBaseState.description;
+      setAccessSelectValue(knowledgeBaseState.access);
+    } else {
+      if (knowledgeModalTitle) knowledgeModalTitle.textContent = 'Nova base de conhecimento';
+      if (knowledgeModalSubmitBtn) knowledgeModalSubmitBtn.textContent = 'Criar';
+      knowledgeModalForm?.reset();
+      setAccessSelectValue('');
+    }
+
+    knowledgeModalBackdrop.classList.add('open');
+    knowledgeModalBackdrop.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    knowledgeNameInput?.focus();
+  }
+
+  function closeKnowledgeModal(restoreFocus = true) {
+    knowledgeModalBackdrop.classList.remove('open');
+    knowledgeModalBackdrop.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+    closeAccessDropdown();
+    if (restoreFocus) {
+      if (knowledgeModalMode === 'edit') {
+        detailActionsToggle?.focus();
+      } else {
+        openKnowledgeModalBtn?.focus();
+      }
+    }
+  }
+
+  function showKnowledgeDetail(base = null) {
+    closeKnowledgeRowActionsDropdowns();
+    const baseName = base?.name || knowledgeNameInput?.value.trim() || 'Nova base de conhecimento';
+    const baseDescription = base?.description ?? knowledgeDescriptionInput?.value.trim() ?? '';
+
+    if (base?.id) currentKnowledgeBaseId = base.id;
+    knowledgeBaseState.name = baseName;
+    knowledgeBaseState.description = baseDescription;
+    knowledgeBaseState.access = base?.visibility ? getAccessValueFromVisibility(base.visibility) : knowledgeAccessInput?.value || '';
+
+    if (knowledgeDetailTitle) knowledgeDetailTitle.textContent = baseName;
+    if (knowledgeDetailDescription) knowledgeDetailDescription.textContent = baseDescription || 'Sem descrição';
+
+    if (currentKnowledgeBaseId) {
+      setKnowledgeFilesForBase(currentKnowledgeBaseId, knowledgeFilesByBase[currentKnowledgeBaseId] || []);
+      loadSourcesForBase(currentKnowledgeBaseId);
+    }
+
+    knowledgeEmptyView.hidden = true;
+    knowledgeDetailView.hidden = false;
+    knowledgeDetailView.scrollIntoView({ block: 'start' });
+  }
+
+  function showKnowledgeList() {
+    knowledgeDetailView.hidden = true;
+    knowledgeEmptyView.hidden = false;
+    renderKnowledgeBases();
+    const focusTarget = knowledgeBases.length ? openKnowledgeModalListBtn : openKnowledgeModalBtn;
+    focusTarget?.focus();
+  }
+
+  async function deleteKnowledgeBase() {
+    const isLocalBase = String(currentKnowledgeBaseId || '').startsWith('local-');
+
+    if (currentKnowledgeBaseId && knowledgeService?.isConfigured() && !isLocalBase) {
+      try {
+        await knowledgeService.deleteKnowledgeBase(currentKnowledgeBaseId);
+      } catch (error) {
+        console.warn('Supabase delete failed:', error);
+        window.alert('Não foi possível excluir a base no Supabase. Verifique se você está autenticado e tente novamente.');
+        return;
+      }
+    }
+
+    knowledgeBaseState.name = '';
+    knowledgeBaseState.description = '';
+    knowledgeBaseState.access = '';
+    removeKnowledgeBaseFromList(currentKnowledgeBaseId);
+    delete knowledgeFilesByBase[currentKnowledgeBaseId];
+    currentKnowledgeBaseId = null;
+    knowledgeFiles.length = 0;
+    knowledgeModalForm?.reset();
+    setAccessSelectValue('');
+    renderKnowledgeFiles();
+    renderKnowledgeBases();
+    closeDetailActionsDropdown();
+    showKnowledgeList();
+  }
+
+  async function loadKnowledgeBases() {
+    if (!knowledgeService?.isConfigured()) {
+      renderKnowledgeBases();
+      return;
+    }
+
+    try {
+      const bases = await knowledgeService.listKnowledgeBases();
+      knowledgeBases.splice(0, knowledgeBases.length, ...bases);
+      renderKnowledgeBases();
+    } catch (error) {
+      console.warn('Supabase knowledge base list skipped:', error);
+      renderKnowledgeBases();
+    }
+  }
+
+  if (openKnowledgeModalBtn && knowledgeModalBackdrop) {
+    openKnowledgeModalBtn.addEventListener('click', () => openKnowledgeModal('create', 'list'));
+    openKnowledgeModalListBtn?.addEventListener('click', () => openKnowledgeModal('create', 'list'));
+    closeKnowledgeModalBtn?.addEventListener('click', closeKnowledgeModal);
+    backKnowledgeModalBtn?.addEventListener('click', closeKnowledgeModal);
+
+    knowledgeModalBackdrop.addEventListener('click', event => {
+      if (event.target === knowledgeModalBackdrop) {
+        closeKnowledgeModal();
+      }
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && document.querySelector('.knowledge-row-actions.open')) {
+        closeKnowledgeRowActionsDropdowns();
+        return;
+      }
+
+      if (event.key === 'Escape' && detailActions?.classList.contains('open')) {
+        closeDetailActionsDropdown();
+        detailActionsToggle?.focus();
+        return;
+      }
+
+      if (event.key === 'Escape' && uploadDrawerBackdrop?.classList.contains('open')) {
+        closeUploadDrawer();
+        return;
+      }
+
+      if (event.key === 'Escape' && knowledgeModalBackdrop.classList.contains('open')) {
+        if (accessSelectWrap?.classList.contains('open')) {
+          closeAccessDropdown();
+          accessSelect?.focus();
+          return;
+        }
+        closeKnowledgeModal();
+      }
+    });
+
+    knowledgeModalForm?.addEventListener('submit', async event => {
+      event.preventDefault();
+      const savedBase = await persistKnowledgeBaseFromForm();
+      const baseToRender = savedBase || createLocalKnowledgeBaseFromForm(
+        knowledgeModalMode === 'edit' ? knowledgeBases.find(item => item.id === currentKnowledgeBaseId) : null
+      );
+      currentKnowledgeBaseId = baseToRender.id;
+      upsertKnowledgeBase(baseToRender);
+      renderKnowledgeBases();
+      closeKnowledgeModal(false);
+      if (knowledgeModalMode !== 'edit') {
+        setKnowledgeFilesForBase(baseToRender.id, []);
+        showKnowledgeDetail(baseToRender);
+        knowledgeFileInput?.focus();
+      } else if (knowledgeModalReturnView === 'detail') {
+        showKnowledgeDetail(baseToRender);
+        knowledgeFileInput?.focus();
+      } else {
+        showKnowledgeList();
+      }
+    });
+  }
+
+  backToEmptyViewBtn?.addEventListener('click', showKnowledgeList);
+  openUploadDrawerBtn?.addEventListener('click', openUploadDrawer);
+  openUploadDrawerHeaderBtn?.addEventListener('click', openUploadDrawer);
+  closeUploadDrawerBtn?.addEventListener('click', closeUploadDrawer);
+  cancelUploadDrawerBtn?.addEventListener('click', handleUploadDrawerSecondaryAction);
+  advanceUploadDrawerBtn?.addEventListener('click', advanceUploadFlow);
+  uploadDrawerBackdrop?.addEventListener('click', event => {
+    if (event.target === uploadDrawerBackdrop) {
+      closeUploadDrawer();
+    }
+  });
+  fileUploadDropzone?.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      knowledgeFileInput?.click();
+    }
+  });
+  fileUploadDropzone?.addEventListener('dragenter', event => {
+    event.preventDefault();
+    fileUploadDropzone.classList.add('is-dragging');
+  });
+  fileUploadDropzone?.addEventListener('dragover', event => {
+    event.preventDefault();
+    fileUploadDropzone.classList.add('is-dragging');
+  });
+  fileUploadDropzone?.addEventListener('dragleave', event => {
+    if (!fileUploadDropzone.contains(event.relatedTarget)) {
+      fileUploadDropzone.classList.remove('is-dragging');
+    }
+  });
+  fileUploadDropzone?.addEventListener('drop', event => {
+    event.preventDefault();
+    fileUploadDropzone.classList.remove('is-dragging');
+
+    const droppedFiles = Array.from(event.dataTransfer?.files || []);
+    if (!droppedFiles.length) return;
+
+    try {
+      const dataTransfer = new DataTransfer();
+      droppedFiles.forEach(file => dataTransfer.items.add(file));
+      if (knowledgeFileInput) knowledgeFileInput.files = dataTransfer.files;
+    } catch (error) {
+      console.warn('Could not sync dropped files to input:', error);
+    }
+
+    handleSelectedUploadFiles(droppedFiles);
+  });
+  knowledgeFileInput?.addEventListener('change', event => {
+    handleSelectedUploadFiles(event.target.files);
+  });
+  addResourceEntryBtn?.addEventListener('click', () => openResourceForm());
+  saveResourceEntryBtn?.addEventListener('click', saveResourceEntry);
+  cancelResourceEntryBtn?.addEventListener('click', closeResourceForm);
+  removeResourceEntryBtn?.addEventListener('click', removeResourceEntry);
+  uploadSourceCards.forEach(card => {
+    card.addEventListener('click', () => {
+      if (card.classList.contains('disabled')) return;
+      setSelectedUploadSource(card.dataset.uploadSource || 'file');
+    });
+  });
+
+  detailActionsToggle?.addEventListener('click', event => {
+    event.stopPropagation();
+    toggleDetailActionsDropdown();
+  });
+
+  editKnowledgeBaseBtn?.addEventListener('click', event => {
+    event.stopPropagation();
+    closeDetailActionsDropdown();
+    openKnowledgeModal('edit', 'detail');
+  });
+
+  deleteKnowledgeBaseBtn?.addEventListener('click', async event => {
+    event.stopPropagation();
+    await deleteKnowledgeBase();
+  });
+
+  if (accessSelect && accessSelectWrap && accessSelectValue && knowledgeAccessInput) {
+    accessSelect.addEventListener('click', event => {
+      event.stopPropagation();
+      toggleAccessDropdown();
+    });
+
+    accessOptions.forEach(option => {
+      option.addEventListener('click', event => {
+        event.stopPropagation();
+        setAccessSelectValue(option.dataset.value || '');
+        closeAccessDropdown();
+        accessSelect.focus();
+      });
+    });
+
+    document.addEventListener('click', event => {
+      if (!accessSelectWrap.contains(event.target)) {
+        closeAccessDropdown();
+      }
+
+      if (detailActions && !detailActions.contains(event.target)) {
+        closeDetailActionsDropdown();
+      }
+
+      if (!event.target.closest('.knowledge-row-actions')) {
+        closeKnowledgeRowActionsDropdowns();
+      }
+    });
+
+    window.addEventListener('resize', positionAccessDropdown);
+    window.addEventListener('resize', () => closeKnowledgeRowActionsDropdowns());
+    window.addEventListener('scroll', () => closeKnowledgeRowActionsDropdowns(), true);
+    knowledgeModalBackdrop?.addEventListener('scroll', positionAccessDropdown, true);
+  }
+
+  loadKnowledgeBases();
+</script>
+</body>
+</html>

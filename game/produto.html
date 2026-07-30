@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produto · Game · Agent Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700;9..40,900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --totem-w: 1080px;
+      --totem-h: 1920px;
+      --product-w: 1440px;
+      --product-h: 900px;
+      --side-padding: 48px;
+      --product-view-w: 984px; /* 1080 - 48*2 */
+      --product-scale: 0.683333; /* 984 / 1440 */
+      --product-view-h: 615px; /* 900 * 984 / 1440 */
+      --grip-h: 56px;
+      --shell-bar-h: 96px;
+      --color-bg-top: #00111a;
+      --color-bg-bottom: #002233;
+      --color-primary: #00dbff;
+      --color-text-on-primary: #002233;
+      --color-text: #ffffff;
+      --font: 'DM Sans', sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    .viewport {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .totem {
+      width: var(--totem-w);
+      height: var(--totem-h);
+      position: relative;
+      flex-shrink: 0;
+      transform-origin: center center;
+      background: linear-gradient(180deg, var(--color-bg-top) 0%, var(--color-bg-bottom) 100%);
+      overflow: hidden;
+    }
+
+    .shell-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--shell-bar-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 48px;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .shell-bar > * {
+      pointer-events: auto;
+    }
+
+    .shell-brand {
+      height: 40px;
+      width: auto;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 48px;
+      padding: 12px 20px;
+      border: 2px solid var(--color-primary);
+      border-radius: 12px;
+      background: transparent;
+      color: var(--color-primary);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .btn-back:hover {
+      background: rgba(0, 219, 255, 0.08);
+    }
+
+    .btn-back:active {
+      transform: scale(0.98);
+    }
+
+    .product-window {
+      position: absolute;
+      left: var(--side-padding);
+      width: var(--product-view-w);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      touch-action: none;
+    }
+
+    .product-window.is-dragging {
+      z-index: 4;
+    }
+
+    .product-window.is-dragging .product-frame {
+      pointer-events: none;
+    }
+
+    .product-slot {
+      width: var(--product-view-w);
+      height: var(--product-view-h);
+      position: relative;
+      border-radius: 16px 16px 0 0;
+      overflow: hidden;
+      box-shadow:
+        0 24px 80px rgba(0, 0, 0, 0.45),
+        0 0 24px rgba(0, 219, 255, 0.45),
+        0 0 48px rgba(0, 219, 255, 0.3),
+        0 0 80px rgba(0, 219, 255, 0.18);
+      background: #001927;
+    }
+
+    .product-scaler {
+      width: var(--product-w);
+      height: var(--product-h);
+      transform: scale(var(--product-scale));
+      transform-origin: top left;
+    }
+
+    .product-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #001927;
+    }
+
+    .product-grip {
+      width: 100%;
+      height: var(--grip-h);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(0, 33, 49, 0.92);
+      border: 1px solid rgba(0, 219, 255, 0.35);
+      border-top: 0;
+      border-radius: 0 0 16px 16px;
+      box-shadow:
+        0 16px 40px rgba(0, 0, 0, 0.35),
+        0 0 20px rgba(0, 219, 255, 0.18);
+      cursor: ns-resize;
+      color: var(--color-primary);
+    }
+
+    .product-grip:active,
+    .product-window.is-dragging .product-grip {
+      cursor: ns-resize;
+      background: rgba(0, 45, 64, 0.96);
+    }
+
+    .product-grip img {
+      width: 24px;
+      height: 24px;
+      display: block;
+      pointer-events: none;
+    }
+
+    .product-grip-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      opacity: 0.85;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="viewport">
+    <div class="totem" id="totem" data-screen="produto">
+      <div class="shell-bar">
+        <img class="shell-brand" src="../img/logo-rd-station.svg" width="182" height="40" alt="RD Station">
+        <button type="button" class="btn-back" id="btn-back">Voltar ao jogo</button>
+      </div>
+
+      <div class="product-window" id="product-window">
+        <div class="product-slot">
+          <div class="product-scaler">
+            <iframe
+              class="product-frame"
+              id="product-frame"
+              src="../home/index.html"
+              title="Agent Builder"
+            ></iframe>
+          </div>
+        </div>
+        <div class="product-grip" id="product-grip" role="button" aria-label="Arrastar janela do produto" title="Arrastar">
+          <img src="assets/grip-h.svg" width="24" height="24" alt="">
+          <span class="product-grip-label">Arrastar</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const TOTEM_W = 1080;
+      const TOTEM_H = 1920;
+      const SHELL_BAR_H = 96;
+      const SIDE_PADDING = 48;
+      const VERTICAL_PADDING = 16;
+
+      const totem = document.getElementById('totem');
+      const productWindow = document.getElementById('product-window');
+      const productGrip = document.getElementById('product-grip');
+
+      var totemScale = 1;
+      var drag = null;
+
+      function fitTotem() {
+        totemScale = Math.min(window.innerWidth / TOTEM_W, window.innerHeight / TOTEM_H);
+        totem.style.transform = 'scale(' + totemScale + ')';
+        clampWindow();
+      }
+
+      function getWindowHeight() {
+        return productWindow.offsetHeight;
+      }
+
+      function getYBounds() {
+        var height = getWindowHeight();
+        return {
+          minY: SHELL_BAR_H + VERTICAL_PADDING,
+          maxY: TOTEM_H - height - VERTICAL_PADDING
+        };
+      }
+
+      function clamp(value, min, max) {
+        if (max < min) return min;
+        return Math.min(Math.max(value, min), max);
+      }
+
+      function setY(y) {
+        var bounds = getYBounds();
+        productWindow.style.left = SIDE_PADDING + 'px';
+        productWindow.style.top = clamp(y, bounds.minY, bounds.maxY) + 'px';
+      }
+
+      function clampWindow() {
+        var y = parseFloat(productWindow.style.top) || 0;
+        setY(y);
+      }
+
+      function centerWindowVertically() {
+        var height = getWindowHeight();
+        var y = SHELL_BAR_H + (TOTEM_H - SHELL_BAR_H - height) / 2;
+        setY(y);
+      }
+
+      function toTotemY(clientY) {
+        var rect = totem.getBoundingClientRect();
+        return (clientY - rect.top) / totemScale;
+      }
+
+      function onPointerDown(event) {
+        if (event.button != null && event.button !== 0) return;
+
+        var y = parseFloat(productWindow.style.top) || 0;
+        drag = {
+          pointerId: event.pointerId,
+          offsetY: toTotemY(event.clientY) - y
+        };
+
+        productWindow.classList.add('is-dragging');
+        productGrip.setPointerCapture(event.pointerId);
+        event.preventDefault();
+      }
+
+      function onPointerMove(event) {
+        if (!drag || drag.pointerId !== event.pointerId) return;
+        setY(toTotemY(event.clientY) - drag.offsetY);
+        event.preventDefault();
+      }
+
+      function onPointerUp(event) {
+        if (!drag || drag.pointerId !== event.pointerId) return;
+        drag = null;
+        productWindow.classList.remove('is-dragging');
+        try {
+          productGrip.releasePointerCapture(event.pointerId);
+        } catch (e) {}
+      }
+
+      productGrip.addEventListener('pointerdown', onPointerDown);
+      productGrip.addEventListener('pointermove', onPointerMove);
+      productGrip.addEventListener('pointerup', onPointerUp);
+      productGrip.addEventListener('pointercancel', onPointerUp);
+
+      document.getElementById('btn-back').addEventListener('click', function () {
+        window.location.href = 'index.html';
+      });
+
+      fitTotem();
+      centerWindowVertically();
+      window.addEventListener('resize', fitTotem);
+    })();
+  </script>
+</body>
+</html>

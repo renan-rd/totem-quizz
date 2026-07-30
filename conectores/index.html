@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conectores · Agent Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ─── TOKENS ─────────────────────────────────────── */
+    :root {
+      --color-nav-bg:      #001927;
+      --color-surface:     #ffffff;
+      --color-surface-low: #eceeef;
+      --color-text-high:   #002233;
+      --color-text-low:    #405466;
+      --color-danger:      #e60f57;
+      --radius-sm:  8px;
+      --radius-md:  12px;
+      --sp-2: 8px;
+      --sp-3: 12px;
+      --sp-4: 16px;
+      --sp-1: 4px;
+      --sp-5: 24px;
+      --sp-6: 32px;
+      --sp-7: 40px;
+      --color-border: #d6dbde;
+      --color-border-interactive: #b2bcc1;
+      --color-border-disabled: #e5e8ea;
+      --color-link: #0077b2;
+      --color-btn-inverse: #003d5c;
+      --color-btn-on-color: #00dbff;
+      --color-primary-soft: #b2f4ff;
+      --color-success-soft: #d6fae8;
+      --color-text-disabled: #7f8d99;
+      --radius-xs: 4px;
+      --radius-lg: 16px;
+      --radius-pill: 999px;
+      --font: 'DM Sans', sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--color-nav-bg);
+      min-height: 100vh;
+      color: var(--color-text-high);
+    }
+
+    /* ─── LAYOUT ─────────────────────────────────────── */
+    .layout {
+      display: grid;
+      grid-template-rows: 64px 1fr;
+      grid-template-columns: 64px 1fr;
+      grid-template-areas:
+        "navbar navbar"
+        "sidebar content";
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ─── NAVBAR ─────────────────────────────────────── */
+    .navbar {
+      grid-area: navbar;
+      background: var(--color-nav-bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--sp-3);
+      height: 64px;
+      position: relative;
+      z-index: 9600;
+    }
+
+    .navbar-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+    }
+
+    .navbar-logo img {
+      height: 32px;
+      width: auto;
+      flex-shrink: 0;
+    }
+
+    .navbar-secondary {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+
+    .navbar-icons {
+      display: flex;
+      align-items: center;
+    }
+
+    .navbar-icon-btn {
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .navbar-icon-btn svg { width: 24px; height: 24px; }
+    .navbar-icon-btn:hover { background: rgba(255,255,255,0.08); }
+
+    .badge-dot {
+      position: absolute;
+      top: 4px; right: 4px;
+      width: 8px; height: 8px;
+      background: var(--color-danger);
+      border-radius: 50%;
+    }
+
+    .navbar-divider {
+      width: 1px; height: 32px;
+      background: rgba(255,255,255,0.15);
+      margin: 0 4px;
+    }
+
+    .account-menu {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: var(--sp-2);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .account-menu:hover { background: rgba(255,255,255,0.08); }
+
+    .account-avatar {
+      width: 24px; height: 24px;
+      border-radius: var(--radius-sm);
+      background: #00f2c9;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .account-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .account-name {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+      letter-spacing: -0.14px;
+    }
+
+    .account-menu > svg { fill: #fff; width: 16px; height: 16px; }
+
+    .account-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      right: 0;
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      min-width: 160px;
+      overflow: hidden;
+      z-index: 9700;
+    }
+
+    .account-menu.open .account-dropdown { display: block; }
+
+    .account-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: var(--sp-3) var(--sp-4);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-high);
+      cursor: pointer;
+    }
+
+    .account-dropdown-item:hover { background: var(--color-surface-low); }
+    .account-dropdown-item svg { width: 18px; height: 18px; fill: var(--color-text-low); }
+
+    /* ─── SIDEBAR ─────────────────────────────────────── */
+    .sidebar {
+      grid-area: sidebar;
+      background: var(--color-nav-bg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+      padding-top: var(--sp-3);
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-3);
+      position: relative;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .sidebar-item.active .sidebar-item-inner {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .sidebar-item svg,
+    .sidebar-item img { width: 24px; height: 24px; }
+
+    .sidebar-item-inner {
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ─── CONTENT ─────────────────────────────────────── */
+    .content {
+      grid-area: content;
+      background: var(--color-surface);
+      padding: 16px var(--sp-6) var(--sp-6);
+      border-top-left-radius: 20px;
+      overflow-y: auto;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+      min-height: 0;
+    }
+
+    /* ─── CONECTORES PAGE ──────────────────────────────── */
+    .page-header {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-3);
+      padding: var(--sp-2) 0 var(--sp-7);
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    .page-header-main {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-4);
+      width: 100%;
+    }
+
+    .page-header-title {
+      flex: 1;
+      min-width: 0;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.28px;
+      color: var(--color-text-high);
+      padding: 2px 0;
+    }
+
+    .page-header-desc {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: var(--color-text-low);
+    }
+
+    .btn-primary-inverse {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-2);
+      height: 40px;
+      padding: var(--sp-2) var(--sp-4);
+      border: 0;
+      border-radius: var(--radius-md);
+      background: var(--color-btn-inverse);
+      color: var(--color-btn-on-color);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .btn-primary-inverse:hover { filter: brightness(1.08); }
+    .btn-primary-inverse img { width: 24px; height: 24px; display: block; }
+
+    .connectors-tabs {
+      display: flex;
+      align-items: flex-end;
+      width: 100%;
+      flex-shrink: 0;
+      border-bottom: 2px solid var(--color-border-disabled);
+    }
+
+    .connectors-tab {
+      appearance: none;
+      background: transparent;
+      border: 0;
+      padding: 8px 12px 12px;
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: var(--color-text-low);
+      cursor: pointer;
+      position: relative;
+      margin-bottom: -2px;
+      white-space: nowrap;
+    }
+
+    .connectors-tab:first-child { padding-left: 0; }
+
+    .connectors-tab.active {
+      color: var(--color-link);
+    }
+
+    .connectors-tab.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 4px;
+      background: var(--color-btn-on-color);
+      border-radius: 2px 2px 0 0;
+    }
+
+    .connectors-tab:first-child.active::after { left: 0; }
+
+    .connectors-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-2);
+      align-items: center;
+      padding: var(--sp-2) 0;
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    .search-field {
+      width: 300px;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: var(--sp-1) var(--sp-1) var(--sp-1) var(--sp-3);
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+      background: #fff;
+    }
+
+    .search-field input {
+      flex: 1;
+      min-width: 0;
+      height: 24px;
+      border: 0;
+      outline: none;
+      background: transparent;
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: var(--color-text-high);
+    }
+
+    .search-field input::placeholder { color: var(--color-text-low); }
+
+    .search-field-btn {
+      width: 32px;
+      height: 32px;
+      border: 0;
+      background: transparent;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      padding: 6px;
+    }
+
+    .search-field-btn:hover { background: var(--color-surface-low); }
+    .search-field-btn img { width: 20px; height: 20px; display: block; }
+
+    .filter-select {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      height: 40px;
+      padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-3);
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      cursor: pointer;
+      font-family: var(--font);
+      color: var(--color-text-low);
+    }
+
+    .filter-select img.icon,
+    .filter-select img.caret {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .filter-select span {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      white-space: nowrap;
+    }
+
+    .connectors-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+      width: 100%;
+      flex: 1;
+    }
+
+    .connector-card {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      width: 100%;
+      padding: var(--sp-4);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface);
+    }
+
+    .connector-card-main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: var(--sp-1);
+    }
+
+    .connector-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--color-border);
+      overflow: hidden;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+    }
+
+    .connector-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .connector-avatar.rd {
+      background: #00dbff;
+      border-color: var(--color-border);
+    }
+
+    .connector-avatar.rd img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+    }
+
+    .connector-avatar.supabase {
+      background: #000;
+    }
+
+    .connector-avatar.supabase img,
+    .connector-avatar.slack img {
+      width: 70%;
+      height: 70%;
+      object-fit: contain;
+    }
+
+    .connector-copy {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-1);
+    }
+
+    .connector-title-row {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      flex-wrap: wrap;
+    }
+
+    .connector-name {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: var(--color-text-high);
+    }
+
+    .status-ativo {
+      display: inline-flex;
+      align-items: center;
+      padding: var(--sp-1) var(--sp-2);
+      border-radius: var(--radius-pill);
+      background: var(--color-success-soft);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+      color: var(--color-text-high);
+    }
+
+    .connector-desc {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      color: var(--color-text-high);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-more {
+      width: 32px;
+      height: 32px;
+      border: 0;
+      background: transparent;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      padding: 6px;
+    }
+
+    .btn-more:hover { background: var(--color-surface-low); }
+    .btn-more img { width: 20px; height: 20px; display: block; }
+
+    .btn-conectar {
+      height: 32px;
+      padding: 6px 12px;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: var(--color-primary-soft);
+      color: var(--color-link);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .btn-conectar:hover {
+      filter: brightness(0.97);
+    }
+
+    .connectors-pagination {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      padding: var(--sp-4);
+      flex-shrink: 0;
+    }
+
+    .pagination-summary {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      color: var(--color-text-low);
+      white-space: nowrap;
+    }
+
+    .pagination-nav {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .pagination-btn {
+      height: 40px;
+      padding: var(--sp-2) var(--sp-4);
+      border: 0;
+      background: transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: var(--color-link);
+      cursor: pointer;
+    }
+
+    .pagination-btn:disabled,
+    .pagination-btn.is-disabled {
+      color: var(--color-text-disabled);
+      cursor: default;
+    }
+
+    .pagination-btn.is-current {
+      color: var(--color-text-disabled);
+      cursor: default;
+    }
+
+    @media (max-width: 900px) {
+      .page-header-main { flex-direction: column; align-items: stretch; }
+      .search-field { width: 100%; }
+      .connectors-toolbar { flex-direction: column; align-items: stretch; }
+      .filter-select { width: 100%; }
+      .connectors-pagination { flex-direction: column; align-items: flex-start; }
+      .pagination-nav { width: 100%; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ── NAVBAR ────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="navbar-logo">
+      <img src="../img/logo-rd-station.svg" width="146" height="32" alt="RD Station">
+      <!-- Chevron (troca pelo nome do produto se necessário) -->
+      <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;flex-shrink:0;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.61138 13.4077L5.16098 8.95728C4.94634 8.74264 4.94634 8.39466 5.16098 8.18004L5.68005 7.66097C5.89432 7.4467 6.24159 7.44629 6.45637 7.66006L10 11.1871L13.5436 7.66006C13.7584 7.44629 14.1057 7.4467 14.32 7.66097L14.839 8.18004C15.0537 8.39468 15.0537 8.74267 14.839 8.95728L10.3886 13.4077C10.174 13.6223 9.82602 13.6223 9.61138 13.4077Z" fill="white"/></svg>
+      </div>
+    </div>
+
+    <div class="navbar-secondary">
+      <div class="navbar-icons">
+        <!-- RD Station -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_382_2076)"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 0C12 6.62741 17.3726 12 24 12C17.3726 12 12 17.3726 12 24C12 17.3726 6.62744 12 0 12C6.62744 12 12 6.62741 12 0ZM12 5.80645C12 8.36104 8.33148 12 5.71429 12C8.33148 12 12 15.639 12 18.1935C12 15.639 15.6685 12 18.2857 12C15.6685 12 12 8.36104 12 5.80645Z" fill="white"/><path d="M2.28564 13.9852C2.89332 14.1253 3.47973 14.3209 4.03974 14.5659V15.6002L4.04234 15.7378C4.09244 17.0507 4.89237 18.2342 6.12642 18.8039L9.46273 20.344C9.70706 21.0151 9.88155 21.7196 9.97873 22.4488C9.93125 22.4304 9.88404 22.4111 9.83698 22.3914L9.69376 22.329L9.66474 22.3158L9.66176 22.3142L5.37009 20.333C3.54463 19.4903 2.36197 17.739 2.28936 15.7964L2.28899 15.785V15.7737L2.28602 15.6278L2.28564 15.6183V13.9852Z" fill="#00DBFF"/><path d="M21.7142 15.6066C21.7142 17.6243 20.5144 19.463 18.6298 20.333L14.3381 22.3142C14.2334 22.3626 14.1273 22.407 14.0204 22.4484C14.1176 21.7195 14.2922 21.0152 14.5364 20.3444L17.8734 18.8039C19.1485 18.2153 19.9601 16.9714 19.9601 15.6066V14.5659C20.5201 14.3209 21.1065 14.1253 21.7142 13.9852V15.6066Z" fill="#00DBFF"/><path d="M9.91585 1.55127C9.78336 2.30526 9.56674 3.03008 9.27672 3.71621L6.12642 5.17085C4.85136 5.75945 4.03975 7.00333 4.03974 8.36818V9.02141C3.47972 9.26639 2.89333 9.46203 2.28564 9.60205V8.36818C2.28566 6.35048 3.48547 4.5118 5.37009 3.64174L9.66176 1.66052L9.66474 1.65901L9.69376 1.64578L9.69487 1.6454L9.69636 1.64464C9.76892 1.61175 9.84221 1.58089 9.91585 1.55127Z" fill="#00DBFF"/><path d="M14.3039 1.64502L14.3381 1.66052L18.6298 3.64174C20.5144 4.51181 21.7142 6.35049 21.7142 8.36818V9.60205C21.1065 9.46202 20.5201 9.2664 19.9601 9.02141V8.36818C19.9601 7.01398 19.1611 5.77896 17.9032 5.18484L17.8734 5.17085L14.722 3.71584C14.4322 3.02992 14.2165 2.305 14.084 1.55127C14.1578 1.58093 14.2312 1.61207 14.3039 1.64502Z" fill="#00DBFF"/></g><defs><clipPath id="clip0_382_2076"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
+        </div>
+        <!-- Apps -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 15V19H9V15H5ZM3 15C3 13.9353 3.93527 13 5 13H9C10.0647 13 11 13.9353 11 15V19C11 20.0647 10.0647 21 9 21H5C3.93527 21 3 20.0647 3 19V15ZM19 5H15V9H19V5ZM15 3H19C20.0647 3 21 3.93527 21 5V9C21 10.0647 20.0647 11 19 11H15C13.9353 11 13 10.0647 13 9V5C13 3.93527 13.9353 3 15 3ZM15 15V19H19V15H15ZM13 15C13 13.9353 13.9353 13 15 13H19C20.0647 13 21 13.9353 21 15V19C21 20.0647 20.0647 21 19 21H15C13.9353 21 13 20.0647 13 19V15Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9 3C10.0647 3 11 3.93527 11 5V9C11 10.0647 10.0647 11 9 11H5C3.93527 11 3 10.0647 3 9V5C3 3.93527 3.93527 3 5 3H9ZM5 5V9H9V5H5Z" fill="#00DBFF"/></svg>
+        </div>
+        <!-- Notificações -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.9999 3.25C12.5976 3.25 13.1249 3.77734 13.1249 4.375V5.07812C15.6913 5.57031 17.6249 7.85547 17.6249 10.5625V11.4766C17.6249 13.0586 18.1522 14.6055 19.1366 15.8711L19.664 16.5039C19.8749 16.7852 19.9101 17.1367 19.7694 17.418C19.6288 17.6992 19.3476 17.875 19.0312 17.875H4.96865C4.61709 17.875 4.33584 17.6992 4.19521 17.418C4.05459 17.1367 4.08975 16.7852 4.30068 16.5039L4.82803 15.8711C5.8124 14.6055 6.3749 13.0586 6.3749 11.4766V10.5625C6.3749 7.85547 8.3085 5.57031 10.8749 5.07812V4.375C10.8749 3.77734 11.3671 3.25 11.9999 3.25ZM11.9999 6.625C9.82021 6.625 8.0624 8.41797 8.0624 10.5625V11.4766C8.0624 13.1641 7.57021 14.7812 6.65615 16.1875H17.3085C16.3944 14.7812 15.9374 13.1641 15.9374 11.4766V10.5625C15.9374 8.41797 14.1444 6.625 11.9999 6.625Z" fill="white"/><path d="M13.582 20.6172C14.0039 20.1953 14.25 19.5977 14.25 19H12H9.75C9.75 19.5977 9.96094 20.1953 10.3828 20.6172C10.8047 21.0391 11.4023 21.25 12 21.25C12.5977 21.25 13.1602 21.0391 13.582 20.6172Z" fill="#00DBFF"/></svg>
+          <div class="badge-dot"></div>
+        </div>
+        <!-- Configurações -->
+        <div class="navbar-icon-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3.25C12.5977 3.25 13.1602 3.32031 13.7227 3.42578C14.0039 3.49609 14.4961 3.63672 14.7773 4.12891C14.8477 4.26953 14.8828 4.41016 14.918 4.55078L15.2695 5.92188C15.3047 6.09766 15.6562 6.30859 15.8672 6.23828L17.2031 5.85156C17.3438 5.81641 17.4844 5.78125 17.625 5.78125C18.1875 5.78125 18.5742 6.13281 18.75 6.34375C19.5234 7.22266 20.1211 8.24219 20.5078 9.36719C20.6133 9.64844 20.7188 10.1406 20.4023 10.5977C20.332 10.7383 20.2266 10.8438 20.1211 10.9492L19.1367 11.9336C18.9609 12.0742 18.9609 12.4609 19.1367 12.6016L20.1211 13.5859C20.2266 13.6914 20.332 13.7969 20.4023 13.9375C20.6836 14.3945 20.5781 14.8867 20.5078 15.168C20.1211 16.293 19.5234 17.3125 18.75 18.1914C18.5742 18.4023 18.1875 18.7539 17.625 18.7539C17.4844 18.7539 17.3438 18.7188 17.2031 18.6836L15.8672 18.2617C15.6562 18.2266 15.3047 18.4023 15.2695 18.6133L14.918 19.9844C14.8828 20.125 14.8477 20.2656 14.7773 20.4062C14.4961 20.8984 14.0039 21.0391 13.7227 21.1094C13.1602 21.2148 12.5977 21.25 12 21.25C11.4023 21.25 10.8047 21.2148 10.2422 21.1094C9.96094 21.0391 9.46875 20.8984 9.1875 20.4062C9.11719 20.2656 9.08203 20.125 9.04688 19.9844L8.69531 18.6133C8.66016 18.4023 8.30859 18.2266 8.13281 18.2617L6.79688 18.6836C6.65625 18.7188 6.48047 18.7188 6.33984 18.7539C5.77734 18.7539 5.39062 18.4023 5.21484 18.1914C4.44141 17.3125 3.84375 16.293 3.45703 15.168C3.38672 14.8867 3.28125 14.3945 3.5625 13.9023C3.63281 13.7969 3.73828 13.6562 3.84375 13.5508L4.86328 12.6016C5.00391 12.4609 5.00391 12.0742 4.86328 11.9336L3.84375 10.9492C3.73828 10.8438 3.63281 10.7383 3.5625 10.5977C3.28125 10.1406 3.38672 9.64844 3.45703 9.36719C3.84375 8.24219 4.44141 7.22266 5.21484 6.34375C5.39062 6.13281 5.77734 5.78125 6.33984 5.78125C6.48047 5.78125 6.65625 5.81641 6.79688 5.85156L8.13281 6.23828C8.30859 6.30859 8.66016 6.09766 8.69531 5.92188L9.04688 4.55078C9.08203 4.41016 9.11719 4.26953 9.1875 4.12891C9.46875 3.63672 9.96094 3.49609 10.2422 3.42578C10.8047 3.32031 11.4023 3.25 12 3.25ZM10.6641 5.07812L10.3477 6.30859C10.0664 7.43359 8.76562 8.20703 7.64062 7.89062L6.41016 7.50391C5.84766 8.20703 5.39062 8.98047 5.07422 9.82422L6.02344 10.7031C6.86719 11.5117 6.86719 13.0234 6.02344 13.832L5.07422 14.7109C5.39062 15.5547 5.84766 16.3281 6.41016 17.0312L7.64062 16.6445C8.76562 16.3281 10.0664 17.1016 10.3477 18.2266L10.6641 19.457C11.5078 19.6328 12.457 19.6328 13.3359 19.457L13.6172 18.2266C13.8984 17.1016 15.1992 16.3281 16.3242 16.6445L17.5547 17.0312C18.1172 16.3281 18.5742 15.5547 18.8906 14.7109L17.9766 13.832C17.1328 13.0234 17.1328 11.5117 17.9766 10.7031L18.8906 9.82422C18.5742 8.98047 18.1172 8.20703 17.5547 7.50391L16.3242 7.89062C15.2344 8.20703 13.8984 7.43359 13.6172 6.30859L13.3359 5.07812C12.457 4.90234 11.5078 4.90234 10.6641 5.07812Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M12 8.875C13.1953 8.875 14.2852 9.54297 14.918 10.5625C15.5156 11.6172 15.5156 12.918 14.918 13.9375C14.2852 14.9922 13.1953 15.625 12 15.625C10.7695 15.625 9.67969 14.9922 9.04688 13.9375C8.44922 12.918 8.44922 11.6172 9.04688 10.5625C9.67969 9.54297 10.7695 8.875 12 8.875ZM12.8438 10.8086C12.3164 10.4922 11.6484 10.4922 11.1562 10.8086C10.6289 11.125 10.3125 11.6523 10.3125 12.25C10.3125 12.8828 10.6289 13.4102 11.1562 13.7266C11.6484 14.043 12.3164 14.043 12.8438 13.7266C13.3359 13.4102 13.6875 12.8828 13.6875 12.25C13.6875 11.6523 13.3359 11.125 12.8438 10.8086Z" fill="#00DBFF"/></svg>
+        </div>
+      </div>
+
+      <div class="navbar-divider"></div>
+
+      <div class="account-menu" id="account-menu">
+        <div class="account-avatar">
+          <!-- Substitua pelo src do avatar do usuário -->
+          <img src="" alt="Avatar" onerror="this.style.display='none'">
+        </div>
+        <span class="account-name" id="account-name">Usuário</span>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.61138 13.4077L5.16098 8.95728C4.94634 8.74264 4.94634 8.39466 5.16098 8.18004L5.68005 7.66097C5.89432 7.4467 6.24159 7.44629 6.45637 7.66006L10 11.1871L13.5436 7.66006C13.7584 7.44629 14.1057 7.4467 14.32 7.66097L14.839 8.18004C15.0537 8.39468 15.0537 8.74267 14.839 8.95728L10.3886 13.4077C10.174 13.6223 9.82602 13.6223 9.61138 13.4077Z" fill="white"/></svg>
+        <div class="account-dropdown" id="account-dropdown">
+          <div class="account-dropdown-item" id="logout-btn">
+            <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            Sair
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── SIDEBAR ────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <!-- Home -->
+    <a class="sidebar-item" href="../home/index.html" aria-label="Home" title="Home">
+      <div class="sidebar-item-inner">
+        <img src="../img/icon-home-default.svg" width="24" height="24" alt="Home">
+      </div>
+    </a>
+    <!-- Agentes -->
+    <a class="sidebar-item" href="../agentes/index.html" aria-label="Agentes" title="Agentes">
+      <div class="sidebar-item-inner">
+        <img src="../img/icon-agent-default.svg" width="24" height="24" alt="Agentes">
+      </div>
+    </a>
+    <!-- Conectores -->
+    <a class="sidebar-item active" href="../conectores/index.html" aria-label="Conectores" title="Conectores">
+      <div class="sidebar-item-inner">
+        <img src="../img/icon-conectores-active.svg" width="24" height="24" alt="Conectores">
+      </div>
+    </a>
+    <!-- Anexos -->
+    <a class="sidebar-item" href="../anexos/index.html" aria-label="Anexos" title="Anexos">
+      <div class="sidebar-item-inner">
+        <img src="../img/icon-anexo-default.svg" width="24" height="24" alt="Anexos">
+      </div>
+    </a>
+    <!-- Game -->
+    <a class="sidebar-item" href="../game/index.html" aria-label="Game" title="Game">
+      <div class="sidebar-item-inner">
+        <img src="../img/svg/bolt.svg" width="24" height="24" alt="Game">
+      </div>
+    </a>
+  </aside>
+  <!-- ── CONTENT ────────────────────────────────────────── -->
+  <main class="content">
+    <header class="page-header">
+      <div class="page-header-main">
+        <h1 class="page-header-title">Conectores</h1>
+        <button type="button" class="btn-primary-inverse">
+          <img src="../img/conectores/plus.svg" alt="">
+          Adicionar conector
+        </button>
+      </div>
+      <p class="page-header-desc">Crie, ative e acompanhe os agentes de IA da sua empresa em um só lugar.</p>
+    </header>
+
+    <nav class="connectors-tabs" aria-label="Categorias de conectores">
+      <button type="button" class="connectors-tab active">Todos</button>
+      <button type="button" class="connectors-tab">Meus conectores</button>
+      <button type="button" class="connectors-tab">RD Station</button>
+      <button type="button" class="connectors-tab">Verificadas</button>
+    </nav>
+
+    <div class="connectors-toolbar">
+      <label class="search-field">
+        <input type="search" placeholder="Buscar" aria-label="Buscar conectores">
+        <button type="button" class="search-field-btn" aria-label="Buscar">
+          <img src="../img/conectores/search.svg" alt="">
+        </button>
+      </label>
+      <button type="button" class="filter-select" aria-haspopup="listbox" aria-label="Todas as categorias">
+        <img class="icon" src="../img/conectores/filter.svg" alt="">
+        <span>Todas as categorias</span>
+        <img class="caret" src="../img/conectores/caret.svg" alt="">
+      </button>
+      <button type="button" class="filter-select" aria-haspopup="listbox" aria-label="Ordenar por relevância">
+        <img class="icon" src="../img/conectores/sort.svg" alt="">
+        <span>Relevância</span>
+        <img class="caret" src="../img/conectores/caret.svg" alt="">
+      </button>
+    </div>
+
+    <div class="connectors-list">
+            <article class="connector-card">
+              <div class="connector-card-main">
+                <div class="connector-avatar rd" aria-hidden="true">
+                  <img src="../img/conectores/rd-symbol.svg" alt="">
+                </div>
+                <div class="connector-copy">
+                  <div class="connector-title-row">
+                    <h3 class="connector-name">RD Marketing</h3>
+                    <span class="status-ativo">Ativo</span>
+                  </div>
+                  <p class="connector-desc">Realize análises sobre sua operação de marketing.</p>
+                </div>
+              </div>
+              <button type="button" class="btn-more" aria-label="Mais opções">
+                <img src="../img/conectores/more.svg" alt="">
+              </button>
+            </article>
+            <article class="connector-card">
+              <div class="connector-card-main">
+                <div class="connector-avatar rd" aria-hidden="true">
+                  <img src="../img/conectores/rd-symbol.svg" alt="">
+                </div>
+                <div class="connector-copy">
+                  <div class="connector-title-row">
+                    <h3 class="connector-name">RD Vendas</h3>
+                    <span class="status-ativo">Ativo</span>
+                  </div>
+                  <p class="connector-desc">Analisar e gerenciar cadastros, negociações, vendas, funções e tarefas.</p>
+                </div>
+              </div>
+              <button type="button" class="btn-more" aria-label="Mais opções">
+                <img src="../img/conectores/more.svg" alt="">
+              </button>
+            </article>
+            <article class="connector-card">
+              <div class="connector-card-main">
+                <div class="connector-avatar rd" aria-hidden="true">
+                  <img src="../img/conectores/rd-symbol.svg" alt="">
+                </div>
+                <div class="connector-copy">
+                  <div class="connector-title-row">
+                    <h3 class="connector-name">RD Conversas</h3>
+                    <span class="status-ativo">Ativo</span>
+                  </div>
+                  <p class="connector-desc">Análise de dados sobre eficiência operacional, gestão de filas, métricas de satisfação do cliente, desempenho de campanhas, desempenho do Chatbot e mais.</p>
+                </div>
+              </div>
+              <button type="button" class="btn-more" aria-label="Mais opções">
+                <img src="../img/conectores/more.svg" alt="">
+              </button>
+            </article>
+            <article class="connector-card">
+              <div class="connector-card-main">
+                <div class="connector-avatar">
+                  <img src="../img/conectores/logo-gmail.png" alt="">
+                </div>
+                <div class="connector-copy">
+                  <div class="connector-title-row">
+                    <h3 class="connector-name">Gmail</h3>
+                    <span class="status-ativo">Ativo</span>
+                  </div>
+                  <p class="connector-desc">Serviço de e-mail gratuito do Google</p>
+                </div>
+              </div>
+              <button type="button" class="btn-more" aria-label="Mais opções">
+                <img src="../img/conectores/more.svg" alt="">
+              </button>
+            </article>
+            <article class="connector-card">
+              <div class="connector-card-main">
+                <div class="connector-avatar supabase">
+                  <img src="../img/conectores/logo-supabase.png" alt="">
+                </div>
+                <div class="connector-copy">
+                  <div class="connector-title-row">
+                    <h3 class="connector-name">Supabase</h3>
+                  </div>
+                  <p class="connector-desc">Plataforma de Backend como Serviço (BaaS) de código aberto, muito utilizada como uma alternativa ao Firebase</p>
+                </div>
+              </div>
+              <button type="button" class="btn-conectar">Conectar</button>
+            </article>
+            <article class="connector-card">
+              <div class="connector-card-main">
+                <div class="connector-avatar">
+                  <img src="../img/conectores/logo-stripe.png" alt="">
+                </div>
+                <div class="connector-copy">
+                  <div class="connector-title-row">
+                    <h3 class="connector-name">Stripe</h3>
+                  </div>
+                  <p class="connector-desc">Plataforma global de infraestrutura financeira que permite a empresas de todos os tamanhos processar pagamentos online e gerenciar suas finanças na internet.</p>
+                </div>
+              </div>
+              <button type="button" class="btn-conectar">Conectar</button>
+            </article>
+            <article class="connector-card">
+              <div class="connector-card-main">
+                <div class="connector-avatar slack">
+                  <img src="../img/conectores/logo-slack.png" alt="">
+                </div>
+                <div class="connector-copy">
+                  <div class="connector-title-row">
+                    <h3 class="connector-name">Slack</h3>
+                  </div>
+                  <p class="connector-desc">Plataforma de comunicação e colaboração corporativa</p>
+                </div>
+              </div>
+              <button type="button" class="btn-conectar">Conectar</button>
+            </article>
+            <article class="connector-card">
+              <div class="connector-card-main">
+                <div class="connector-avatar">
+                  <img src="../img/conectores/logo-datadog.png" alt="">
+                </div>
+                <div class="connector-copy">
+                  <div class="connector-title-row">
+                    <h3 class="connector-name">Datadog</h3>
+                  </div>
+                  <p class="connector-desc">Plataforma SaaS (Software como Serviço) de monitoramento e observabilidade para infraestrutura, aplicações e segurança em nuvem.</p>
+                </div>
+              </div>
+              <button type="button" class="btn-conectar">Conectar</button>
+            </article>
+            <article class="connector-card">
+              <div class="connector-card-main">
+                <div class="connector-avatar">
+                  <img src="../img/conectores/logo-atlassian.png" alt="">
+                </div>
+                <div class="connector-copy">
+                  <div class="connector-title-row">
+                    <h3 class="connector-name">Atlassian</h3>
+                  </div>
+                  <p class="connector-desc">Ferramentas corporativas de colaboração, produtividade e gestão de projetos.</p>
+                </div>
+              </div>
+              <button type="button" class="btn-conectar">Conectar</button>
+            </article>
+            <article class="connector-card">
+              <div class="connector-card-main">
+                <div class="connector-avatar">
+                  <img src="../img/conectores/logo-clickup.png" alt="">
+                </div>
+                <div class="connector-copy">
+                  <div class="connector-title-row">
+                    <h3 class="connector-name">Clickup</h3>
+                  </div>
+                  <p class="connector-desc">Plataforma "tudo-em-um" de produtividade e gestão de projetos.</p>
+                </div>
+              </div>
+              <button type="button" class="btn-conectar">Conectar</button>
+            </article>
+    </div>
+
+    <footer class="connectors-pagination">
+      <div class="pagination-summary">
+        <span>Exibindo</span>
+        <span>6</span>
+        <span>de</span>
+        <span>29</span>
+        <span>agentes</span>
+      </div>
+      <div class="pagination-nav">
+        <button type="button" class="pagination-btn" disabled>Anterior</button>
+        <button type="button" class="pagination-btn is-current" aria-current="page">1</button>
+        <button type="button" class="pagination-btn">2</button>
+        <button type="button" class="pagination-btn">3</button>
+        <button type="button" class="pagination-btn">4</button>
+        <button type="button" class="pagination-btn">5</button>
+        <button type="button" class="pagination-btn" aria-hidden="true">...</button>
+        <button type="button" class="pagination-btn">20</button>
+        <button type="button" class="pagination-btn">Próxima</button>
+      </div>
+    </footer>
+  </main>
+
+</div><!-- /layout -->
+
+<script>
+  // ── Account menu dropdown ─────────────────────────────
+  const accountMenu = document.getElementById('account-menu');
+  if (accountMenu) {
+    accountMenu.addEventListener('click', e => {
+      e.stopPropagation();
+      accountMenu.classList.toggle('open');
+    });
+    document.addEventListener('click', () => accountMenu.classList.remove('open'));
+  }
+
+  document.querySelectorAll('.connectors-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.connectors-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

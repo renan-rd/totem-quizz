@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game · Agent Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700;9..40,900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --totem-w: 1080px;
+      --totem-h: 1920px;
+      --color-bg-top: #00111a;
+      --color-bg-bottom: #002233;
+      --color-primary: #00dbff;
+      --color-text-on-primary: #002233;
+      --color-text: #ffffff;
+      --font: 'DM Sans', sans-serif;
+      --radius-btn: 16px;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    /* Escala o frame 1080×1920 para caber na viewport (útil no preview) */
+    .viewport {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .totem {
+      width: var(--totem-w);
+      height: var(--totem-h);
+      position: relative;
+      flex-shrink: 0;
+      transform-origin: center center;
+      background: linear-gradient(180deg, var(--color-bg-top) 0%, var(--color-bg-bottom) 100%);
+      overflow: hidden;
+    }
+
+    /* ── Header ───────────────────────────────────────── */
+    .header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 48px;
+      z-index: 2;
+    }
+
+    .header img {
+      width: 273px;
+      height: 60px;
+      object-fit: contain;
+    }
+
+    /* ── Conteúdo central ─────────────────────────────── */
+    .content {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 48px;
+      padding: 100px 96px;
+    }
+
+    .hero-wrap {
+      width: 743px;
+    }
+
+    .hero {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .title {
+      width: 541px;
+      color: var(--color-text);
+      font-size: 36px;
+      font-weight: 900;
+      line-height: 46px;
+      letter-spacing: -0.72px;
+      text-align: center;
+      font-variation-settings: "opsz" 14;
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      width: 560px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 24px;
+      border-radius: var(--radius-btn);
+      font-family: var(--font);
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.15s ease, filter 0.15s ease, background 0.15s ease;
+      font-variation-settings: "opsz" 14;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: var(--color-text-on-primary);
+      border-color: var(--color-primary);
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.06);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--color-primary);
+      border-color: var(--color-primary);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0, 219, 255, 0.08);
+    }
+
+    /* ── Entrada ──────────────────────────────────────── */
+    .header,
+    .hero-wrap,
+    .title,
+    .actions {
+      opacity: 0;
+      animation: fade-up 0.7s ease forwards;
+    }
+
+    .header { animation-delay: 0.05s; }
+    .hero-wrap { animation-delay: 0.18s; }
+    .title { animation-delay: 0.32s; }
+    .actions { animation-delay: 0.46s; }
+
+    .hero-wrap.is-ready {
+      opacity: 1;
+      animation: hero-float 4.5s ease-in-out infinite;
+    }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes hero-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="viewport">
+    <div class="totem" id="totem" data-screen="home">
+      <header class="header">
+        <img src="../img/logo-rd-station.svg" width="273" height="60" alt="RD Station">
+      </header>
+
+      <main class="content">
+        <div class="hero-wrap" id="hero-wrap">
+          <img
+            class="hero"
+            src="assets/hero-illustration.png"
+            width="743"
+            height="319"
+            alt="Pessoa com capacete de IA criando um agente"
+          >
+        </div>
+
+        <h1 class="title">
+          Crie seu primeiro Agente de IA e descubra quais são os agentes mais solicitados!
+        </h1>
+
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="btn-start">
+            Começar agora
+          </button>
+          <button type="button" class="btn btn-secondary" id="btn-product">
+            Acessar produto
+          </button>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const totem = document.getElementById('totem');
+      const TOTEM_W = 1080;
+      const TOTEM_H = 1920;
+
+      function fitTotem() {
+        const scale = Math.min(window.innerWidth / TOTEM_W, window.innerHeight / TOTEM_H);
+        totem.style.transform = 'scale(' + scale + ')';
+      }
+
+      fitTotem();
+      window.addEventListener('resize', fitTotem);
+
+      const heroWrap = document.getElementById('hero-wrap');
+      setTimeout(function () {
+        heroWrap.classList.add('is-ready');
+      }, 900);
+
+      // Navegação será ligada nas próximas telas
+      document.getElementById('btn-start').addEventListener('click', function () {
+        window.location.href = 'modelos.html';
+      });
+
+      document.getElementById('btn-product').addEventListener('click', function () {
+        window.location.href = 'produto.html';
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor de agente · Agent Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-surface: #ffffff;
+      --color-surface-low: #eceeef;
+      --color-surface-page: #e5e8ea;
+      --color-border: #d6dbde;
+      --color-border-interactive: #b2bcc1;
+      --color-text-high: #002233;
+      --color-text-low: #405466;
+      --color-text-disabled: #7f8d99;
+      --color-link: #0077b2;
+      --color-primary-soft: #b2f4ff;
+      --color-primary-hover: #66ebff;
+      --color-primary-icon-hover: #005580;
+      --color-highlight: #8800f7;
+      --color-highlight-soft: #edd6ff;
+      --color-danger: #c20046;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --font: 'DM Sans', sans-serif;
+      --sp-1: 4px;
+      --sp-2: 8px;
+      --sp-3: 12px;
+      --sp-4: 16px;
+      --sp-5: 24px;
+      --sp-6: 32px;
+      --sp-8: 64px;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--color-text-high);
+      background: linear-gradient(180deg, #002233 0%, #004466 100%);
+    }
+
+    button,
+    textarea {
+      font: inherit;
+    }
+
+    .editor-shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .editor-navbar {
+      height: 44px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .brand {
+      width: 157px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 6px;
+      border-right: 1px solid var(--color-border);
+    }
+
+    .brand-logo {
+      width: 114px;
+      height: 24px;
+      display: block;
+      object-fit: contain;
+      filter: brightness(0) saturate(100%) invert(6%);
+    }
+
+    .agent-name {
+      display: flex;
+      align-items: center;
+      padding: 0 var(--sp-4);
+      color: var(--color-text-high);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      white-space: nowrap;
+    }
+
+    .navbar-actions {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-4);
+      padding: 0 var(--sp-2);
+      background: var(--color-surface);
+    }
+
+    .save-status {
+      color: var(--color-text-low);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+      white-space: nowrap;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 44px;
+      background: #cfd3d8;
+    }
+
+    .btn-icon {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      overflow: hidden;
+      color: var(--color-link);
+      cursor: pointer;
+    }
+
+    .btn-icon img {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+
+    .btn-icon-tertiary img {
+      filter: brightness(0) saturate(100%) invert(31%) sepia(94%) saturate(1352%) hue-rotate(175deg) brightness(93%) contrast(101%);
+    }
+
+    .btn-icon-tertiary:hover {
+      background: var(--color-surface-low);
+    }
+
+    .btn-icon-tertiary:focus-visible {
+      outline: 2px solid rgba(0, 119, 178, 0.32);
+      outline-offset: 2px;
+    }
+
+    .btn-small {
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px var(--sp-3);
+      border: 0;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-secondary {
+      background: var(--color-primary-soft);
+      color: var(--color-link);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-primary-hover);
+      color: var(--color-primary-icon-hover);
+    }
+
+    .btn-secondary:focus-visible {
+      outline: 2px solid rgba(0, 85, 128, 0.32);
+      outline-offset: 2px;
+    }
+
+    .btn-disabled {
+      background: #edeff1;
+      color: var(--color-text-disabled);
+      cursor: default;
+    }
+
+    .exit-link {
+      color: var(--color-link);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      white-space: nowrap;
+    }
+
+    .editor-workspace {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: var(--sp-5) var(--sp-4) var(--sp-4);
+      background: var(--color-surface-page);
+      overflow: auto;
+    }
+
+    .agent-card {
+      width: min(810px, 100%);
+      min-height: 640px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-5);
+      padding: var(--sp-5) var(--sp-5) var(--sp-8);
+      border: 1px solid var(--color-border);
+      border-radius: 24px;
+      background: var(--color-surface);
+      overflow: hidden;
+    }
+
+    .agent-card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-4);
+      padding-right: var(--sp-3);
+    }
+
+    .agent-avatar {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border-radius: var(--radius-md);
+      background: var(--color-primary-soft);
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .agent-heading {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+    }
+
+    .agent-heading h1 {
+      color: var(--color-text-high);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .agent-heading p {
+      color: var(--color-text-low);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .edit-button {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .form-sections {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+      width: 100%;
+    }
+
+    .editor-section {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-3);
+      padding: var(--sp-3) var(--sp-4);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface);
+    }
+
+    .editor-section.has-action {
+      align-items: center;
+    }
+
+    .section-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      margin-top: var(--sp-1);
+      display: block;
+    }
+
+    .section-content {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-1);
+      padding-bottom: var(--sp-2);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: baseline;
+      gap: var(--sp-1);
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .required {
+      color: var(--color-danger);
+    }
+
+    .section-desc {
+      color: var(--color-text-low);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+    }
+
+    .selected-trigger-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      width: fit-content;
+      margin-top: var(--sp-2);
+      padding: var(--sp-1) var(--sp-2);
+      border-radius: 4px;
+      background: var(--color-surface-low);
+      color: var(--color-text-high);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+    }
+
+    .selected-trigger-tag[hidden] {
+      display: none;
+    }
+
+    .selected-trigger-tag img {
+      width: 16px;
+      height: 16px;
+      display: block;
+      filter: brightness(0) saturate(100%) invert(9%) sepia(78%) saturate(1117%) hue-rotate(164deg) brightness(94%) contrast(103%);
+    }
+
+    .section-action {
+      flex-shrink: 0;
+      margin-left: var(--sp-3);
+      background: var(--color-primary-soft);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .section-action img {
+      filter: brightness(0) saturate(100%) invert(31%) sepia(94%) saturate(1352%) hue-rotate(175deg) brightness(93%) contrast(101%);
+    }
+
+    .section-action:hover {
+      background: var(--color-primary-hover);
+    }
+
+    .section-action:hover img {
+      filter: brightness(0) saturate(100%) invert(25%) sepia(56%) saturate(1163%) hue-rotate(166deg) brightness(94%) contrast(101%);
+    }
+
+    .section-action:focus-visible {
+      outline: 2px solid rgba(0, 85, 128, 0.32);
+      outline-offset: 2px;
+    }
+
+    .textarea-wrap {
+      width: 100%;
+      padding-left: var(--sp-6);
+    }
+
+    .instruction-textarea {
+      width: 100%;
+      height: 96px;
+      resize: none;
+      padding: var(--sp-2) var(--sp-3);
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+      outline: none;
+      color: var(--color-text-high);
+      background: var(--color-surface);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .instruction-textarea::placeholder {
+      color: var(--color-text-low);
+      opacity: 1;
+    }
+
+    .instruction-textarea:focus {
+      border-color: var(--color-link);
+      box-shadow: 0 0 0 2px rgba(0, 119, 178, 0.16);
+    }
+
+    .drawer-backdrop {
+      position: fixed;
+      inset: 44px 0 0;
+      z-index: 20;
+      display: flex;
+      justify-content: flex-end;
+      background: rgba(0, 34, 51, 0.16);
+    }
+
+    .drawer-backdrop[hidden] {
+      display: none;
+    }
+
+    .drawer-panel {
+      width: min(500px, 100%);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: var(--color-surface);
+      box-shadow: 0 8px 18px rgba(0, 34, 51, 0.16);
+    }
+
+    .drawer-panel[hidden] {
+      display: none;
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-5);
+      padding: var(--sp-5);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .drawer-title {
+      flex: 1;
+      padding-top: var(--sp-1);
+      color: var(--color-text-high);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.2px;
+    }
+
+    .drawer-content {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+      padding: var(--sp-5);
+      overflow-y: auto;
+    }
+
+    .drawer-intro {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .trigger-options {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-3);
+      width: 100%;
+    }
+
+    .trigger-option {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-2);
+      padding: var(--sp-3);
+      border: 1px solid rgba(0, 27, 51, 0.35);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      color: var(--color-text-high);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .trigger-option:hover {
+      border-color: var(--color-link);
+      box-shadow: 0 0 0 2px rgba(0, 119, 178, 0.08);
+    }
+
+    .trigger-icon-wrap {
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: var(--sp-1);
+      border-radius: 40px;
+      background: var(--color-highlight-soft);
+    }
+
+    .trigger-icon-wrap img {
+      width: 16px;
+      height: 16px;
+      display: block;
+      filter: brightness(0) saturate(100%) invert(9%) sepia(78%) saturate(1117%) hue-rotate(164deg) brightness(94%) contrast(103%);
+    }
+
+    .trigger-option-copy {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-1);
+    }
+
+    .trigger-option-title {
+      color: var(--color-text-high);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+    }
+
+    .trigger-option-desc {
+      color: var(--color-text-low);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+    }
+
+    .drawer-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding: var(--sp-5);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .drawer-back-button {
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px var(--sp-3);
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-link);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      cursor: pointer;
+    }
+
+    .drawer-back-button:hover {
+      background: var(--color-surface-low);
+    }
+
+    .schedule-form {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-5);
+      width: 100%;
+      padding-bottom: var(--sp-5);
+    }
+
+    .schedule-field {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+      width: 100%;
+      position: relative;
+    }
+
+    .schedule-label {
+      display: inline-flex;
+      align-items: baseline;
+      gap: var(--sp-1);
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .schedule-select-button,
+    .schedule-input {
+      width: 100%;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-3);
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      color: var(--color-text-low);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      text-align: left;
+    }
+
+    .schedule-input-button {
+      cursor: pointer;
+    }
+
+    .schedule-select-button {
+      cursor: pointer;
+    }
+
+    .schedule-select-button span,
+    .schedule-input span {
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .schedule-select-button img,
+    .schedule-input img {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      filter: brightness(0) saturate(100%) invert(35%) sepia(13%) saturate(1078%) hue-rotate(164deg) brightness(90%) contrast(84%);
+    }
+
+    .schedule-select-button.is-filled,
+    .schedule-input.is-filled {
+      color: #212429;
+    }
+
+    .schedule-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      padding: var(--sp-1);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      box-shadow: 0 8px 18px rgba(0, 34, 51, 0.16);
+    }
+
+    .schedule-dropdown[hidden] {
+      display: none;
+    }
+
+    .schedule-dropdown-option {
+      width: 100%;
+      padding: var(--sp-2) var(--sp-3);
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-text-high);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 24px;
+      letter-spacing: -0.16px;
+      text-align: left;
+      cursor: pointer;
+      overflow-wrap: break-word;
+    }
+
+    .schedule-dropdown-option:hover {
+      background: var(--color-surface-low);
+    }
+
+    .schedule-date-time {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      width: 100%;
+    }
+
+    .schedule-date-picker-wrap {
+      position: relative;
+      width: 176px;
+      flex-shrink: 0;
+    }
+
+    .schedule-date-picker-wrap .schedule-input {
+      width: 100%;
+    }
+
+    .schedule-date-time .schedule-input:last-child {
+      width: 107px;
+      flex-shrink: 0;
+    }
+
+    .schedule-time-input {
+      flex: 1;
+      min-width: 0;
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .schedule-time-input::placeholder {
+      color: var(--color-text-low);
+      opacity: 1;
+    }
+
+    .date-picker-popover {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      z-index: 3;
+      width: 312px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: var(--sp-4);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      box-shadow: 0 4px 12px rgba(0, 34, 51, 0.14);
+    }
+
+    .date-picker-popover[hidden] {
+      display: none;
+    }
+
+    .date-picker-header {
+      width: 280px;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-4);
+      padding-bottom: var(--sp-4);
+    }
+
+    .date-picker-nav {
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .date-picker-nav:hover {
+      background: var(--color-surface-low);
+    }
+
+    .date-picker-nav img {
+      width: 24px;
+      height: 24px;
+      filter: brightness(0) saturate(100%) invert(31%) sepia(94%) saturate(1352%) hue-rotate(175deg) brightness(93%) contrast(101%);
+    }
+
+    .date-picker-title {
+      flex: 1;
+      min-width: 0;
+      color: var(--color-text-low);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      text-align: center;
+      text-transform: capitalize;
+    }
+
+    .date-picker-weekdays,
+    .date-picker-grid {
+      width: 280px;
+      display: grid;
+      grid-template-columns: repeat(7, 40px);
+    }
+
+    .date-picker-weekdays {
+      padding: var(--sp-1) 0 var(--sp-4);
+      color: var(--color-text-low);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+      text-align: center;
+    }
+
+    .date-picker-weekdays span {
+      width: 40px;
+    }
+
+    .date-picker-day {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-2);
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-text-high);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      cursor: pointer;
+    }
+
+    .date-picker-day:hover {
+      background: var(--color-surface-low);
+    }
+
+    .date-picker-day.is-muted {
+      color: var(--color-text-disabled);
+    }
+
+    .date-picker-day.is-today {
+      background: var(--color-surface-low);
+      color: var(--color-link);
+      font-weight: 900;
+    }
+
+    .date-picker-day.is-selected {
+      background: #00dbff;
+      color: var(--color-text-high);
+      font-weight: 700;
+    }
+
+    .schedule-date-time-separator {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      white-space: nowrap;
+    }
+
+    .schedule-summary {
+      width: 100%;
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      border-left: 8px solid var(--color-highlight);
+    }
+
+    .schedule-summary-inner {
+      flex: 1;
+      display: flex;
+      gap: var(--sp-4);
+      padding: var(--sp-3) var(--sp-4);
+      border: 1px solid var(--color-border);
+      border-left: 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+
+    .schedule-summary-icon {
+      width: 24px;
+      height: 24px;
+      margin-top: var(--sp-1);
+      filter: brightness(0) saturate(100%) invert(12%) sepia(99%) saturate(7453%) hue-rotate(278deg) brightness(92%) contrast(119%);
+      flex-shrink: 0;
+    }
+
+    .schedule-summary-copy {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-1);
+      color: var(--color-text-high);
+      font-size: 16px;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .schedule-summary-title {
+      font-weight: 700;
+    }
+
+    .schedule-summary-desc {
+      font-weight: 500;
+    }
+
+    .drawer-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: var(--sp-4);
+      width: 100%;
+    }
+
+    .drawer-save-button {
+      height: 40px;
+      padding: var(--sp-2) var(--sp-4);
+      border: 0;
+      border-radius: var(--radius-md);
+      background: #005580;
+      color: #b2f4ff;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+    }
+
+    .drawer-save-button:hover {
+      background: #004466;
+    }
+
+    .knowledge-base-selection-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-3);
+      width: 100%;
+    }
+
+    .knowledge-base-selection-card {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-3);
+      padding: var(--sp-3);
+      border: 1px solid rgba(0, 27, 51, 0.35);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      color: var(--color-text-high);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .knowledge-base-selection-card:hover {
+      border-color: var(--color-link);
+      box-shadow: 0 0 0 2px rgba(0, 119, 178, 0.08);
+    }
+
+    .knowledge-base-selection-card.is-selected {
+      border-color: var(--color-link);
+      box-shadow: 0 0 0 2px rgba(0, 119, 178, 0.16);
+    }
+
+    .knowledge-base-check {
+      width: 18px;
+      height: 18px;
+      margin-top: 3px;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: 4px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .knowledge-base-selection-card.is-selected .knowledge-base-check {
+      border-color: var(--color-link);
+      background: var(--color-link);
+    }
+
+    .knowledge-base-selection-card.is-selected .knowledge-base-check::after {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 2px;
+      width: 5px;
+      height: 9px;
+      border: solid #fff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .knowledge-base-card-copy {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-1);
+    }
+
+    .knowledge-base-card-title {
+      color: var(--color-text-high);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+    }
+
+    .knowledge-base-card-desc {
+      color: var(--color-text-low);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+    }
+
+    .knowledge-base-card-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      flex-wrap: wrap;
+      margin-top: var(--sp-1);
+      color: var(--color-text-low);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+    }
+
+    .knowledge-access-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: var(--sp-1) var(--sp-2);
+      border-radius: 4px;
+      background: var(--color-surface-low);
+      color: var(--color-text-high);
+    }
+
+    .knowledge-base-drawer-state {
+      width: 100%;
+      padding: var(--sp-5);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text-low);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      text-align: center;
+    }
+
+    .selected-knowledge-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-2);
+      margin-top: var(--sp-2);
+    }
+
+    .selected-knowledge-tags[hidden] {
+      display: none;
+    }
+
+    .selected-knowledge-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      max-width: 100%;
+      padding: var(--sp-1) var(--sp-2);
+      border-radius: 4px;
+      background: var(--color-surface-low);
+      color: var(--color-text-high);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+    }
+
+    .selected-knowledge-tag img {
+      width: 16px;
+      height: 16px;
+      display: block;
+      filter: brightness(0) saturate(100%) invert(9%) sepia(78%) saturate(1117%) hue-rotate(164deg) brightness(94%) contrast(103%);
+    }
+
+    @media (max-width: 860px) {
+      .editor-navbar {
+        height: auto;
+        min-height: 44px;
+        flex-wrap: wrap;
+        gap: var(--sp-2);
+        padding-bottom: var(--sp-2);
+      }
+
+      .navbar-left,
+      .navbar-actions {
+        width: 100%;
+      }
+
+      .navbar-actions {
+        justify-content: flex-end;
+        overflow-x: auto;
+      }
+
+      .brand {
+        width: auto;
+        min-width: 157px;
+      }
+
+      .editor-workspace {
+        padding: var(--sp-4);
+      }
+
+      .agent-card {
+        min-height: auto;
+        padding: var(--sp-5);
+      }
+    }
+
+    @media (max-width: 620px) {
+      .agent-card-header,
+      .editor-section {
+        flex-direction: column;
+      }
+
+      .textarea-wrap {
+        padding-left: 0;
+      }
+
+      .section-action {
+        margin-left: 0;
+      }
+
+      .drawer-backdrop {
+        inset: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="editor-shell">
+    <header class="editor-navbar">
+      <div class="navbar-left">
+        <div class="brand" aria-label="RD Station">
+          <img class="brand-logo" src="../img/logo-rd-station.svg" alt="">
+        </div>
+        <div class="agent-name">Nome do agente</div>
+      </div>
+
+      <div class="navbar-actions">
+        <span class="save-status">Salvo às 09/07/2026 16:11</span>
+        <button type="button" class="btn-icon btn-icon-tertiary" aria-label="Histórico de salvamento">
+          <img src="../img/svg/calendar-clock-sharp-solid.svg" alt="">
+        </button>
+        <button type="button" class="btn-small btn-secondary">Salvar</button>
+        <button type="button" class="btn-small btn-disabled" disabled>Criar</button>
+        <span class="header-divider" aria-hidden="true"></span>
+        <a class="exit-link" href="index.html">Sair do editor</a>
+      </div>
+    </header>
+
+    <main class="editor-workspace">
+      <section class="agent-card" aria-labelledby="agent-editor-title">
+        <header class="agent-card-header">
+          <div class="agent-avatar" aria-hidden="true">AB</div>
+          <div class="agent-heading">
+            <h1 id="agent-editor-title">Agente qualificador de Leads</h1>
+            <p>Adicione uma descrição para identificar seu agente</p>
+          </div>
+          <button type="button" class="btn-icon btn-icon-tertiary edit-button" aria-label="Editar dados do agente">
+            <img src="../img/svg/pen.svg" alt="">
+          </button>
+        </header>
+
+        <div class="form-sections">
+          <section class="editor-section has-action">
+            <img class="section-icon" src="../img/svg/rocket.svg" alt="">
+            <div class="section-content">
+              <h2 class="section-title">Gatilho <span class="required">*</span></h2>
+              <p class="section-desc">Defina quando o agente será acionado</p>
+              <div class="selected-trigger-tag" id="selected-trigger-tag" hidden>
+                <img id="selected-trigger-icon" src="../img/svg/message-dot.svg" alt="">
+                <span id="selected-trigger-label">Mensagem recebida</span>
+              </div>
+            </div>
+            <button type="button" class="btn-icon section-action" id="open-trigger-drawer" aria-label="Adicionar gatilho" aria-expanded="false" aria-controls="trigger-drawer">
+              <img src="../img/svg/plus.svg" alt="">
+            </button>
+          </section>
+
+          <section class="editor-section">
+            <img class="section-icon" src="../img/svg/pen-field-solid.svg" alt="">
+            <div class="section-content">
+              <h2 class="section-title">Instrução <span class="required">*</span></h2>
+              <p class="section-desc">Orientações que definem como o agente deve se comportar e executar suas tarefas.</p>
+            </div>
+          </section>
+
+          <div class="textarea-wrap">
+            <textarea class="instruction-textarea" aria-label="Instrução do agente" placeholder="Ex: Você é um assistente especializado em atender solicitações relacionadas a este processo. Analise o contexto, faça perguntas quando faltarem informações, execute apenas as ações permitidas e responda de forma clara, objetiva e profissional."></textarea>
+          </div>
+
+          <section class="editor-section has-action">
+            <img class="section-icon" src="../img/svg/plug.svg" alt="">
+            <div class="section-content">
+              <h2 class="section-title">Conectores e ferramentas</h2>
+              <p class="section-desc">Selecione os conectores que o agente poderá utilizar para consultar dados ou executar ações.</p>
+            </div>
+            <button type="button" class="btn-icon section-action" aria-label="Adicionar conectores e ferramentas">
+              <img src="../img/svg/plus.svg" alt="">
+            </button>
+          </section>
+
+          <section class="editor-section has-action">
+            <img class="section-icon" src="../img/svg/paperclip.svg" alt="">
+            <div class="section-content">
+              <h2 class="section-title">Bases de conhecimento</h2>
+              <p class="section-desc">Você pode adicionar até 10 arquivos, com no máximo 20MB por arquivo.</p>
+              <div class="selected-knowledge-tags" id="selected-knowledge-tags" hidden></div>
+            </div>
+            <button type="button" class="btn-icon section-action" id="open-knowledge-bases-drawer" aria-label="Adicionar bases de conhecimento" aria-expanded="false" aria-controls="knowledge-bases-drawer">
+              <img src="../img/svg/plus.svg" alt="">
+            </button>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <div class="drawer-backdrop" id="trigger-drawer-backdrop" hidden>
+      <aside class="drawer-panel" id="trigger-drawer" aria-labelledby="trigger-drawer-title" aria-modal="true" role="dialog">
+        <header class="drawer-header">
+          <h2 class="drawer-title" id="trigger-drawer-title">Gatilho</h2>
+        </header>
+
+        <div class="drawer-content">
+          <p class="drawer-intro">Selecione um gatilho para definir quando o agente é acionado</p>
+
+          <div class="trigger-options">
+            <button type="button" class="trigger-option" data-trigger-label="Mensagem recebida" data-trigger-icon="../img/svg/message-dot.svg">
+              <span class="trigger-icon-wrap" aria-hidden="true">
+                <img src="../img/svg/message-dot.svg" alt="">
+              </span>
+              <span class="trigger-option-copy">
+                <span class="trigger-option-title">Mensagem recebida</span>
+                <span class="trigger-option-desc">O fluxo se inicia quando o agente receber uma mensagem</span>
+              </span>
+            </button>
+
+            <button type="button" class="trigger-option" data-trigger-label="Agendamento" data-trigger-icon="../img/svg/calendar-clock-sharp-solid.svg">
+              <span class="trigger-icon-wrap" aria-hidden="true">
+                <img src="../img/svg/calendar-clock-sharp-solid.svg" alt="">
+              </span>
+              <span class="trigger-option-copy">
+                <span class="trigger-option-title">Agendamento</span>
+                <span class="trigger-option-desc">Executa automaticamente na recorrência definida</span>
+              </span>
+            </button>
+
+            <button type="button" class="trigger-option" data-trigger-label="Lead criado" data-trigger-icon="../img/svg/person.svg">
+              <span class="trigger-icon-wrap" aria-hidden="true">
+                <img src="../img/svg/person.svg" alt="">
+              </span>
+              <span class="trigger-option-copy">
+                <span class="trigger-option-title">Lead criado</span>
+                <span class="trigger-option-desc">Novo Lead criado no RD Marketing</span>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <footer class="drawer-footer">
+          <button type="button" class="drawer-back-button" id="close-trigger-drawer">Voltar</button>
+        </footer>
+      </aside>
+
+      <aside class="drawer-panel" id="schedule-drawer" aria-labelledby="schedule-drawer-title" aria-modal="true" role="dialog" hidden>
+        <header class="drawer-header">
+          <h2 class="drawer-title" id="schedule-drawer-title">Agendamento</h2>
+        </header>
+
+        <div class="drawer-content">
+          <div class="schedule-form">
+            <p class="drawer-intro">Defina quando o agente deve executar automaticamente.</p>
+
+            <div class="schedule-field">
+              <label class="schedule-label" id="recurrence-label">
+                Recorrência <span class="required">*</span>
+              </label>
+              <button type="button" class="schedule-select-button" id="recurrence-select" aria-labelledby="recurrence-label" aria-expanded="false" aria-controls="recurrence-options">
+                <span id="recurrence-selected">Selecione a recorrência</span>
+                <img src="../img/svg/chevron-down.svg" alt="">
+              </button>
+              <div class="schedule-dropdown" id="recurrence-options" hidden>
+                <button type="button" class="schedule-dropdown-option">A cada hora</button>
+                <button type="button" class="schedule-dropdown-option">Dias úteis (Segunda à Sexta)</button>
+                <button type="button" class="schedule-dropdown-option">Todos os dias</button>
+                <button type="button" class="schedule-dropdown-option">Semanal</button>
+                <button type="button" class="schedule-dropdown-option">Mensal</button>
+              </div>
+            </div>
+
+            <div class="schedule-field">
+              <div class="schedule-label">Data e hora de inicio <span class="required">*</span></div>
+              <div class="schedule-date-time">
+                <div class="schedule-date-picker-wrap">
+                  <button type="button" class="schedule-input schedule-input-button is-filled" id="schedule-date-button" aria-label="Data de início" aria-expanded="false" aria-controls="date-picker-popover">
+                    <img src="../img/svg/calendar.svg" alt="">
+                    <span id="schedule-date-value">29/04/2026</span>
+                  </button>
+                  <div class="date-picker-popover" id="date-picker-popover" hidden>
+                    <div class="date-picker-header">
+                      <button type="button" class="date-picker-nav" id="date-picker-prev" aria-label="Mês anterior">
+                        <img src="../img/svg/chevron-left.svg" alt="">
+                      </button>
+                      <div class="date-picker-title" id="date-picker-title">Abril 2026</div>
+                      <button type="button" class="date-picker-nav" id="date-picker-next" aria-label="Próximo mês">
+                        <img src="../img/svg/chevron-right.svg" alt="">
+                      </button>
+                    </div>
+                    <div class="date-picker-weekdays" aria-hidden="true">
+                      <span>Dom</span>
+                      <span>Seg</span>
+                      <span>Ter</span>
+                      <span>Qua</span>
+                      <span>Qui</span>
+                      <span>Sex</span>
+                      <span>Sáb</span>
+                    </div>
+                    <div class="date-picker-grid" id="date-picker-grid"></div>
+                  </div>
+                </div>
+                <span class="schedule-date-time-separator">às</span>
+                <label class="schedule-input" aria-label="Hora de início">
+                  <img src="../img/svg/clock.svg" alt="">
+                  <input type="text" class="schedule-time-input" id="schedule-time-input" inputmode="numeric" maxlength="5" placeholder="--:--" aria-label="Hora de início">
+                </label>
+              </div>
+            </div>
+
+            <div class="schedule-field">
+              <div class="schedule-label" id="timezone-label">Fuso horário <span class="required">*</span></div>
+              <button type="button" class="schedule-select-button is-filled" id="timezone-select" aria-labelledby="timezone-label" aria-expanded="false" aria-controls="timezone-options">
+                <span id="timezone-selected">(GMT-03:00) Brasilia</span>
+                <img src="../img/svg/chevron-down.svg" alt="">
+              </button>
+              <div class="schedule-dropdown" id="timezone-options" hidden>
+                <button type="button" class="schedule-dropdown-option">(GMT-03:00) Brasilia</button>
+                <button type="button" class="schedule-dropdown-option">(GMT-04:00) Manaus</button>
+                <button type="button" class="schedule-dropdown-option">(GMT-05:00) Rio Branco</button>
+                <button type="button" class="schedule-dropdown-option">(GMT-02:00) Fernando de Noronha</button>
+                <button type="button" class="schedule-dropdown-option">(GMT+00:00) UTC</button>
+                <button type="button" class="schedule-dropdown-option">(GMT+01:00) Lisboa</button>
+              </div>
+            </div>
+
+            <div class="schedule-summary">
+              <div class="schedule-summary-inner">
+                <img class="schedule-summary-icon" src="../img/svg/clock.svg" alt="">
+                <div class="schedule-summary-copy">
+                  <div class="schedule-summary-title">Resumo do agendamento</div>
+                  <div class="schedule-summary-desc">O agente será executado com base nas configurações de recorrência definidas.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="drawer-footer">
+          <div class="drawer-actions">
+            <button type="button" class="drawer-back-button" id="back-to-trigger-options">Voltar</button>
+            <button type="button" class="drawer-save-button" id="save-schedule-trigger">Salvar</button>
+          </div>
+        </footer>
+      </aside>
+    </div>
+
+    <div class="drawer-backdrop" id="knowledge-bases-drawer-backdrop" hidden>
+      <aside class="drawer-panel" id="knowledge-bases-drawer" aria-labelledby="knowledge-bases-drawer-title" aria-modal="true" role="dialog">
+        <header class="drawer-header">
+          <h2 class="drawer-title" id="knowledge-bases-drawer-title">Bases de conhecimento</h2>
+        </header>
+
+        <div class="drawer-content">
+          <p class="drawer-intro">Selecione as bases que este agente poderá consultar ao responder ou executar tarefas.</p>
+          <div class="knowledge-base-selection-list" id="knowledge-base-selection-list">
+            <div class="knowledge-base-drawer-state">Carregando bases de conhecimento...</div>
+          </div>
+        </div>
+
+        <footer class="drawer-footer">
+          <div class="drawer-actions">
+            <button type="button" class="drawer-back-button" id="close-knowledge-bases-drawer">Voltar</button>
+            <button type="button" class="drawer-save-button" id="save-knowledge-bases">Salvar</button>
+          </div>
+        </footer>
+      </aside>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/knowledge-base-service.js"></script>
+  <script>
+    const openTriggerDrawerButton = document.getElementById('open-trigger-drawer');
+    const triggerDrawerBackdrop = document.getElementById('trigger-drawer-backdrop');
+    const triggerDrawer = document.getElementById('trigger-drawer');
+    const scheduleDrawer = document.getElementById('schedule-drawer');
+    const closeTriggerDrawerButton = document.getElementById('close-trigger-drawer');
+    const backToTriggerOptionsButton = document.getElementById('back-to-trigger-options');
+    const saveScheduleTriggerButton = document.getElementById('save-schedule-trigger');
+    const recurrenceSelect = document.getElementById('recurrence-select');
+    const recurrenceOptions = document.getElementById('recurrence-options');
+    const recurrenceSelected = document.getElementById('recurrence-selected');
+    const timezoneSelect = document.getElementById('timezone-select');
+    const timezoneOptions = document.getElementById('timezone-options');
+    const timezoneSelected = document.getElementById('timezone-selected');
+    const scheduleDateButton = document.getElementById('schedule-date-button');
+    const scheduleDateValue = document.getElementById('schedule-date-value');
+    const datePickerPopover = document.getElementById('date-picker-popover');
+    const datePickerTitle = document.getElementById('date-picker-title');
+    const datePickerGrid = document.getElementById('date-picker-grid');
+    const datePickerPrev = document.getElementById('date-picker-prev');
+    const datePickerNext = document.getElementById('date-picker-next');
+    const scheduleTimeInput = document.getElementById('schedule-time-input');
+    const selectedTriggerTag = document.getElementById('selected-trigger-tag');
+    const selectedTriggerIcon = document.getElementById('selected-trigger-icon');
+    const selectedTriggerLabel = document.getElementById('selected-trigger-label');
+    const openKnowledgeBasesDrawerButton = document.getElementById('open-knowledge-bases-drawer');
+    const knowledgeBasesDrawerBackdrop = document.getElementById('knowledge-bases-drawer-backdrop');
+    const closeKnowledgeBasesDrawerButton = document.getElementById('close-knowledge-bases-drawer');
+    const saveKnowledgeBasesButton = document.getElementById('save-knowledge-bases');
+    const knowledgeBaseSelectionList = document.getElementById('knowledge-base-selection-list');
+    const selectedKnowledgeTags = document.getElementById('selected-knowledge-tags');
+    const knowledgeService = window.KnowledgeBaseService;
+    const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    const availableKnowledgeBases = [];
+    const selectedKnowledgeBaseIds = new Set();
+    const draftKnowledgeBaseIds = new Set();
+    let selectedScheduleDate = new Date(2026, 3, 29);
+    let visibleScheduleMonth = new Date(selectedScheduleDate.getFullYear(), selectedScheduleDate.getMonth(), 1);
+
+    function openTriggerDrawer() {
+      if (!triggerDrawerBackdrop || !openTriggerDrawerButton || !triggerDrawer || !scheduleDrawer) return;
+      triggerDrawerBackdrop.hidden = false;
+      triggerDrawer.hidden = false;
+      scheduleDrawer.hidden = true;
+      openTriggerDrawerButton.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeTriggerDrawer() {
+      if (!triggerDrawerBackdrop || !openTriggerDrawerButton) return;
+      triggerDrawerBackdrop.hidden = true;
+      openTriggerDrawerButton.setAttribute('aria-expanded', 'false');
+      closeRecurrenceDropdown();
+      closeTimezoneDropdown();
+      closeDatePicker();
+      openTriggerDrawerButton.focus();
+    }
+
+    function openScheduleDrawer() {
+      if (!triggerDrawer || !scheduleDrawer) return;
+      triggerDrawer.hidden = true;
+      scheduleDrawer.hidden = false;
+      closeRecurrenceDropdown();
+      closeTimezoneDropdown();
+      closeDatePicker();
+    }
+
+    function backToTriggerOptions() {
+      if (!triggerDrawer || !scheduleDrawer) return;
+      scheduleDrawer.hidden = true;
+      triggerDrawer.hidden = false;
+      closeRecurrenceDropdown();
+      closeTimezoneDropdown();
+      closeDatePicker();
+    }
+
+    function applySelectedTrigger(label, icon) {
+      if (selectedTriggerTag && selectedTriggerIcon && selectedTriggerLabel) {
+        selectedTriggerIcon.src = icon;
+        selectedTriggerLabel.textContent = label;
+        selectedTriggerTag.hidden = false;
+      }
+    }
+
+    function buildScheduleTriggerLabel() {
+      const date = scheduleDateValue?.textContent?.trim() || formatDate(selectedScheduleDate);
+      const time = scheduleTimeInput?.value?.trim() || '--:--';
+      const recurrence = recurrenceSelect?.classList.contains('is-filled')
+        ? recurrenceSelected?.textContent?.trim()
+        : 'Selecione a recorrência';
+
+      return `Agendamento - ${date} às ${time}, ${recurrence}`;
+    }
+
+    function formatKnowledgeBaseDate(value) {
+      if (!value) return '';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '';
+      return new Intl.DateTimeFormat('pt-BR').format(date);
+    }
+
+    function getKnowledgeBaseAccessLabel(visibility) {
+      return visibility === 'public' ? 'Público' : 'Privado';
+    }
+
+    function setKnowledgeBaseDrawerState(message) {
+      if (!knowledgeBaseSelectionList) return;
+      knowledgeBaseSelectionList.innerHTML = '';
+
+      const state = document.createElement('div');
+      state.className = 'knowledge-base-drawer-state';
+      state.textContent = message;
+      knowledgeBaseSelectionList.appendChild(state);
+    }
+
+    function renderKnowledgeBaseDrawerList() {
+      if (!knowledgeBaseSelectionList) return;
+      knowledgeBaseSelectionList.innerHTML = '';
+
+      if (!availableKnowledgeBases.length) {
+        setKnowledgeBaseDrawerState('Nenhuma base de conhecimento foi encontrada. Crie uma base na página Anexos para adicioná-la ao agente.');
+        return;
+      }
+
+      availableKnowledgeBases.forEach(base => {
+        const isSelected = draftKnowledgeBaseIds.has(base.id);
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = `knowledge-base-selection-card${isSelected ? ' is-selected' : ''}`;
+        card.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+        card.dataset.knowledgeBaseId = base.id;
+
+        const check = document.createElement('span');
+        check.className = 'knowledge-base-check';
+        check.setAttribute('aria-hidden', 'true');
+
+        const copy = document.createElement('span');
+        copy.className = 'knowledge-base-card-copy';
+
+        const title = document.createElement('span');
+        title.className = 'knowledge-base-card-title';
+        title.textContent = base.name || 'Base sem nome';
+
+        const description = document.createElement('span');
+        description.className = 'knowledge-base-card-desc';
+        description.textContent = base.description || 'Sem descrição';
+
+        const meta = document.createElement('span');
+        meta.className = 'knowledge-base-card-meta';
+
+        const access = document.createElement('span');
+        access.className = 'knowledge-access-tag';
+        access.textContent = getKnowledgeBaseAccessLabel(base.visibility);
+
+        const updatedAt = document.createElement('span');
+        const formattedDate = formatKnowledgeBaseDate(base.updatedAt);
+        updatedAt.textContent = formattedDate ? `Atualizada em ${formattedDate}` : 'Atualização indisponível';
+
+        meta.append(access, updatedAt);
+        copy.append(title, description, meta);
+        card.append(check, copy);
+
+        card.addEventListener('click', () => {
+          if (draftKnowledgeBaseIds.has(base.id)) {
+            draftKnowledgeBaseIds.delete(base.id);
+          } else {
+            draftKnowledgeBaseIds.add(base.id);
+          }
+
+          renderKnowledgeBaseDrawerList();
+        });
+
+        knowledgeBaseSelectionList.appendChild(card);
+      });
+    }
+
+    async function loadKnowledgeBasesForDrawer() {
+      if (!knowledgeService?.isConfigured()) {
+        setKnowledgeBaseDrawerState('Não foi possível carregar as bases porque o Supabase não está configurado nesta página.');
+        return;
+      }
+
+      setKnowledgeBaseDrawerState('Carregando bases de conhecimento...');
+
+      try {
+        const bases = await knowledgeService.listKnowledgeBases();
+        availableKnowledgeBases.splice(0, availableKnowledgeBases.length, ...bases);
+        renderKnowledgeBaseDrawerList();
+      } catch (error) {
+        console.warn('Supabase knowledge base list skipped:', error);
+        setKnowledgeBaseDrawerState('Não foi possível carregar as bases de conhecimento agora. Tente novamente em instantes.');
+      }
+    }
+
+    function openKnowledgeBasesDrawer() {
+      if (!knowledgeBasesDrawerBackdrop || !openKnowledgeBasesDrawerButton) return;
+      draftKnowledgeBaseIds.clear();
+      selectedKnowledgeBaseIds.forEach(id => draftKnowledgeBaseIds.add(id));
+      knowledgeBasesDrawerBackdrop.hidden = false;
+      openKnowledgeBasesDrawerButton.setAttribute('aria-expanded', 'true');
+      loadKnowledgeBasesForDrawer();
+    }
+
+    function closeKnowledgeBasesDrawer(restoreFocus = true) {
+      if (!knowledgeBasesDrawerBackdrop || !openKnowledgeBasesDrawerButton) return;
+      knowledgeBasesDrawerBackdrop.hidden = true;
+      openKnowledgeBasesDrawerButton.setAttribute('aria-expanded', 'false');
+      if (restoreFocus) openKnowledgeBasesDrawerButton.focus();
+    }
+
+    function renderSelectedKnowledgeTags() {
+      if (!selectedKnowledgeTags) return;
+      selectedKnowledgeTags.innerHTML = '';
+
+      const selectedBases = availableKnowledgeBases.filter(base => selectedKnowledgeBaseIds.has(base.id));
+      selectedKnowledgeTags.hidden = selectedBases.length === 0;
+
+      selectedBases.forEach(base => {
+        const tag = document.createElement('span');
+        tag.className = 'selected-knowledge-tag';
+
+        const icon = document.createElement('img');
+        icon.src = '../img/svg/paperclip.svg';
+        icon.alt = '';
+
+        const label = document.createElement('span');
+        label.textContent = base.name || 'Base sem nome';
+
+        tag.append(icon, label);
+        selectedKnowledgeTags.appendChild(tag);
+      });
+    }
+
+    function openRecurrenceDropdown() {
+      if (!recurrenceSelect || !recurrenceOptions) return;
+      closeTimezoneDropdown();
+      closeDatePicker();
+      recurrenceOptions.hidden = false;
+      recurrenceSelect.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeRecurrenceDropdown() {
+      if (!recurrenceSelect || !recurrenceOptions) return;
+      recurrenceOptions.hidden = true;
+      recurrenceSelect.setAttribute('aria-expanded', 'false');
+    }
+
+    function openTimezoneDropdown() {
+      if (!timezoneSelect || !timezoneOptions) return;
+      closeRecurrenceDropdown();
+      closeDatePicker();
+      timezoneOptions.hidden = false;
+      timezoneSelect.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeTimezoneDropdown() {
+      if (!timezoneSelect || !timezoneOptions) return;
+      timezoneOptions.hidden = true;
+      timezoneSelect.setAttribute('aria-expanded', 'false');
+    }
+
+    function formatDate(date) {
+      return new Intl.DateTimeFormat('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      }).format(date);
+    }
+
+    function isSameDate(firstDate, secondDate) {
+      return firstDate.getFullYear() === secondDate.getFullYear() &&
+        firstDate.getMonth() === secondDate.getMonth() &&
+        firstDate.getDate() === secondDate.getDate();
+    }
+
+    function renderDatePicker() {
+      if (!datePickerTitle || !datePickerGrid) return;
+
+      const year = visibleScheduleMonth.getFullYear();
+      const month = visibleScheduleMonth.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const firstGridDate = new Date(year, month, 1 - firstDay.getDay());
+      const today = new Date();
+      const cellCount = Math.ceil((firstDay.getDay() + new Date(year, month + 1, 0).getDate()) / 7) * 7;
+
+      datePickerTitle.textContent = `${monthNames[month]} ${year}`;
+      datePickerGrid.innerHTML = '';
+
+      for (let index = 0; index < cellCount; index += 1) {
+        const currentDate = new Date(firstGridDate);
+        currentDate.setDate(firstGridDate.getDate() + index);
+
+        const dayButton = document.createElement('button');
+        dayButton.type = 'button';
+        dayButton.className = 'date-picker-day';
+        dayButton.textContent = String(currentDate.getDate());
+
+        if (currentDate.getMonth() !== month) {
+          dayButton.classList.add('is-muted');
+        }
+
+        if (isSameDate(currentDate, today)) {
+          dayButton.classList.add('is-today');
+        }
+
+        if (isSameDate(currentDate, selectedScheduleDate)) {
+          dayButton.classList.add('is-selected');
+        }
+
+        dayButton.addEventListener('click', () => {
+          selectedScheduleDate = currentDate;
+          visibleScheduleMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+          if (scheduleDateValue) {
+            scheduleDateValue.textContent = formatDate(selectedScheduleDate);
+          }
+          closeDatePicker();
+          renderDatePicker();
+        });
+
+        datePickerGrid.appendChild(dayButton);
+      }
+    }
+
+    function openDatePicker() {
+      if (!datePickerPopover || !scheduleDateButton) return;
+      closeRecurrenceDropdown();
+      closeTimezoneDropdown();
+      datePickerPopover.hidden = false;
+      scheduleDateButton.setAttribute('aria-expanded', 'true');
+      renderDatePicker();
+    }
+
+    function closeDatePicker() {
+      if (!datePickerPopover || !scheduleDateButton) return;
+      datePickerPopover.hidden = true;
+      scheduleDateButton.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleDatePicker() {
+      if (!datePickerPopover || datePickerPopover.hidden) {
+        openDatePicker();
+      } else {
+        closeDatePicker();
+      }
+    }
+
+    function toggleRecurrenceDropdown() {
+      if (!recurrenceOptions || recurrenceOptions.hidden) {
+        openRecurrenceDropdown();
+      } else {
+        closeRecurrenceDropdown();
+      }
+    }
+
+    function toggleTimezoneDropdown() {
+      if (!timezoneOptions || timezoneOptions.hidden) {
+        openTimezoneDropdown();
+      } else {
+        closeTimezoneDropdown();
+      }
+    }
+
+    openTriggerDrawerButton?.addEventListener('click', openTriggerDrawer);
+    closeTriggerDrawerButton?.addEventListener('click', closeTriggerDrawer);
+    backToTriggerOptionsButton?.addEventListener('click', backToTriggerOptions);
+    saveScheduleTriggerButton?.addEventListener('click', () => {
+      applySelectedTrigger(buildScheduleTriggerLabel(), '../img/svg/calendar-clock-sharp-solid.svg');
+      closeTriggerDrawer();
+    });
+    recurrenceSelect?.addEventListener('click', toggleRecurrenceDropdown);
+    timezoneSelect?.addEventListener('click', toggleTimezoneDropdown);
+    scheduleDateButton?.addEventListener('click', toggleDatePicker);
+    openKnowledgeBasesDrawerButton?.addEventListener('click', openKnowledgeBasesDrawer);
+    closeKnowledgeBasesDrawerButton?.addEventListener('click', () => closeKnowledgeBasesDrawer());
+    saveKnowledgeBasesButton?.addEventListener('click', () => {
+      selectedKnowledgeBaseIds.clear();
+      draftKnowledgeBaseIds.forEach(id => selectedKnowledgeBaseIds.add(id));
+      renderSelectedKnowledgeTags();
+      closeKnowledgeBasesDrawer();
+    });
+    datePickerPrev?.addEventListener('click', () => {
+      visibleScheduleMonth = new Date(visibleScheduleMonth.getFullYear(), visibleScheduleMonth.getMonth() - 1, 1);
+      renderDatePicker();
+    });
+    datePickerNext?.addEventListener('click', () => {
+      visibleScheduleMonth = new Date(visibleScheduleMonth.getFullYear(), visibleScheduleMonth.getMonth() + 1, 1);
+      renderDatePicker();
+    });
+    scheduleTimeInput?.addEventListener('input', () => {
+      const digits = scheduleTimeInput.value.replace(/\D/g, '').slice(0, 4);
+      const hours = digits.slice(0, 2);
+      const minutes = digits.slice(2, 4);
+      scheduleTimeInput.value = minutes ? `${hours}:${minutes}` : hours;
+    });
+    scheduleTimeInput?.addEventListener('blur', () => {
+      const [rawHours = '', rawMinutes = ''] = scheduleTimeInput.value.split(':');
+      if (!rawHours) return;
+
+      const hours = Math.min(Number(rawHours), 23).toString().padStart(2, '0');
+      const minutes = Math.min(Number(rawMinutes || '0'), 59).toString().padStart(2, '0');
+      scheduleTimeInput.value = `${hours}:${minutes}`;
+    });
+
+    triggerDrawerBackdrop?.addEventListener('click', event => {
+      if (event.target === triggerDrawerBackdrop) {
+        closeTriggerDrawer();
+      }
+    });
+
+    knowledgeBasesDrawerBackdrop?.addEventListener('click', event => {
+      if (event.target === knowledgeBasesDrawerBackdrop) {
+        closeKnowledgeBasesDrawer();
+      }
+    });
+
+    document.querySelectorAll('.trigger-option').forEach(option => {
+      option.addEventListener('click', () => {
+        const label = option.getAttribute('data-trigger-label') || '';
+        const icon = option.getAttribute('data-trigger-icon') || '';
+
+        if (label === 'Agendamento') {
+          openScheduleDrawer();
+          return;
+        }
+
+        applySelectedTrigger(label, icon);
+        closeTriggerDrawer();
+      });
+    });
+
+    document.querySelectorAll('.schedule-dropdown-option').forEach(option => {
+      option.addEventListener('click', () => {
+        if (option.parentElement === recurrenceOptions && recurrenceSelected && recurrenceSelect) {
+          recurrenceSelected.textContent = option.textContent || '';
+          recurrenceSelect.classList.add('is-filled');
+          closeRecurrenceDropdown();
+        }
+
+        if (option.parentElement === timezoneOptions && timezoneSelected && timezoneSelect) {
+          timezoneSelected.textContent = option.textContent || '';
+          timezoneSelect.classList.add('is-filled');
+          closeTimezoneDropdown();
+        }
+      });
+    });
+
+    document.addEventListener('click', event => {
+      if (
+        recurrenceOptions &&
+        recurrenceSelect &&
+        !recurrenceOptions.hidden &&
+        !recurrenceOptions.contains(event.target) &&
+        !recurrenceSelect.contains(event.target)
+      ) {
+        closeRecurrenceDropdown();
+      }
+
+      if (
+        timezoneOptions &&
+        timezoneSelect &&
+        !timezoneOptions.hidden &&
+        !timezoneOptions.contains(event.target) &&
+        !timezoneSelect.contains(event.target)
+      ) {
+        closeTimezoneDropdown();
+      }
+
+      if (
+        datePickerPopover &&
+        scheduleDateButton &&
+        !datePickerPopover.hidden &&
+        !datePickerPopover.contains(event.target) &&
+        !scheduleDateButton.contains(event.target)
+      ) {
+        closeDatePicker();
+      }
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && triggerDrawerBackdrop && !triggerDrawerBackdrop.hidden) {
+        if (datePickerPopover && !datePickerPopover.hidden) {
+          closeDatePicker();
+          return;
+        }
+
+        if (recurrenceOptions && !recurrenceOptions.hidden) {
+          closeRecurrenceDropdown();
+          return;
+        }
+
+        if (timezoneOptions && !timezoneOptions.hidden) {
+          closeTimezoneDropdown();
+          return;
+        }
+
+        closeTriggerDrawer();
+      }
+
+      if (event.key === 'Escape' && knowledgeBasesDrawerBackdrop && !knowledgeBasesDrawerBackdrop.hidden) {
+        closeKnowledgeBasesDrawer();
+      }
+    });
+
+    renderDatePicker();
+  </script>
+</body>
+</html>
