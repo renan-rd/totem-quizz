@@ -66,6 +66,8 @@
       align-items: center;
       gap: 24px;
       padding: 32px;
+      /* Espaço extra para o último card subir até a altura dos olhos */
+      padding-bottom: calc(var(--totem-h) - 400px);
       overflow-x: hidden;
       overflow-y: auto;
     }
@@ -74,13 +76,13 @@
     .prompt-block {
       position: relative;
       width: 100%;
-      height: 300px;
+      height: 150px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 24px;
-      padding: 48px 0 24px;
+      gap: 12px;
+      padding: 24px 0 12px;
       flex-shrink: 0;
     }
 
@@ -100,6 +102,12 @@
       height: 100%;
       display: block;
       object-fit: contain;
+      animation: glow-pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes glow-pulse {
+      0%, 100% { opacity: 0.7; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.04); }
     }
 
     .prompt-title {
@@ -116,10 +124,10 @@
     }
 
     .prompt-input-wrap {
+      display: none;
       position: relative;
       z-index: 1;
       width: 864px;
-      display: flex;
       flex-direction: column;
       align-items: center;
       gap: 16px;
@@ -475,7 +483,7 @@
     }
 
     .screen.has-actions-bar {
-      padding-bottom: 175px;
+      padding-bottom: calc(var(--totem-h) - 400px + 143px);
     }
 
     .actions-bar-btn {
@@ -520,6 +528,197 @@
     .actions-bar-btn--finish:hover {
       filter: brightness(1.06);
     }
+
+    .filter-btn.is-active {
+      background: rgba(0, 119, 178, 0.1);
+    }
+
+    /* ── Filter modal ─────────────────────────────────── */
+    .filter-modal {
+      position: absolute;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+
+    .filter-modal.is-open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .filter-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 34, 51, 0.55);
+    }
+
+    .filter-modal-panel {
+      position: relative;
+      z-index: 1;
+      width: 640px;
+      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      padding: 40px;
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 16px 48px rgba(0, 34, 51, 0.18);
+    }
+
+    .filter-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .filter-modal-title {
+      color: var(--color-text-high);
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.24px;
+      font-variation-settings: "opsz" 14;
+    }
+
+    .filter-modal-close {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--color-text-high);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .filter-modal-close:hover {
+      background: #f5f7f8;
+    }
+
+    .filter-modal-close svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    .filter-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .filter-option {
+      width: 100%;
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 24px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      color: var(--color-text-high);
+      font-family: var(--font);
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.18px;
+      text-align: left;
+      cursor: pointer;
+      font-variation-settings: "opsz" 14;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .filter-option:hover {
+      border-color: var(--color-border-interactive);
+      background: #f8fafb;
+    }
+
+    .filter-option.is-selected {
+      border: 2px solid #00DBFF;
+      background: rgba(0, 219, 255, 0.06);
+    }
+
+    .filter-option-check {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      opacity: 0;
+      color: var(--color-text-high);
+    }
+
+    .filter-option.is-selected .filter-option-check {
+      opacity: 1;
+    }
+
+    .filter-option-check svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+      display: block;
+    }
+
+    .filter-modal-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .filter-modal-btn {
+      height: 56px;
+      min-width: 180px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+      font-variation-settings: "opsz" 14;
+      transition: background 0.15s ease, filter 0.15s ease, border-color 0.15s ease;
+    }
+
+    .filter-modal-btn--clear {
+      background: transparent;
+      border: 2px solid var(--color-border-interactive);
+      color: var(--color-text-high);
+    }
+
+    .filter-modal-btn--clear:hover {
+      background: #f5f7f8;
+    }
+
+    .filter-modal-btn--apply {
+      background: #00dbff;
+      border: 2px solid #00dbff;
+      color: #002233;
+      margin-left: auto;
+    }
+
+    .filter-modal-btn--apply:hover {
+      filter: brightness(1.06);
+    }
+
     .models-grid-status {
       grid-column: 1 / -1;
       color: var(--color-text-low);
@@ -590,6 +789,48 @@
           Finalizar e ver ranking
         </button>
       </div>
+
+      <div class="filter-modal" id="filter-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="filter-modal-title">
+        <div class="filter-modal-backdrop" id="filter-modal-backdrop"></div>
+        <div class="filter-modal-panel">
+          <div class="filter-modal-header">
+            <h2 class="filter-modal-title" id="filter-modal-title">Filtrar por produto</h2>
+            <button type="button" class="filter-modal-close" id="filter-modal-close" aria-label="Fechar">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6.70711 5.29289C6.31658 4.90237 5.68342 4.90237 5.29289 5.29289C4.90237 5.68342 4.90237 6.31658 5.29289 6.70711L10.5858 12L5.29289 17.2929C4.90237 17.6834 4.90237 18.3166 5.29289 18.7071C5.68342 19.0976 6.31658 19.0976 6.70711 18.7071L12 13.4142L17.2929 18.7071C17.6834 19.0976 18.3166 19.0976 18.7071 18.7071C19.0976 18.3166 19.0976 17.6834 18.7071 17.2929L13.4142 12L18.7071 6.70711C19.0976 6.31658 19.0976 5.68342 18.7071 5.29289C18.3166 4.90237 17.6834 4.90237 17.2929 5.29289L12 10.5858L6.70711 5.29289Z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="filter-options" id="filter-options">
+            <button type="button" class="filter-option" data-tag="Marketing" aria-pressed="false">
+              <span>Marketing</span>
+              <span class="filter-option-check" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M10.3964 15.3107L7.14644 12.0607C6.95119 11.8654 6.95119 11.5488 7.14644 11.3536L7.85353 10.6464C8.04879 10.4512 8.36539 10.4512 8.56064 10.6464L10.75 12.8358L15.4394 8.14644C15.6346 7.95119 15.9512 7.95119 16.1465 8.14644L16.8536 8.85355C17.0488 9.0488 17.0488 9.36539 16.8536 9.56066L11.1036 15.3107C10.9083 15.5059 10.5917 15.5059 10.3964 15.3107Z"/></svg>
+              </span>
+            </button>
+            <button type="button" class="filter-option" data-tag="Atendimento" aria-pressed="false">
+              <span>Atendimento</span>
+              <span class="filter-option-check" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M10.3964 15.3107L7.14644 12.0607C6.95119 11.8654 6.95119 11.5488 7.14644 11.3536L7.85353 10.6464C8.04879 10.4512 8.36539 10.4512 8.56064 10.6464L10.75 12.8358L15.4394 8.14644C15.6346 7.95119 15.9512 7.95119 16.1465 8.14644L16.8536 8.85355C17.0488 9.0488 17.0488 9.36539 16.8536 9.56066L11.1036 15.3107C10.9083 15.5059 10.5917 15.5059 10.3964 15.3107Z"/></svg>
+              </span>
+            </button>
+            <button type="button" class="filter-option" data-tag="Vendas" aria-pressed="false">
+              <span>Vendas</span>
+              <span class="filter-option-check" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M10.3964 15.3107L7.14644 12.0607C6.95119 11.8654 6.95119 11.5488 7.14644 11.3536L7.85353 10.6464C8.04879 10.4512 8.36539 10.4512 8.56064 10.6464L10.75 12.8358L15.4394 8.14644C15.6346 7.95119 15.9512 7.95119 16.1465 8.14644L16.8536 8.85355C17.0488 9.0488 17.0488 9.36539 16.8536 9.56066L11.1036 15.3107C10.9083 15.5059 10.5917 15.5059 10.3964 15.3107Z"/></svg>
+              </span>
+            </button>
+          </div>
+          <div class="filter-modal-actions">
+            <button type="button" class="filter-modal-btn filter-modal-btn--clear" id="filter-clear">
+              Limpar filtros
+            </button>
+            <button type="button" class="filter-modal-btn filter-modal-btn--apply" id="filter-apply">
+              Aplicar
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -604,9 +845,13 @@
       const promptInput = document.getElementById('prompt-input');
 
       let models = [];
+      let activeFilterTags = [];
+      let draftFilterTags = [];
       const selectedIds = new Set();
       const actionsBar = document.getElementById('actions-bar');
       const screen = document.querySelector('.screen');
+      const filterModal = document.getElementById('filter-modal');
+      const btnFilter = document.getElementById('btn-filter');
 
       const TAG_CLASS_MAP = {
         marketing: 'model-tag--marketing',
@@ -638,6 +883,16 @@
           title: row.Nome || '',
           description: row['Descrição'] || ''
         };
+      }
+
+      function getVisibleModels() {
+        if (!activeFilterTags.length) return models;
+        var filterKeys = activeFilterTags.map(function (tag) {
+          return tag.toLowerCase();
+        });
+        return models.filter(function (model) {
+          return filterKeys.indexOf(String(model.tag || '').trim().toLowerCase()) !== -1;
+        });
       }
 
       function createSupabaseClient() {
@@ -684,14 +939,76 @@
         screen.classList.toggle('has-actions-bar', hasSelection);
       }
 
+      function syncFilterOptionUi(selectedTags) {
+        Array.prototype.forEach.call(document.querySelectorAll('.filter-option'), function (el) {
+          var selected = selectedTags.indexOf(el.getAttribute('data-tag')) !== -1;
+          el.classList.toggle('is-selected', selected);
+          el.setAttribute('aria-pressed', selected ? 'true' : 'false');
+        });
+      }
+
+      function updateFilterUi() {
+        btnFilter.classList.toggle('is-active', activeFilterTags.length > 0);
+        syncFilterOptionUi(draftFilterTags);
+      }
+
+      function openFilterModal() {
+        draftFilterTags = activeFilterTags.slice();
+        updateFilterUi();
+        filterModal.classList.add('is-open');
+        filterModal.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeFilterModal() {
+        filterModal.classList.remove('is-open');
+        filterModal.setAttribute('aria-hidden', 'true');
+        draftFilterTags = activeFilterTags.slice();
+        updateFilterUi();
+      }
+
+      function toggleDraftFilterTag(tag) {
+        var index = draftFilterTags.indexOf(tag);
+        if (index === -1) {
+          draftFilterTags.push(tag);
+        } else {
+          draftFilterTags.splice(index, 1);
+        }
+        syncFilterOptionUi(draftFilterTags);
+      }
+
+      function applyFilters() {
+        activeFilterTags = draftFilterTags.slice();
+        updateFilterUi();
+        closeFilterModal();
+        renderModels();
+        screen.scrollTop = 0;
+      }
+
+      function clearFilters() {
+        draftFilterTags = [];
+        activeFilterTags = [];
+        updateFilterUi();
+        closeFilterModal();
+        renderModels();
+        screen.scrollTop = 0;
+      }
+
       function renderModels() {
+        var visible = getVisibleModels();
+
         if (!models.length) {
           modelsGrid.innerHTML = '<p class="models-grid-status">Nenhum modelo encontrado.</p>';
           updateActionsBar();
           return;
         }
 
-        modelsGrid.innerHTML = models.map(function (model) {
+        if (!visible.length) {
+          modelsGrid.innerHTML = '<p class="models-grid-status">Nenhum modelo encontrado para este produto.</p>';
+          updateActionsBar();
+          return;
+        }
+
+        modelsGrid.innerHTML = visible.map(function (model) {
           const selected = selectedIds.has(model.id);
           return (
             '<button type="button" class="model-card' + (selected ? ' is-selected' : '') + '" data-id="' + escapeHtml(model.id) + '" aria-pressed="' + selected + '">' +
@@ -730,7 +1047,8 @@
 
       document.getElementById('btn-cancel').addEventListener('click', function () {
         selectedIds.clear();
-        renderModels();
+        sessionStorage.removeItem('gameSelectedModels');
+        window.location.href = 'index.html';
       });
 
       document.getElementById('btn-finish').addEventListener('click', function () {
@@ -755,8 +1073,15 @@
         // placeholder: futura geração / busca por prompt
       });
 
-      document.getElementById('btn-filter').addEventListener('click', function () {
-        // placeholder: filtro por produto
+      btnFilter.addEventListener('click', openFilterModal);
+      document.getElementById('filter-modal-close').addEventListener('click', closeFilterModal);
+      document.getElementById('filter-modal-backdrop').addEventListener('click', closeFilterModal);
+      document.getElementById('filter-clear').addEventListener('click', clearFilters);
+      document.getElementById('filter-apply').addEventListener('click', applyFilters);
+      document.getElementById('filter-options').addEventListener('click', function (event) {
+        var option = event.target.closest('.filter-option');
+        if (!option) return;
+        toggleDraftFilterTag(option.getAttribute('data-tag'));
       });
 
       fitTotem();
