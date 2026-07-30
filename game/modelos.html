@@ -293,7 +293,7 @@
     }
 
     .model-card {
-      height: 320px;
+      height: 280px;
       display: flex;
       flex-direction: column;
       padding: 4px;
@@ -384,7 +384,7 @@
     }
 
     .model-card-desc {
-      flex: 1;
+      flex: 0 1 auto;
       min-height: 0;
       font-size: 14px;
       font-weight: 500;
@@ -393,7 +393,7 @@
       font-variation-settings: "opsz" 14;
       display: -webkit-box;
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: 7;
+      -webkit-line-clamp: 5;
       overflow: hidden;
     }
 
@@ -881,7 +881,7 @@
           tag: tag,
           tagClass: tagClassFor(tag),
           title: row.Nome || '',
-          description: row['Descrição'] || ''
+          description: row['Descrição curta'] || ''
         };
       }
 
@@ -914,7 +914,7 @@
 
         const { data, error } = await client
           .from('lista_agentes')
-          .select('ID, Nome, Descrição, Tag')
+          .select('ID, Nome, "Descrição curta", Tag')
           .order('Nome', { ascending: true });
 
         if (error) {
