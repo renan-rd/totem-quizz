@@ -37,8 +37,13 @@
       --sp-8: 64px;
     }
 
+    html {
+      height: 100%;
+    }
+
     body {
-      min-height: 100vh;
+      min-height: 100%;
+      min-height: 100dvh;
       font-family: var(--font);
       color: var(--color-text-high);
       background: linear-gradient(180deg, #002233 0%, #004466 100%);
@@ -50,7 +55,8 @@
     }
 
     .editor-shell {
-      min-height: 100vh;
+      height: 100dvh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -215,7 +221,7 @@
       gap: var(--sp-3);
       padding: var(--sp-3) var(--sp-4);
       background: var(--color-surface-page);
-      overflow: hidden;
+      overflow: auto;
     }
 
     .copilot-panel {
@@ -223,6 +229,11 @@
       flex-shrink: 0;
       display: flex;
       flex-direction: column;
+      align-self: flex-start;
+      position: sticky;
+      top: var(--sp-3);
+      height: calc(100dvh - 44px - (var(--sp-3) * 2));
+      max-height: calc(100dvh - 44px - (var(--sp-3) * 2));
       border: 1px solid var(--color-border);
       border-radius: 24px;
       background: var(--color-surface);
@@ -424,7 +435,8 @@
     .agent-card {
       flex: 1;
       min-width: 0;
-      min-height: 0;
+      min-height: calc(100dvh - 44px - (var(--sp-3) * 2));
+      height: max-content;
       display: flex;
       flex-direction: column;
       gap: var(--sp-5);
@@ -432,7 +444,6 @@
       border: 1px solid var(--color-border);
       border-radius: 24px;
       background: var(--color-surface);
-      overflow: auto;
     }
 
     .agent-card-header {
@@ -440,6 +451,7 @@
       align-items: flex-start;
       gap: var(--sp-3);
       padding-right: var(--sp-3);
+      flex-shrink: 0;
     }
 
     .agent-avatar {
@@ -475,6 +487,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      min-height: 30px;
     }
 
     .agent-heading p {
@@ -483,6 +496,146 @@
       font-weight: 500;
       line-height: 1.5;
       letter-spacing: -0.16px;
+    }
+
+    .selected-connector-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-2);
+      margin-top: var(--sp-2);
+    }
+
+    .selected-connector-tags[hidden] {
+      display: none !important;
+    }
+
+    .selected-connector-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-1);
+      max-width: 100%;
+      padding: var(--sp-1) var(--sp-1) var(--sp-1) var(--sp-2);
+      border-radius: 4px;
+      background: var(--color-surface-low);
+      color: var(--color-text-high);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+    }
+
+    .selected-connector-tag span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .selected-connector-tag-remove {
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .selected-connector-tag-remove:hover {
+      background: rgba(0, 34, 51, 0.08);
+    }
+
+    .selected-connector-tag-remove img {
+      width: 12px;
+      height: 12px;
+      display: block;
+      filter: brightness(0) saturate(100%) invert(9%) sepia(78%) saturate(1117%) hue-rotate(164deg) brightness(94%) contrast(103%);
+    }
+
+    .editor-skeleton-block {
+      display: block;
+      border-radius: 6px;
+      background: linear-gradient(
+        90deg,
+        var(--color-surface-low) 0%,
+        #f5f6f7 50%,
+        var(--color-surface-low) 100%
+      );
+      background-size: 200% 100%;
+      animation: editor-skeleton-shimmer 1.4s ease-in-out infinite;
+    }
+
+    .editor-title-skeleton {
+      width: min(320px, 70%);
+      height: 22px;
+      margin: 4px 0;
+    }
+
+    .editor-connector-skeleton {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-2);
+      margin-top: var(--sp-2);
+    }
+
+    .editor-connector-skeleton[hidden],
+    .editor-prompt-skeleton[hidden] {
+      display: none !important;
+    }
+
+    .editor-connector-skeleton-pill {
+      width: 96px;
+      height: 24px;
+      border-radius: 4px;
+    }
+
+    .editor-connector-skeleton-pill:nth-child(2) {
+      width: 72px;
+    }
+
+    .editor-connector-skeleton-pill:nth-child(3) {
+      width: 128px;
+    }
+
+    .editor-prompt-skeleton {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      min-height: 232px;
+      padding: 4px 0;
+    }
+
+    .editor-prompt-skeleton-line {
+      width: 100%;
+      height: 14px;
+    }
+
+    .editor-prompt-skeleton-line.is-short {
+      width: 68%;
+    }
+
+    .editor-prompt-skeleton-line.is-medium {
+      width: 86%;
+    }
+
+    .textarea-wrap.is-loading .instruction-placeholder,
+    .textarea-wrap.is-loading .instruction-textarea {
+      visibility: hidden;
+    }
+
+    .textarea-wrap.is-loading .editor-prompt-skeleton {
+      position: absolute;
+      inset: 16px 20px;
+    }
+
+    @keyframes editor-skeleton-shimmer {
+      0% { background-position: 100% 0; }
+      100% { background-position: -100% 0; }
     }
 
     .edit-button {
@@ -495,6 +648,8 @@
       flex-direction: column;
       gap: var(--sp-1);
       width: 100%;
+      flex: 1;
+      min-height: 0;
     }
 
     .editor-section {
@@ -505,6 +660,7 @@
       padding: var(--sp-3) var(--sp-4);
       border-radius: var(--radius-lg);
       background: var(--color-surface);
+      flex-shrink: 0;
     }
 
     .editor-section.has-action {
@@ -520,6 +676,12 @@
     .editor-section.is-stack {
       flex-direction: column;
       gap: var(--sp-3);
+    }
+
+    .editor-section.is-stack.instruction-section {
+      /* ocupa o restante do card para o card preencher a viewport */
+      flex: 1 1 auto;
+      min-height: 0;
     }
 
     .section-title-row {
@@ -642,6 +804,7 @@
       height: 1px;
       margin: var(--sp-1) 0;
       background: var(--color-border);
+      flex-shrink: 0;
     }
 
     .selected-trigger-tag {
@@ -700,20 +863,27 @@
       position: relative;
       width: 100%;
       padding-left: var(--sp-6);
+      min-height: 232px;
     }
 
     .instruction-textarea {
       position: relative;
       z-index: 1;
+      display: block;
       width: 100%;
+      box-sizing: border-box;
+      min-height: 232px;
       height: 232px;
       resize: none;
+      overflow-x: hidden;
+      overflow-y: hidden;
       padding: var(--sp-2) var(--sp-3);
       border: 1px solid var(--color-border-interactive);
       border-radius: var(--radius-md);
       outline: none;
       color: var(--color-text-high);
       background: var(--color-surface);
+      font-family: var(--font);
       font-size: 14px;
       font-weight: 500;
       line-height: 21px;
@@ -1439,12 +1609,19 @@
     @media (max-width: 1100px) {
       .editor-workspace {
         flex-direction: column;
-        overflow: auto;
       }
 
       .copilot-panel {
         width: 100%;
+        height: auto;
+        max-height: none;
         min-height: 420px;
+        position: static;
+        align-self: stretch;
+      }
+
+      .agent-card {
+        min-height: auto;
       }
     }
 
@@ -1587,7 +1764,7 @@
         <header class="agent-card-header">
           <div class="agent-avatar" aria-hidden="true">AB</div>
           <div class="agent-heading">
-            <h1 id="agent-editor-title">Agente qualificador de Leads</h1>
+            <h1 id="agent-editor-title">Novo agente</h1>
             <p>Adicione uma descrição para identificar seu agente</p>
           </div>
           <button type="button" class="btn-icon btn-icon-tertiary edit-button" aria-label="Editar dados do agente">
@@ -1623,11 +1800,17 @@
             </div>
           </section>
 
-          <section class="editor-section has-action">
+          <section class="editor-section has-action" id="connectors-section">
             <div class="section-title-row">
               <img class="section-icon" src="../img/svg/plug.svg" alt="">
               <div class="section-content">
                 <h2 class="section-title">Conectores e ferramentas</h2>
+                <div class="selected-connector-tags" id="selected-connector-tags" hidden></div>
+                <div class="editor-connector-skeleton" id="connectors-skeleton" hidden aria-hidden="true">
+                  <span class="editor-skeleton-block editor-connector-skeleton-pill"></span>
+                  <span class="editor-skeleton-block editor-connector-skeleton-pill"></span>
+                  <span class="editor-skeleton-block editor-connector-skeleton-pill"></span>
+                </div>
               </div>
             </div>
             <button type="button" class="btn-icon section-action" aria-label="Adicionar conectores e ferramentas">
@@ -1650,17 +1833,26 @@
 
           <div class="form-divider" aria-hidden="true"></div>
 
-          <section class="editor-section is-stack">
+          <section class="editor-section is-stack instruction-section">
             <div class="section-title-row">
               <img class="section-icon" src="../img/svg/pen-field-solid.svg" alt="">
               <h2 class="section-title">Instrução <span class="required">*</span></h2>
             </div>
-            <div class="textarea-wrap">
+            <div class="textarea-wrap" id="instruction-wrap">
               <div class="instruction-placeholder" aria-hidden="true">
                 <span class="instruction-placeholder-lead">Comece a escrever ou pressione ”/” para comandos ou ”@” para contexto.</span>
                 <span class="instruction-placeholder-example">Ex: Você é um assistente especializado em atender solicitações relacionadas a este processo. Analise o contexto, faça perguntas quando faltarem informações, execute apenas as ações permitidas e responda de forma clara, objetiva e profissional.</span>
               </div>
               <textarea class="instruction-textarea" id="instruction-textarea" aria-label="Instrução do agente"></textarea>
+              <div class="editor-prompt-skeleton" id="prompt-skeleton" hidden aria-hidden="true">
+                <span class="editor-skeleton-block editor-prompt-skeleton-line"></span>
+                <span class="editor-skeleton-block editor-prompt-skeleton-line is-medium"></span>
+                <span class="editor-skeleton-block editor-prompt-skeleton-line"></span>
+                <span class="editor-skeleton-block editor-prompt-skeleton-line is-short"></span>
+                <span class="editor-skeleton-block editor-prompt-skeleton-line is-medium"></span>
+                <span class="editor-skeleton-block editor-prompt-skeleton-line"></span>
+                <span class="editor-skeleton-block editor-prompt-skeleton-line is-short"></span>
+              </div>
             </div>
           </section>
         </div>
@@ -2230,15 +2422,178 @@
     });
 
     const instructionTextarea = document.getElementById('instruction-textarea');
-    const instructionWrap = instructionTextarea?.closest('.textarea-wrap');
+    const instructionWrap = document.getElementById('instruction-wrap') || instructionTextarea?.closest('.textarea-wrap');
+    const agentEditorTitle = document.getElementById('agent-editor-title');
+    const agentNameNav = document.querySelector('.agent-name');
+    const selectedConnectorTags = document.getElementById('selected-connector-tags');
+    const connectorsSkeleton = document.getElementById('connectors-skeleton');
+    const promptSkeleton = document.getElementById('prompt-skeleton');
+    const selectedConnectors = [];
 
     function syncInstructionPlaceholder() {
       if (!instructionTextarea || !instructionWrap) return;
       instructionWrap.classList.toggle('is-filled', instructionTextarea.value.trim().length > 0);
     }
 
-    instructionTextarea?.addEventListener('input', syncInstructionPlaceholder);
-    syncInstructionPlaceholder();
+    function autosizeInstructionTextarea() {
+      if (!instructionTextarea) return;
+
+      const minHeight = 232;
+
+      instructionTextarea.style.height = '0px';
+      const contentHeight = Math.max(minHeight, instructionTextarea.scrollHeight);
+      instructionTextarea.style.height = `${contentHeight}px`;
+    }
+
+    function syncInstructionField() {
+      syncInstructionPlaceholder();
+      requestAnimationFrame(() => {
+        autosizeInstructionTextarea();
+      });
+    }
+
+    function createSupabaseClient() {
+      const config = window.AGENT_BUILDER_SUPABASE_CONFIG || {};
+      if (!window.supabase || !config.url || !config.publishableKey) return null;
+      return window.supabase.createClient(config.url, config.publishableKey, {
+        auth: { persistSession: false, autoRefreshToken: false }
+      });
+    }
+
+    function setAgentTitle(name) {
+      const title = name || 'Novo agente';
+      if (agentEditorTitle) agentEditorTitle.textContent = title;
+      if (agentNameNav) agentNameNav.textContent = title;
+    }
+
+    function setModelLoading(isLoading) {
+      if (agentEditorTitle) {
+        if (isLoading) {
+          agentEditorTitle.innerHTML = '<span class="editor-skeleton-block editor-title-skeleton" aria-hidden="true"></span>';
+          agentEditorTitle.setAttribute('aria-busy', 'true');
+        } else {
+          agentEditorTitle.removeAttribute('aria-busy');
+        }
+      }
+
+      if (agentNameNav && isLoading) {
+        agentNameNav.textContent = 'Carregando…';
+      }
+
+      if (connectorsSkeleton) {
+        connectorsSkeleton.hidden = !isLoading;
+      }
+
+      if (selectedConnectorTags && isLoading) {
+        selectedConnectorTags.hidden = true;
+      }
+
+      if (instructionWrap) {
+        instructionWrap.classList.toggle('is-loading', isLoading);
+      }
+
+      if (promptSkeleton) {
+        promptSkeleton.hidden = !isLoading;
+      }
+
+      if (instructionTextarea) {
+        instructionTextarea.disabled = isLoading;
+      }
+    }
+
+    function renderSelectedConnectors() {
+      if (!selectedConnectorTags) return;
+      selectedConnectorTags.innerHTML = '';
+      selectedConnectorTags.hidden = selectedConnectors.length === 0;
+
+      selectedConnectors.forEach((connector, index) => {
+        const tag = document.createElement('span');
+        tag.className = 'selected-connector-tag';
+
+        const label = document.createElement('span');
+        label.textContent = connector;
+
+        const removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'selected-connector-tag-remove';
+        removeButton.setAttribute('aria-label', `Remover ${connector}`);
+        removeButton.innerHTML = '<img src="../img/svg/times.svg" alt="">';
+        removeButton.addEventListener('click', () => {
+          selectedConnectors.splice(index, 1);
+          renderSelectedConnectors();
+        });
+
+        tag.append(label, removeButton);
+        selectedConnectorTags.appendChild(tag);
+      });
+    }
+
+    function applyModelToEditor(model) {
+      const name = model?.Nome || 'Novo agente';
+      const prompt = model?.Prompt || '';
+      const connectors = Array.isArray(model?.Conectores)
+        ? model.Conectores.filter(Boolean)
+        : [];
+
+      setAgentTitle(name);
+
+      selectedConnectors.splice(0, selectedConnectors.length, ...connectors);
+      renderSelectedConnectors();
+
+      if (instructionTextarea) {
+        instructionTextarea.value = prompt;
+        syncInstructionField();
+        // Recalcula após fontes/layout estabilizarem.
+        setTimeout(autosizeInstructionTextarea, 50);
+      }
+    }
+
+    async function loadSelectedModel() {
+      const modelId = new URLSearchParams(window.location.search).get('id');
+      if (!modelId) {
+        setAgentTitle('Novo agente');
+        renderSelectedConnectors();
+        syncInstructionField();
+        return;
+      }
+
+      setModelLoading(true);
+
+      const client = createSupabaseClient();
+      if (!client) {
+        console.error('Supabase não configurado.');
+        setModelLoading(false);
+        setAgentTitle('Novo agente');
+        return;
+      }
+
+      const { data, error } = await client
+        .from('lista_agentes')
+        .select('ID, Nome, Conectores, Prompt')
+        .eq('ID', modelId)
+        .maybeSingle();
+
+      setModelLoading(false);
+
+      if (error) {
+        console.error('Erro ao carregar modelo:', error);
+        setAgentTitle('Novo agente');
+        return;
+      }
+
+      if (!data) {
+        console.warn('Modelo não encontrado:', modelId);
+        setAgentTitle('Novo agente');
+        return;
+      }
+
+      applyModelToEditor(data);
+    }
+
+    instructionTextarea?.addEventListener('input', syncInstructionField);
+    window.addEventListener('resize', autosizeInstructionTextarea);
+    syncInstructionField();
+    loadSelectedModel();
 
     document.querySelectorAll('.copilot-suggestion').forEach(button => {
       button.addEventListener('click', () => {
