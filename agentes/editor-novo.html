@@ -21,6 +21,8 @@
       --color-primary-soft: #b2f4ff;
       --color-primary-hover: #66ebff;
       --color-primary-icon-hover: #005580;
+      --color-btn-inverse: #003d5c;
+      --color-btn-on-color: #00dbff;
       --color-highlight: #8800f7;
       --color-highlight-soft: #edd6ff;
       --color-danger: #c20046;
@@ -158,7 +160,12 @@
     }
 
     .btn-icon-tertiary:hover {
-      background: var(--color-surface-low);
+      background: var(--color-primary-soft);
+      color: var(--color-primary-icon-hover);
+    }
+
+    .btn-icon-tertiary:hover img {
+      filter: brightness(0) saturate(100%) invert(25%) sepia(56%) saturate(1163%) hue-rotate(166deg) brightness(94%) contrast(101%);
     }
 
     .btn-icon-tertiary:focus-visible {
@@ -217,11 +224,12 @@
       flex: 1;
       min-height: 0;
       display: flex;
-      align-items: stretch;
+      align-items: flex-start;
       gap: var(--sp-3);
-      padding: var(--sp-3) var(--sp-4);
+      padding: 0 0 0 var(--sp-4);
       background: var(--color-surface-page);
-      overflow: auto;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     .copilot-panel {
@@ -229,15 +237,40 @@
       flex-shrink: 0;
       display: flex;
       flex-direction: column;
-      align-self: flex-start;
       position: sticky;
       top: var(--sp-3);
+      align-self: flex-start;
       height: calc(100dvh - 44px - (var(--sp-3) * 2));
-      max-height: calc(100dvh - 44px - (var(--sp-3) * 2));
+      min-height: 0;
+      margin-top: var(--sp-3);
+      margin-bottom: var(--sp-3);
       border: 1px solid var(--color-border);
       border-radius: 24px;
       background: var(--color-surface);
       overflow: hidden;
+    }
+
+    .agent-column {
+      flex: 1;
+      min-width: 0;
+      height: auto;
+      padding-right: var(--sp-4);
+      overflow: visible;
+    }
+
+    .agent-card {
+      min-width: 0;
+      min-height: calc(100dvh - 44px - (var(--sp-3) * 2));
+      height: auto;
+      margin-top: var(--sp-3);
+      margin-bottom: var(--sp-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-5);
+      padding: var(--sp-5) var(--sp-5) var(--sp-8);
+      border: 1px solid var(--color-border);
+      border-radius: 24px;
+      background: var(--color-surface);
     }
 
     .copilot-header {
@@ -333,7 +366,7 @@
       display: flex;
       align-items: center;
       gap: var(--sp-2);
-      padding: var(--sp-1) var(--sp-4);
+      padding: var(--sp-2) var(--sp-4);
       border: 0;
       border-radius: var(--radius-sm);
       background: transparent;
@@ -430,20 +463,6 @@
       height: 19px;
       width: auto;
       display: block;
-    }
-
-    .agent-card {
-      flex: 1;
-      min-width: 0;
-      min-height: calc(100dvh - 44px - (var(--sp-3) * 2));
-      height: max-content;
-      display: flex;
-      flex-direction: column;
-      gap: var(--sp-5);
-      padding: var(--sp-5) var(--sp-5) var(--sp-8);
-      border: 1px solid var(--color-border);
-      border-radius: 24px;
-      background: var(--color-surface);
     }
 
     .agent-card-header {
@@ -743,7 +762,7 @@
       align-items: flex-start;
       gap: var(--sp-2);
       padding: var(--sp-4);
-      border: 1px solid var(--color-border);
+      border: 2px solid var(--color-border);
       border-radius: var(--radius-lg);
       background: var(--color-surface);
       color: var(--color-text-high);
@@ -751,14 +770,14 @@
       cursor: pointer;
     }
 
-    .channel-card:hover {
-      border-color: var(--color-link);
-      box-shadow: 0 0 0 2px rgba(0, 119, 178, 0.08);
+    .channel-card:hover:not(.is-selected) {
+      border-color: var(--color-border-interactive);
     }
 
     .channel-card.is-selected {
-      border-color: var(--color-link);
-      box-shadow: 0 0 0 2px rgba(0, 119, 178, 0.16);
+      background: #c0f6ff;
+      border-color: #00dbff;
+      box-shadow: none;
     }
 
     .channel-card-icon {
@@ -797,6 +816,312 @@
       font-weight: 500;
       line-height: 1.4;
       letter-spacing: -0.14px;
+    }
+
+    .agent-card-view {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-5);
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .agent-card-view[hidden] {
+      display: none !important;
+    }
+
+    .widget-page-header {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-1);
+      width: 100%;
+      padding: var(--sp-3) 0;
+    }
+
+    .widget-page-main {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-4);
+      width: 100%;
+    }
+
+    .widget-back-btn {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-2);
+      border: 0;
+      border-radius: var(--radius-md);
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .widget-back-btn img {
+      width: 24px;
+      height: 24px;
+      display: block;
+      filter: brightness(0) saturate(100%) invert(31%) sepia(94%) saturate(1352%) hue-rotate(175deg) brightness(93%) contrast(101%);
+    }
+
+    .widget-back-btn:hover {
+      background: var(--color-surface-low);
+    }
+
+    .widget-page-title {
+      flex: 1;
+      min-width: 0;
+      padding-top: 2px;
+      color: var(--color-text-high);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.2px;
+    }
+
+    .widget-page-desc {
+      padding-left: 56px;
+      color: var(--color-text-low);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .widget-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-5);
+      width: 100%;
+    }
+
+    .widget-field {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+      width: 100%;
+    }
+
+    .widget-field-label {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .widget-dropzone {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-6);
+      border: 1px dashed var(--color-border-interactive);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface);
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .widget-dropzone:hover,
+    .widget-dropzone.is-dragging {
+      border-color: var(--color-link);
+      background: rgba(0, 119, 178, 0.04);
+    }
+
+    .widget-dropzone.is-uploaded {
+      border-style: solid;
+      border-color: #0ed869;
+      cursor: default;
+    }
+
+    .widget-dropzone.is-uploaded:hover {
+      background: var(--color-surface);
+      border-color: #0ed869;
+    }
+
+    .widget-dropzone-idle,
+    .widget-dropzone-success {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .widget-dropzone-idle[hidden],
+    .widget-dropzone-success[hidden] {
+      display: none !important;
+    }
+
+    .widget-dropzone-idle img {
+      width: 48px;
+      height: 48px;
+      display: block;
+      filter: brightness(0) saturate(100%) invert(26%) sepia(8%) saturate(1042%) hue-rotate(163deg) brightness(94%) contrast(90%);
+    }
+
+    .widget-dropzone-success-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #0ed869;
+    }
+
+    .widget-dropzone-success-icon img {
+      width: 28px;
+      height: 28px;
+      display: block;
+      filter: brightness(0) invert(1);
+    }
+
+    .widget-dropzone-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-2);
+      width: 100%;
+      padding-top: var(--sp-4);
+    }
+
+    .widget-dropzone-title {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .widget-dropzone-title .link {
+      color: var(--color-link);
+      font-weight: 700;
+    }
+
+    .widget-dropzone-title strong {
+      font-weight: 700;
+    }
+
+    .widget-dropzone-helper {
+      color: var(--color-text-high);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+    }
+
+    .widget-dropzone-replace {
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-2) var(--sp-4);
+      border: 0;
+      border-radius: var(--radius-md);
+      background: var(--color-primary-soft);
+      color: var(--color-link);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+    }
+
+    .widget-dropzone-replace:hover {
+      background: var(--color-primary-hover);
+    }
+
+    .widget-color-swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .widget-color-swatch {
+      width: 40px;
+      height: 40px;
+      border: 2px solid transparent;
+      border-radius: 60px;
+      padding: 0;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .widget-color-swatch.is-selected {
+      box-shadow: 0 0 0 2px var(--color-link);
+    }
+
+    .widget-field-helper {
+      color: var(--color-text-low);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+    }
+
+    .widget-radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-3);
+      width: 100%;
+    }
+
+    .widget-radio {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-3);
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      font: inherit;
+      color: var(--color-text-high);
+    }
+
+    .widget-radio-control {
+      width: 18px;
+      height: 18px;
+      margin-top: 3px;
+      border: 2px solid var(--color-border-interactive);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+
+    .widget-radio-control::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: transparent;
+    }
+
+    .widget-radio.is-selected .widget-radio-control {
+      border-color: var(--color-link);
+    }
+
+    .widget-radio.is-selected .widget-radio-control::after {
+      background: var(--color-text-high);
+    }
+
+    .widget-radio-label {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
     }
 
     .form-divider {
@@ -1075,24 +1400,25 @@
     }
 
     .drawer-back-button {
-      height: 32px;
+      height: 40px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 6px var(--sp-3);
+      padding: 8px 16px;
       border: 0;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       background: transparent;
       color: var(--color-link);
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 700;
-      line-height: 1.4;
-      letter-spacing: -0.14px;
+      line-height: 24px;
+      letter-spacing: -0.16px;
       cursor: pointer;
     }
 
     .drawer-back-button:hover {
-      background: var(--color-surface-low);
+      background: var(--color-primary-soft);
+      color: var(--color-primary-icon-hover);
     }
 
     .schedule-form {
@@ -1438,16 +1764,55 @@
       width: 100%;
     }
 
+    .drawer-actions[hidden] {
+      display: none;
+    }
+
+    .drawer-actions--split {
+      justify-content: space-between;
+    }
+
+    .drawer-actions-end {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-4);
+    }
+
+    .drawer-secondary-button {
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      border: 0;
+      border-radius: var(--radius-md);
+      background: var(--color-primary-soft);
+      color: var(--color-link);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 24px;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+    }
+
+    .drawer-secondary-button:hover {
+      background: var(--color-primary-hover);
+      color: var(--color-primary-icon-hover);
+    }
+
     .drawer-save-button {
       height: 40px;
-      padding: var(--sp-2) var(--sp-4);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
       border: 0;
       border-radius: var(--radius-md);
       background: #005580;
       color: #b2f4ff;
       font-size: 16px;
       font-weight: 700;
-      line-height: 1.5;
+      line-height: 24px;
       letter-spacing: -0.16px;
       cursor: pointer;
     }
@@ -1573,6 +1938,189 @@
       text-align: center;
     }
 
+    .knowledge-create-form {
+      display: flex;
+      flex-direction: column;
+      gap: 21px;
+      width: 100%;
+    }
+
+    #knowledge-list-view,
+    #knowledge-create-view {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+      width: 100%;
+    }
+
+    #knowledge-list-view[hidden],
+    #knowledge-create-view[hidden] {
+      display: none;
+    }
+
+    .kb-form-field {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+      width: 100%;
+    }
+
+    .kb-form-label {
+      display: flex;
+      gap: var(--sp-1);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: var(--color-text-high);
+    }
+
+    .kb-required-mark {
+      color: #cc0d4d;
+    }
+
+    .kb-text-input,
+    .kb-text-area {
+      width: 100%;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      color: var(--color-text-high);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      outline: none;
+    }
+
+    .kb-text-input {
+      height: 40px;
+      padding: var(--sp-2) var(--sp-3);
+    }
+
+    .kb-text-area {
+      min-height: 103px;
+      padding: var(--sp-2) var(--sp-3);
+      resize: vertical;
+    }
+
+    .kb-text-input::placeholder,
+    .kb-text-area::placeholder {
+      color: var(--color-text-low);
+      opacity: 1;
+    }
+
+    .kb-text-input:focus,
+    .kb-text-area:focus,
+    .kb-access-select:focus,
+    .kb-access-select[aria-expanded="true"] {
+      border-color: var(--color-link);
+      box-shadow: 0 0 0 2px rgba(0, 119, 178, 0.16);
+    }
+
+    .kb-access-select-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .kb-access-select {
+      width: 100%;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-2);
+      padding: var(--sp-2) var(--sp-3);
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      color: var(--color-text-high);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      text-align: left;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .kb-access-select-placeholder {
+      color: var(--color-text-low);
+    }
+
+    .kb-access-select-value {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .kb-access-caret {
+      width: 0;
+      height: 0;
+      flex-shrink: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid var(--color-text-low);
+    }
+
+    .kb-access-select[aria-expanded="true"] .kb-access-caret {
+      transform: rotate(180deg);
+    }
+
+    .kb-access-dropdown {
+      position: fixed;
+      z-index: 50;
+      display: none;
+      flex-direction: column;
+      gap: var(--sp-3);
+      padding: var(--sp-2);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      box-shadow: 0 4px 12px rgba(0, 34, 51, 0.14);
+    }
+
+    .kb-access-select-wrap.open .kb-access-dropdown {
+      display: flex;
+    }
+
+    .kb-access-option {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      padding: var(--sp-2) var(--sp-3);
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      font-family: var(--font);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .kb-access-option:hover,
+    .kb-access-option:focus {
+      background: var(--color-surface-low);
+      outline: none;
+    }
+
+    .kb-access-option-title {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .kb-access-option-description {
+      color: var(--color-text-low);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+    }
+
     .selected-knowledge-tags {
       display: flex;
       flex-wrap: wrap;
@@ -1609,19 +2157,30 @@
     @media (max-width: 1100px) {
       .editor-workspace {
         flex-direction: column;
+        padding: var(--sp-3) var(--sp-4);
       }
 
       .copilot-panel {
         width: 100%;
         height: auto;
-        max-height: none;
         min-height: 420px;
         position: static;
-        align-self: stretch;
+        margin-top: 0;
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+
+      .agent-column {
+        flex: 1 0 auto;
+        height: auto;
+        padding-right: 0;
+        overflow: visible;
       }
 
       .agent-card {
         min-height: auto;
+        margin-top: 0;
+        margin-bottom: 0;
       }
     }
 
@@ -1663,6 +2222,362 @@
       }
     }
 
+    .connectors-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-5);
+      background: rgba(0, 34, 51, 0.4);
+    }
+
+    .connectors-modal-backdrop[hidden] {
+      display: none;
+    }
+
+    .connectors-modal {
+      width: min(856px, 100%);
+      height: min(561px, calc(100dvh - 48px));
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--color-surface);
+      border-radius: 24px;
+      box-shadow: 0 12px 24px rgba(0, 34, 51, 0.2);
+      padding: var(--sp-5);
+    }
+
+    .connectors-modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding-bottom: var(--sp-2);
+      flex-shrink: 0;
+    }
+
+    .connectors-modal-close {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: var(--radius-md);
+      background: transparent;
+      cursor: pointer;
+      color: var(--color-text-low);
+    }
+
+    .connectors-modal-close:hover {
+      background: var(--color-surface-low);
+    }
+
+    .connectors-modal-close img {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    .connectors-modal-body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      gap: var(--sp-5);
+      align-items: stretch;
+    }
+
+    .connectors-modal-nav {
+      width: 219px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+      min-height: 0;
+    }
+
+    .connectors-modal-search {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      width: 100%;
+      padding: 4px 4px 4px 12px;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+    }
+
+    .connectors-modal-search input {
+      flex: 1;
+      min-width: 0;
+      height: 24px;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: var(--color-text-high);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: -0.16px;
+      line-height: 1.5;
+    }
+
+    .connectors-modal-search input::placeholder {
+      color: var(--color-text-low);
+    }
+
+    .connectors-modal-search-btn {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      padding: 0;
+      flex-shrink: 0;
+      pointer-events: none;
+    }
+
+    .connectors-modal-search-btn img {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+
+    .connectors-modal-list {
+      flex: 1;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .connectors-modal-list-label {
+      padding: 8px 12px;
+      color: var(--color-text-low);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+      text-transform: uppercase;
+    }
+
+    .connectors-modal-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border: 0;
+      border-right: 4px solid transparent;
+      background: transparent;
+      color: var(--color-text-high);
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.15px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .connectors-modal-item:hover {
+      background: rgba(178, 244, 255, 0.35);
+    }
+
+    .connectors-modal-item.is-active {
+      background: var(--color-primary-soft);
+      border-right-color: #00dbff;
+    }
+
+    .connectors-modal-item-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .connectors-modal-item-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .connectors-modal-item.has-icon {
+      padding-left: 8px;
+      padding-right: 8px;
+      gap: 8px;
+      border-right-width: 0;
+    }
+
+    .connectors-modal-item.has-icon.is-active {
+      border-right-width: 4px;
+      padding-right: 12px;
+    }
+
+    .connectors-modal-detail {
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+    }
+
+    .connectors-modal-detail-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-3);
+    }
+
+    .connectors-modal-detail-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 32px;
+    }
+
+    .connectors-modal-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: var(--color-primary-soft);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .connectors-modal-avatar.is-brand {
+      background: transparent;
+    }
+
+    .connectors-modal-avatar img {
+      width: 16px;
+      height: 16px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .connectors-modal-avatar.is-brand img {
+      width: 28px;
+      height: 28px;
+    }
+
+    .connectors-modal-detail-title h3 {
+      color: var(--color-text-high);
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.5;
+      letter-spacing: -0.2px;
+    }
+
+    .connectors-modal-detail-desc {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .connectors-modal-block {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+    }
+
+    .connectors-modal-block h4 {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .connectors-modal-resources {
+      margin: 0;
+      padding-left: 24px;
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .connectors-modal-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .connectors-modal-tool-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: var(--color-surface-low);
+      color: var(--color-text-high);
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+      white-space: nowrap;
+    }
+
+    .connectors-modal-activate {
+      width: 100%;
+      height: 40px;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: var(--radius-md);
+      background: var(--color-primary-soft);
+      color: var(--color-link);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+    }
+
+    .connectors-modal-activate:hover {
+      background: var(--color-primary-hover);
+    }
+
+    .connectors-modal-activate.is-active {
+      background: var(--color-surface-low);
+      color: var(--color-text-high);
+    }
+
+    @media (max-width: 860px) {
+      .connectors-modal {
+        height: min(720px, calc(100dvh - 32px));
+      }
+
+      .connectors-modal-body {
+        flex-direction: column;
+      }
+
+      .connectors-modal-nav {
+        width: 100%;
+        max-height: 220px;
+      }
+    }
+
     @media (max-width: 620px) {
       .agent-card-header,
       .editor-section.has-action {
@@ -1671,6 +2586,10 @@
       }
 
       .textarea-wrap {
+        padding-left: 0;
+      }
+
+      .widget-page-desc {
         padding-left: 0;
       }
 
@@ -1760,7 +2679,9 @@
         </div>
       </aside>
 
+      <div class="agent-column">
       <section class="agent-card" aria-labelledby="agent-editor-title">
+        <div class="agent-card-view" id="agent-main-view">
         <header class="agent-card-header">
           <div class="agent-avatar" aria-hidden="true">AB</div>
           <div class="agent-heading">
@@ -1813,7 +2734,7 @@
                 </div>
               </div>
             </div>
-            <button type="button" class="btn-icon section-action" aria-label="Adicionar conectores e ferramentas">
+            <button type="button" class="btn-icon section-action" id="open-connectors-modal" aria-label="Adicionar conectores e ferramentas" aria-expanded="false" aria-controls="connectors-modal">
               <img src="../img/svg/plus.svg" alt="">
             </button>
           </section>
@@ -1856,7 +2777,78 @@
             </div>
           </section>
         </div>
+        </div>
+
+        <div class="agent-card-view" id="agent-widget-view" hidden>
+          <header class="widget-page-header">
+            <div class="widget-page-main">
+              <button type="button" class="widget-back-btn" id="back-from-widget-btn" aria-label="Voltar">
+                <img src="../img/svg/arrow-left.svg" alt="">
+              </button>
+              <h1 class="widget-page-title">Widget no site</h1>
+            </div>
+            <p class="widget-page-desc">Configure o visual do chat adicionando avatar, cor da janela e posição do agente.</p>
+          </header>
+
+          <div class="widget-form">
+            <div class="widget-field">
+              <p class="widget-field-label">Foto de perfil, exibida nos atendimentos</p>
+              <div class="widget-dropzone" id="widget-avatar-dropzone" role="button" tabindex="0" aria-label="Enviar foto de perfil">
+                <div class="widget-dropzone-idle" id="widget-dropzone-idle">
+                  <img src="../img/svg/import.svg" alt="">
+                  <span class="widget-dropzone-copy">
+                    <span class="widget-dropzone-title">
+                      Arraste e solte seu arquivo aqui ou<span class="link"> clique para selecionar</span>
+                    </span>
+                    <span class="widget-dropzone-helper">Formatos aceitos: .png, .jpg, .jpeg e .webp</span>
+                  </span>
+                </div>
+                <div class="widget-dropzone-success" id="widget-dropzone-success" hidden>
+                  <span class="widget-dropzone-success-icon" aria-hidden="true">
+                    <img src="../img/svg/checkmark.svg" alt="">
+                  </span>
+                  <span class="widget-dropzone-copy">
+                    <span class="widget-dropzone-title">
+                      Arquivo <strong>agent-profile.png</strong> carregado!
+                    </span>
+                    <button type="button" class="widget-dropzone-replace" id="widget-replace-file-btn">Enviar outro arquivo</button>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="widget-field">
+              <p class="widget-field-label">Cor da janela do chat</p>
+              <div class="widget-color-swatches" role="listbox" aria-label="Cor da janela do chat">
+                <button type="button" class="widget-color-swatch is-selected" style="background:#b2f4ff" data-color="#b2f4ff" aria-label="Azul claro" aria-selected="true"></button>
+                <button type="button" class="widget-color-swatch" style="background:#f6fed0" data-color="#f6fed0" aria-label="Lima claro" aria-selected="false"></button>
+                <button type="button" class="widget-color-swatch" style="background:#ffe8c2" data-color="#ffe8c2" aria-label="Laranja claro" aria-selected="false"></button>
+                <button type="button" class="widget-color-swatch" style="background:#d6fae8" data-color="#d6fae8" aria-label="Verde claro" aria-selected="false"></button>
+                <button type="button" class="widget-color-swatch" style="background:#fdd6ea" data-color="#fdd6ea" aria-label="Rosa claro" aria-selected="false"></button>
+                <button type="button" class="widget-color-swatch" style="background:#edd6ff" data-color="#edd6ff" aria-label="Roxo claro" aria-selected="false"></button>
+                <button type="button" class="widget-color-swatch" style="background:#fa86c5" data-color="#fa86c5" aria-label="Rosa" aria-selected="false"></button>
+                <button type="button" class="widget-color-swatch" style="background:#e6fc88" data-color="#e6fc88" aria-label="Lima" aria-selected="false"></button>
+              </div>
+              <p class="widget-field-helper">Esta cor será usada na janela do chat.</p>
+            </div>
+
+            <div class="widget-field">
+              <p class="widget-field-label">Posição do agente</p>
+              <div class="widget-radio-group" role="radiogroup" aria-label="Posição do agente">
+                <button type="button" class="widget-radio is-selected" data-position="bottom-left" role="radio" aria-checked="true">
+                  <span class="widget-radio-control" aria-hidden="true"></span>
+                  <span class="widget-radio-label">Canto inferior esquerdo</span>
+                </button>
+                <button type="button" class="widget-radio" data-position="bottom-right" role="radio" aria-checked="false">
+                  <span class="widget-radio-control" aria-hidden="true"></span>
+                  <span class="widget-radio-label">Canto inferior direito</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
+      </div>
     </main>
 
     <div class="drawer-backdrop" id="trigger-drawer-backdrop" hidden>
@@ -2014,19 +3006,92 @@
         </header>
 
         <div class="drawer-content">
-          <p class="drawer-intro">Selecione as bases que este agente poderá consultar ao responder ou executar tarefas.</p>
-          <div class="knowledge-base-selection-list" id="knowledge-base-selection-list">
-            <div class="knowledge-base-drawer-state">Carregando bases de conhecimento...</div>
+          <div id="knowledge-list-view">
+            <p class="drawer-intro">Selecione as bases que este agente poderá consultar ao responder ou executar tarefas.</p>
+            <div class="knowledge-base-selection-list" id="knowledge-base-selection-list">
+              <div class="knowledge-base-drawer-state">Carregando bases de conhecimento...</div>
+            </div>
+          </div>
+
+          <div id="knowledge-create-view" hidden>
+            <p class="drawer-intro">Uma base de conhecimento permite que o agente encontre informações relevantes mais rapidamente.</p>
+            <form class="knowledge-create-form" id="knowledge-create-form">
+              <label class="kb-form-field">
+                <span class="kb-form-label">
+                  Nome da base de conhecimento
+                  <span class="kb-required-mark" aria-hidden="true">*</span>
+                </span>
+                <input class="kb-text-input" type="text" id="knowledge-create-name" name="knowledge-name" placeholder="Informe um nome para essa base" required>
+              </label>
+
+              <label class="kb-form-field">
+                <span class="kb-form-label">Descrição</span>
+                <textarea class="kb-text-area" id="knowledge-create-description" name="knowledge-description" placeholder="Adicione a descrição dessa base"></textarea>
+              </label>
+
+              <div class="kb-form-field">
+                <span class="kb-form-label">Quem poderá acessar essa base?</span>
+                <div class="kb-access-select-wrap" id="knowledge-access-select-wrap">
+                  <button type="button" class="kb-access-select" id="knowledge-access-select" aria-haspopup="listbox" aria-expanded="false" aria-controls="knowledge-access-dropdown">
+                    <span class="kb-access-select-value kb-access-select-placeholder" id="knowledge-access-select-value">Selecione quem poderá acessar</span>
+                    <span class="kb-access-caret" aria-hidden="true"></span>
+                  </button>
+                  <input type="hidden" name="knowledge-access" id="knowledge-access-input">
+                  <div class="kb-access-dropdown" id="knowledge-access-dropdown" role="listbox" aria-label="Quem poderá acessar essa base?">
+                    <button type="button" class="kb-access-option" role="option" data-value="publico">
+                      <span class="kb-access-option-title">Público</span>
+                      <span class="kb-access-option-description">Todas as pessoas da conta podem encontrar e usar esta base de conhecimento ao criar ou editar agentes de IA.</span>
+                    </button>
+                    <button type="button" class="kb-access-option" role="option" data-value="privado">
+                      <span class="kb-access-option-title">Privado</span>
+                      <span class="kb-access-option-description">Somente você poderá acessar esta base para criar ou editar agentes de IA.</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
 
         <footer class="drawer-footer">
-          <div class="drawer-actions">
+          <div class="drawer-actions drawer-actions--split" id="knowledge-list-footer">
             <button type="button" class="drawer-back-button" id="close-knowledge-bases-drawer">Voltar</button>
-            <button type="button" class="drawer-save-button" id="save-knowledge-bases">Salvar</button>
+            <div class="drawer-actions-end">
+              <button type="button" class="drawer-secondary-button" id="create-knowledge-base">Criar novo</button>
+              <button type="button" class="drawer-save-button" id="save-knowledge-bases">Salvar</button>
+            </div>
+          </div>
+          <div class="drawer-actions drawer-actions--split" id="knowledge-create-footer" hidden>
+            <button type="button" class="drawer-back-button" id="back-knowledge-create">Voltar</button>
+            <button type="submit" class="drawer-save-button" id="submit-knowledge-create" form="knowledge-create-form">Criar</button>
           </div>
         </footer>
       </aside>
+    </div>
+
+    <div class="connectors-modal-backdrop" id="connectors-modal-backdrop" hidden>
+      <div class="connectors-modal" id="connectors-modal" role="dialog" aria-modal="true" aria-label="Adicionar conectores e ferramentas">
+        <header class="connectors-modal-header">
+          <button type="button" class="connectors-modal-close" id="close-connectors-modal" aria-label="Fechar">
+            <img src="../img/svg/times.svg" alt="">
+          </button>
+        </header>
+        <div class="connectors-modal-body">
+          <nav class="connectors-modal-nav" aria-label="Lista de conectores">
+            <label class="connectors-modal-search">
+              <input type="search" id="connectors-modal-search" placeholder="Buscar" aria-label="Buscar conectores">
+              <span class="connectors-modal-search-btn" aria-hidden="true">
+                <img src="../img/conectores/search.svg" alt="">
+              </span>
+            </label>
+            <div class="connectors-modal-list" id="connectors-modal-list"></div>
+          </nav>
+          <section class="connectors-modal-detail" aria-live="polite">
+            <div class="connectors-modal-detail-scroll" id="connectors-modal-detail"></div>
+            <button type="button" class="connectors-modal-activate" id="connectors-modal-activate">Ativar</button>
+          </section>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2060,8 +3125,27 @@
     const selectedTriggerLabel = document.getElementById('selected-trigger-label');
     const openKnowledgeBasesDrawerButton = document.getElementById('open-knowledge-bases-drawer');
     const knowledgeBasesDrawerBackdrop = document.getElementById('knowledge-bases-drawer-backdrop');
+    const knowledgeBasesDrawerTitle = document.getElementById('knowledge-bases-drawer-title');
     const closeKnowledgeBasesDrawerButton = document.getElementById('close-knowledge-bases-drawer');
     const saveKnowledgeBasesButton = document.getElementById('save-knowledge-bases');
+    const createKnowledgeBaseButton = document.getElementById('create-knowledge-base');
+    const knowledgeListView = document.getElementById('knowledge-list-view');
+    const knowledgeCreateView = document.getElementById('knowledge-create-view');
+    const knowledgeListFooter = document.getElementById('knowledge-list-footer');
+    const knowledgeCreateFooter = document.getElementById('knowledge-create-footer');
+    const backKnowledgeCreateButton = document.getElementById('back-knowledge-create');
+    const submitKnowledgeCreateButton = document.getElementById('submit-knowledge-create');
+    const knowledgeCreateForm = document.getElementById('knowledge-create-form');
+    const knowledgeCreateNameInput = document.getElementById('knowledge-create-name');
+    const knowledgeCreateDescriptionInput = document.getElementById('knowledge-create-description');
+    const knowledgeAccessSelectWrap = document.getElementById('knowledge-access-select-wrap');
+    const knowledgeAccessSelect = document.getElementById('knowledge-access-select');
+    const knowledgeAccessSelectValue = document.getElementById('knowledge-access-select-value');
+    const knowledgeAccessInput = document.getElementById('knowledge-access-input');
+    const knowledgeAccessDropdown = document.getElementById('knowledge-access-dropdown');
+    const knowledgeAccessOptions = knowledgeAccessDropdown
+      ? Array.from(knowledgeAccessDropdown.querySelectorAll('.kb-access-option'))
+      : [];
     const knowledgeBaseSelectionList = document.getElementById('knowledge-base-selection-list');
     const selectedKnowledgeTags = document.getElementById('selected-knowledge-tags');
     const knowledgeService = window.KnowledgeBaseService;
@@ -2069,6 +3153,7 @@
     const availableKnowledgeBases = [];
     const selectedKnowledgeBaseIds = new Set();
     const draftKnowledgeBaseIds = new Set();
+    let knowledgeDrawerMode = 'list';
     let selectedScheduleDate = new Date(2026, 3, 29);
     let visibleScheduleMonth = new Date(selectedScheduleDate.getFullYear(), selectedScheduleDate.getMonth(), 1);
 
@@ -2124,6 +3209,112 @@
         : 'Selecione a recorrência';
 
       return `Agendamento - ${date} às ${time}, ${recurrence}`;
+    }
+
+    function positionKnowledgeAccessDropdown() {
+      if (!knowledgeAccessSelect || !knowledgeAccessDropdown) return;
+      const rect = knowledgeAccessSelect.getBoundingClientRect();
+      knowledgeAccessDropdown.style.left = `${rect.left}px`;
+      knowledgeAccessDropdown.style.top = `${rect.bottom + 8}px`;
+      knowledgeAccessDropdown.style.width = `${rect.width}px`;
+    }
+
+    function closeKnowledgeAccessDropdown() {
+      knowledgeAccessSelectWrap?.classList.remove('open');
+      knowledgeAccessSelect?.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleKnowledgeAccessDropdown() {
+      const isOpen = knowledgeAccessSelectWrap?.classList.toggle('open');
+      knowledgeAccessSelect?.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      if (isOpen) positionKnowledgeAccessDropdown();
+    }
+
+    function setKnowledgeAccessSelectValue(value) {
+      if (!knowledgeAccessSelectValue || !knowledgeAccessInput) return;
+
+      const selectedOption = knowledgeAccessOptions.find(option => option.dataset.value === value);
+      if (!selectedOption) {
+        knowledgeAccessSelectValue.textContent = 'Selecione quem poderá acessar';
+        knowledgeAccessSelectValue.classList.add('kb-access-select-placeholder');
+        knowledgeAccessInput.value = '';
+        knowledgeAccessOptions.forEach(option => option.setAttribute('aria-selected', 'false'));
+        return;
+      }
+
+      const optionTitle = selectedOption.querySelector('.kb-access-option-title')?.textContent || '';
+      knowledgeAccessSelectValue.textContent = optionTitle;
+      knowledgeAccessSelectValue.classList.remove('kb-access-select-placeholder');
+      knowledgeAccessInput.value = value;
+      knowledgeAccessOptions.forEach(option => option.setAttribute('aria-selected', 'false'));
+      selectedOption.setAttribute('aria-selected', 'true');
+    }
+
+    function getSelectedKnowledgeVisibility() {
+      return knowledgeAccessInput?.value === 'publico' ? 'public' : 'private';
+    }
+
+    function createLocalKnowledgeBaseFromForm() {
+      const now = new Date().toISOString();
+      return {
+        id: `local-${Date.now()}`,
+        name: knowledgeCreateNameInput?.value.trim() || 'Nova base de conhecimento',
+        description: knowledgeCreateDescriptionInput?.value.trim() || '',
+        visibility: knowledgeAccessInput?.value === 'publico' ? 'public' : 'private',
+        status: 'active',
+        createdAt: now,
+        updatedAt: now
+      };
+    }
+
+    function upsertAvailableKnowledgeBase(base) {
+      if (!base?.id) return;
+      const index = availableKnowledgeBases.findIndex(item => item.id === base.id);
+      if (index >= 0) {
+        availableKnowledgeBases[index] = { ...availableKnowledgeBases[index], ...base };
+      } else {
+        availableKnowledgeBases.unshift(base);
+      }
+    }
+
+    async function persistKnowledgeBaseFromCreateForm() {
+      if (!knowledgeService?.isConfigured()) return null;
+
+      const payload = {
+        name: knowledgeCreateNameInput?.value.trim() || 'Nova base de conhecimento',
+        description: knowledgeCreateDescriptionInput?.value.trim() || '',
+        visibility: getSelectedKnowledgeVisibility()
+      };
+
+      try {
+        return await knowledgeService.createKnowledgeBase(payload);
+      } catch (error) {
+        console.warn('Supabase knowledge base create skipped:', error);
+        return null;
+      }
+    }
+
+    function showKnowledgeListView() {
+      knowledgeDrawerMode = 'list';
+      closeKnowledgeAccessDropdown();
+      if (knowledgeListView) knowledgeListView.hidden = false;
+      if (knowledgeCreateView) knowledgeCreateView.hidden = true;
+      if (knowledgeListFooter) knowledgeListFooter.hidden = false;
+      if (knowledgeCreateFooter) knowledgeCreateFooter.hidden = true;
+      if (knowledgeBasesDrawerTitle) knowledgeBasesDrawerTitle.textContent = 'Bases de conhecimento';
+    }
+
+    function showKnowledgeCreateView() {
+      knowledgeDrawerMode = 'create';
+      knowledgeCreateForm?.reset();
+      setKnowledgeAccessSelectValue('');
+      closeKnowledgeAccessDropdown();
+      if (knowledgeListView) knowledgeListView.hidden = true;
+      if (knowledgeCreateView) knowledgeCreateView.hidden = false;
+      if (knowledgeListFooter) knowledgeListFooter.hidden = true;
+      if (knowledgeCreateFooter) knowledgeCreateFooter.hidden = false;
+      if (knowledgeBasesDrawerTitle) knowledgeBasesDrawerTitle.textContent = 'Nova base de conhecimento';
+      knowledgeCreateNameInput?.focus();
     }
 
     function formatKnowledgeBaseDate(value) {
@@ -2230,6 +3421,7 @@
       if (!knowledgeBasesDrawerBackdrop || !openKnowledgeBasesDrawerButton) return;
       draftKnowledgeBaseIds.clear();
       selectedKnowledgeBaseIds.forEach(id => draftKnowledgeBaseIds.add(id));
+      showKnowledgeListView();
       knowledgeBasesDrawerBackdrop.hidden = false;
       openKnowledgeBasesDrawerButton.setAttribute('aria-expanded', 'true');
       loadKnowledgeBasesForDrawer();
@@ -2237,6 +3429,8 @@
 
     function closeKnowledgeBasesDrawer(restoreFocus = true) {
       if (!knowledgeBasesDrawerBackdrop || !openKnowledgeBasesDrawerButton) return;
+      closeKnowledgeAccessDropdown();
+      showKnowledgeListView();
       knowledgeBasesDrawerBackdrop.hidden = true;
       openKnowledgeBasesDrawerButton.setAttribute('aria-expanded', 'false');
       if (restoreFocus) openKnowledgeBasesDrawerButton.focus();
@@ -2406,6 +3600,50 @@
     scheduleDateButton?.addEventListener('click', toggleDatePicker);
     openKnowledgeBasesDrawerButton?.addEventListener('click', openKnowledgeBasesDrawer);
     closeKnowledgeBasesDrawerButton?.addEventListener('click', () => closeKnowledgeBasesDrawer());
+    createKnowledgeBaseButton?.addEventListener('click', showKnowledgeCreateView);
+    backKnowledgeCreateButton?.addEventListener('click', () => {
+      showKnowledgeListView();
+      createKnowledgeBaseButton?.focus();
+    });
+
+    knowledgeAccessSelect?.addEventListener('click', event => {
+      event.preventDefault();
+      toggleKnowledgeAccessDropdown();
+    });
+
+    knowledgeAccessOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        setKnowledgeAccessSelectValue(option.dataset.value || '');
+        closeKnowledgeAccessDropdown();
+      });
+    });
+
+    knowledgeCreateForm?.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (!knowledgeCreateNameInput?.value.trim()) {
+        knowledgeCreateNameInput?.focus();
+        return;
+      }
+
+      if (submitKnowledgeCreateButton) {
+        submitKnowledgeCreateButton.disabled = true;
+        submitKnowledgeCreateButton.textContent = 'Criando…';
+      }
+
+      const savedBase = await persistKnowledgeBaseFromCreateForm();
+      const baseToRender = savedBase || createLocalKnowledgeBaseFromForm();
+
+      upsertAvailableKnowledgeBase(baseToRender);
+      draftKnowledgeBaseIds.add(baseToRender.id);
+      renderKnowledgeBaseDrawerList();
+      showKnowledgeListView();
+
+      if (submitKnowledgeCreateButton) {
+        submitKnowledgeCreateButton.disabled = false;
+        submitKnowledgeCreateButton.textContent = 'Criar';
+      }
+    });
+
     saveKnowledgeBasesButton?.addEventListener('click', () => {
       selectedKnowledgeBaseIds.clear();
       draftKnowledgeBaseIds.forEach(id => selectedKnowledgeBaseIds.add(id));
@@ -2415,10 +3653,121 @@
 
     document.querySelectorAll('.channel-card').forEach(card => {
       card.addEventListener('click', () => {
-        document.querySelectorAll('.channel-card').forEach(item => {
-          item.classList.toggle('is-selected', item === card);
+        const channel = card.getAttribute('data-channel');
+
+        if (channel === 'widget') {
+          openWidgetView();
+          return;
+        }
+
+        if (channel === 'interno') {
+          setSelectedChannel('interno');
+        }
+      });
+    });
+
+    const agentMainView = document.getElementById('agent-main-view');
+    const agentWidgetView = document.getElementById('agent-widget-view');
+    const backFromWidgetBtn = document.getElementById('back-from-widget-btn');
+    const widgetAvatarDropzone = document.getElementById('widget-avatar-dropzone');
+    const widgetDropzoneIdle = document.getElementById('widget-dropzone-idle');
+    const widgetDropzoneSuccess = document.getElementById('widget-dropzone-success');
+    const widgetReplaceFileBtn = document.getElementById('widget-replace-file-btn');
+
+    function setSelectedChannel(channel) {
+      document.querySelectorAll('.channel-card').forEach(item => {
+        const selected = item.getAttribute('data-channel') === channel;
+        item.classList.toggle('is-selected', selected);
+      });
+    }
+
+    function openWidgetView() {
+      if (!agentMainView || !agentWidgetView) return;
+      agentMainView.hidden = true;
+      agentWidgetView.hidden = false;
+      document.querySelector('.editor-workspace')?.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function closeWidgetView() {
+      if (!agentMainView || !agentWidgetView) return;
+      agentWidgetView.hidden = true;
+      agentMainView.hidden = false;
+      setSelectedChannel('widget');
+    }
+
+    function setWidgetUploadSuccess(isUploaded) {
+      if (!widgetAvatarDropzone || !widgetDropzoneIdle || !widgetDropzoneSuccess) return;
+      widgetAvatarDropzone.classList.toggle('is-uploaded', isUploaded);
+      widgetDropzoneIdle.hidden = isUploaded;
+      widgetDropzoneSuccess.hidden = !isUploaded;
+      widgetAvatarDropzone.setAttribute(
+        'aria-label',
+        isUploaded ? 'Foto de perfil carregada' : 'Enviar foto de perfil'
+      );
+    }
+
+    backFromWidgetBtn?.addEventListener('click', closeWidgetView);
+
+    document.querySelectorAll('.widget-color-swatch').forEach(swatch => {
+      swatch.addEventListener('click', () => {
+        document.querySelectorAll('.widget-color-swatch').forEach(item => {
+          const selected = item === swatch;
+          item.classList.toggle('is-selected', selected);
+          item.setAttribute('aria-selected', selected ? 'true' : 'false');
         });
       });
+    });
+
+    document.querySelectorAll('.widget-radio').forEach(radio => {
+      radio.addEventListener('click', () => {
+        document.querySelectorAll('.widget-radio').forEach(item => {
+          const selected = item === radio;
+          item.classList.toggle('is-selected', selected);
+          item.setAttribute('aria-checked', selected ? 'true' : 'false');
+        });
+      });
+    });
+
+    if (widgetAvatarDropzone) {
+      widgetAvatarDropzone.addEventListener('click', event => {
+        if (event.target.closest('#widget-replace-file-btn')) return;
+        if (widgetAvatarDropzone.classList.contains('is-uploaded')) return;
+        setWidgetUploadSuccess(true);
+      });
+
+      widgetAvatarDropzone.addEventListener('keydown', event => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        if (widgetAvatarDropzone.classList.contains('is-uploaded')) return;
+        event.preventDefault();
+        setWidgetUploadSuccess(true);
+      });
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        widgetAvatarDropzone.addEventListener(eventName, event => {
+          event.preventDefault();
+          if (widgetAvatarDropzone.classList.contains('is-uploaded')) return;
+          widgetAvatarDropzone.classList.add('is-dragging');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        widgetAvatarDropzone.addEventListener(eventName, event => {
+          event.preventDefault();
+          widgetAvatarDropzone.classList.remove('is-dragging');
+        });
+      });
+
+      widgetAvatarDropzone.addEventListener('drop', event => {
+        event.preventDefault();
+        if (widgetAvatarDropzone.classList.contains('is-uploaded')) return;
+        setWidgetUploadSuccess(true);
+      });
+    }
+
+    widgetReplaceFileBtn?.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      setWidgetUploadSuccess(false);
     });
 
     const instructionTextarea = document.getElementById('instruction-textarea');
@@ -2429,6 +3778,227 @@
     const connectorsSkeleton = document.getElementById('connectors-skeleton');
     const promptSkeleton = document.getElementById('prompt-skeleton');
     const selectedConnectors = [];
+    const openConnectorsModalButton = document.getElementById('open-connectors-modal');
+    const connectorsModalBackdrop = document.getElementById('connectors-modal-backdrop');
+    const closeConnectorsModalButton = document.getElementById('close-connectors-modal');
+    const connectorsModalSearch = document.getElementById('connectors-modal-search');
+    const connectorsModalList = document.getElementById('connectors-modal-list');
+    const connectorsModalDetail = document.getElementById('connectors-modal-detail');
+    const connectorsModalActivate = document.getElementById('connectors-modal-activate');
+    const CONNECTORS_CATALOG = [
+      {
+        id: 'rd-marketing',
+        name: 'RD Marketing',
+        icon: null,
+        avatar: '../img/conectores/rd-symbol.svg',
+        avatarBrand: false,
+        description: 'Analise campanhas, leads e conversões; ideal para descobrir gargalos e oportunidades no funil.',
+        resources: [
+          'Leitura de perfis de Leads',
+          'Estatísticas de Landing Pages',
+          'Métricas de Campanhas de E-mail',
+          'Análise de Funil de Vendas'
+        ],
+        tools: [
+          'create_label', 'get_thread', 'label_message', 'label_thread', 'list_drafts', 'list_labels',
+          'search_threads', 'unlabel_message', 'unlabel_thread', 'contact_tag_add', 'email_get_by_id',
+          'workflow_get_details', 'workflow_leads_started_list', 'workflow_leads_exited_list',
+          'workflow_leads_at_action_list', 'workflow_lead_enroll', 'contact_funnel_stage_get',
+          'contact_funnel_stage_update', 'segmentation_list', 'segmentation_contacts_list'
+        ]
+      },
+      {
+        id: 'rd-vendas',
+        name: 'RD Vendas',
+        icon: null,
+        avatar: '../img/conectores/rd-symbol.svg',
+        avatarBrand: false,
+        description: 'Analisar e gerenciar cadastros, negociações, vendas, funções e tarefas.',
+        resources: [
+          'Consulta de oportunidades e funis',
+          'Gestão de tarefas e atividades',
+          'Análise de desempenho de vendas',
+          'Atualização de status de negociações'
+        ],
+        tools: [
+          'deal_list', 'deal_get', 'deal_update', 'task_list', 'task_create',
+          'contact_get', 'pipeline_list', 'stage_update'
+        ]
+      },
+      {
+        id: 'rd-atendimento',
+        name: 'RD Atendimento',
+        icon: null,
+        avatar: '../img/conectores/rd-symbol.svg',
+        avatarBrand: false,
+        description: 'Análise de dados sobre eficiência operacional, filas, satisfação e desempenho do chatbot.',
+        resources: [
+          'Métricas de filas e tempo de resposta',
+          'Indicadores de satisfação do cliente',
+          'Desempenho de campanhas de atendimento',
+          'Análise de conversas e chatbot'
+        ],
+        tools: [
+          'conversation_list', 'conversation_get', 'queue_metrics', 'csat_summary',
+          'agent_performance', 'chatbot_stats'
+        ]
+      },
+      {
+        id: 'google-agenda',
+        name: 'Google Agenda',
+        icon: '../img/conectores/brands/google-agenda.png',
+        avatar: '../img/conectores/brands/google-agenda.png',
+        avatarBrand: true,
+        description: 'Consulte e gerencie eventos da agenda para planejar follow-ups e compromissos.',
+        resources: [
+          'Leitura de eventos e disponibilidade',
+          'Criação e atualização de compromissos',
+          'Consulta de calendários compartilhados'
+        ],
+        tools: ['calendar_list', 'event_list', 'event_create', 'event_update', 'freebusy_query']
+      },
+      {
+        id: 'google-workspace',
+        name: 'Google Workspace',
+        icon: '../img/conectores/brands/google-workspace.png',
+        avatar: '../img/conectores/brands/google-workspace.png',
+        avatarBrand: true,
+        description: 'Integre documentos, planilhas e e-mails do Google Workspace ao fluxo do agente.',
+        resources: [
+          'Leitura de arquivos do Drive',
+          'Consulta e edição de planilhas',
+          'Envio e busca de e-mails'
+        ],
+        tools: ['drive_search', 'sheets_read', 'sheets_write', 'gmail_search', 'docs_get']
+      },
+      {
+        id: 'busca-web',
+        name: 'Busca na Web',
+        icon: null,
+        avatar: '../img/conectores/rd-symbol.svg',
+        avatarBrand: false,
+        description: 'Pesquise informações atualizadas na web para enriquecer respostas e análises.',
+        resources: [
+          'Busca de conteúdo público',
+          'Resumo de páginas e fontes',
+          'Consulta de tendências e notícias'
+        ],
+        tools: ['web_search', 'page_fetch', 'page_summarize']
+      },
+      {
+        id: 'enviar-email',
+        name: 'Enviar e-mail',
+        icon: null,
+        avatar: '../img/conectores/logo-gmail.png',
+        avatarBrand: true,
+        description: 'Permite que o agente envie e-mails como parte de automações e follow-ups.',
+        resources: [
+          'Envio de e-mails transacionais',
+          'Uso de modelos de mensagem',
+          'Registro de envios realizados'
+        ],
+        tools: ['email_send', 'email_draft_create', 'email_template_list']
+      },
+      {
+        id: 'slack',
+        name: 'Slack',
+        icon: '../img/conectores/brands/slack.png',
+        avatar: '../img/conectores/brands/slack.png',
+        avatarBrand: true,
+        description: 'Plataforma de comunicação e colaboração corporativa.',
+        resources: [
+          'Envio de mensagens em canais',
+          'Consulta de conversas',
+          'Notificações para times'
+        ],
+        tools: ['slack_post_message', 'slack_list_channels', 'slack_get_thread']
+      },
+      {
+        id: 'zapier',
+        name: 'Zapier',
+        icon: '../img/conectores/brands/zapier.png',
+        avatar: '../img/conectores/brands/zapier.png',
+        avatarBrand: true,
+        description: 'Conecte o agente a milhares de apps e automatize fluxos entre ferramentas.',
+        resources: [
+          'Disparo de Zaps',
+          'Recebimento de eventos externos',
+          'Orquestração entre sistemas'
+        ],
+        tools: ['zap_trigger', 'zap_list', 'webhook_send']
+      },
+      {
+        id: 'notion',
+        name: 'Notion',
+        icon: '../img/conectores/brands/notion.png',
+        avatar: '../img/conectores/brands/notion.png',
+        avatarBrand: true,
+        description: 'Consulte e atualize páginas e bancos de dados do Notion.',
+        resources: [
+          'Leitura de páginas e databases',
+          'Criação e atualização de itens',
+          'Busca por conteúdo interno'
+        ],
+        tools: ['notion_search', 'notion_page_get', 'notion_page_update', 'notion_db_query']
+      },
+      {
+        id: 'trello',
+        name: 'Trello',
+        icon: '../img/conectores/brands/trello.png',
+        avatar: '../img/conectores/brands/trello.png',
+        avatarBrand: true,
+        description: 'Gerencie cartões, listas e quadros para acompanhar tarefas do time.',
+        resources: [
+          'Consulta de boards e listas',
+          'Criação e movimentação de cards',
+          'Atualização de status de tarefas'
+        ],
+        tools: ['trello_board_list', 'trello_card_create', 'trello_card_move', 'trello_card_update']
+      },
+      {
+        id: 'asana',
+        name: 'Asana',
+        icon: '../img/conectores/brands/asana.png',
+        avatar: '../img/conectores/brands/asana.png',
+        avatarBrand: true,
+        description: 'Organize projetos e tarefas com visibilidade do andamento do time.',
+        resources: [
+          'Consulta de projetos e tarefas',
+          'Criação e atribuição de atividades',
+          'Atualização de progresso'
+        ],
+        tools: ['asana_task_list', 'asana_task_create', 'asana_task_update', 'asana_project_list']
+      },
+      {
+        id: 'make',
+        name: 'Make',
+        icon: '../img/conectores/brands/make.png',
+        avatar: '../img/conectores/brands/make.png',
+        avatarBrand: true,
+        description: 'Dispare cenários e integre sistemas complexos via automações no Make.',
+        resources: [
+          'Execução de cenários',
+          'Envio de payloads para webhooks',
+          'Orquestração multi-app'
+        ],
+        tools: ['make_scenario_run', 'make_webhook_send', 'make_scenario_list']
+      },
+      {
+        id: 'outlook',
+        name: 'Outlook',
+        icon: '../img/conectores/brands/outlook.png',
+        avatar: '../img/conectores/brands/outlook.png',
+        avatarBrand: true,
+        description: 'Integre e-mails e calendário do Outlook às ações do agente.',
+        resources: [
+          'Leitura e envio de e-mails',
+          'Consulta de agenda',
+          'Gestão de compromissos'
+        ],
+        tools: ['outlook_mail_list', 'outlook_mail_send', 'outlook_event_list', 'outlook_event_create']
+      }
+    ];
+    let activeConnectorId = CONNECTORS_CATALOG[0].id;
 
     function syncInstructionPlaceholder() {
       if (!instructionTextarea || !instructionWrap) return;
@@ -2526,6 +4096,137 @@
         tag.append(label, removeButton);
         selectedConnectorTags.appendChild(tag);
       });
+
+      if (connectorsModalBackdrop && !connectorsModalBackdrop.hidden) {
+        renderConnectorsModalDetail();
+      }
+    }
+
+    function getActiveConnector() {
+      return CONNECTORS_CATALOG.find(item => item.id === activeConnectorId) || CONNECTORS_CATALOG[0];
+    }
+
+    function isConnectorSelected(name) {
+      return selectedConnectors.includes(name);
+    }
+
+    function renderConnectorsModalList(filter = '') {
+      if (!connectorsModalList) return;
+
+      const query = filter.trim().toLowerCase();
+      const items = CONNECTORS_CATALOG.filter(item => !query || item.name.toLowerCase().includes(query));
+
+      connectorsModalList.innerHTML = '';
+
+      const label = document.createElement('div');
+      label.className = 'connectors-modal-list-label';
+      label.textContent = 'Conectores';
+      connectorsModalList.appendChild(label);
+
+      if (!items.length) {
+        const empty = document.createElement('p');
+        empty.className = 'connectors-modal-detail-desc';
+        empty.style.padding = '8px 12px';
+        empty.textContent = 'Nenhum conector encontrado.';
+        connectorsModalList.appendChild(empty);
+        return;
+      }
+
+      if (!items.some(item => item.id === activeConnectorId)) {
+        activeConnectorId = items[0].id;
+      }
+
+      items.forEach(item => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'connectors-modal-item';
+        if (item.icon) button.classList.add('has-icon');
+        if (item.id === activeConnectorId) button.classList.add('is-active');
+        button.dataset.connectorId = item.id;
+
+        if (item.icon) {
+          const icon = document.createElement('span');
+          icon.className = 'connectors-modal-item-icon';
+          icon.setAttribute('aria-hidden', 'true');
+          icon.innerHTML = `<img src="${item.icon}" alt="">`;
+          button.appendChild(icon);
+        }
+
+        const text = document.createElement('span');
+        text.textContent = item.name;
+        button.appendChild(text);
+
+        button.addEventListener('click', () => {
+          activeConnectorId = item.id;
+          renderConnectorsModalList(connectorsModalSearch?.value || '');
+          renderConnectorsModalDetail();
+        });
+
+        connectorsModalList.appendChild(button);
+      });
+    }
+
+    function renderConnectorsModalDetail() {
+      if (!connectorsModalDetail || !connectorsModalActivate) return;
+
+      const connector = getActiveConnector();
+      const selected = isConnectorSelected(connector.name);
+
+      connectorsModalDetail.innerHTML = `
+        <div class="connectors-modal-detail-title">
+          <span class="connectors-modal-avatar${connector.avatarBrand ? ' is-brand' : ''}" aria-hidden="true">
+            <img src="${connector.avatar}" alt="">
+          </span>
+          <h3>${connector.name}</h3>
+        </div>
+        <p class="connectors-modal-detail-desc">${connector.description}</p>
+        <div class="connectors-modal-block">
+          <h4>Recursos principais</h4>
+          <ul class="connectors-modal-resources">
+            ${connector.resources.map(resource => `<li>${resource}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="connectors-modal-block">
+          <h4>Ferramentas</h4>
+          <div class="connectors-modal-tools">
+            ${connector.tools.map(tool => `<span class="connectors-modal-tool-tag">${tool}</span>`).join('')}
+          </div>
+        </div>
+      `;
+
+      connectorsModalActivate.textContent = selected
+        ? `Remover ${connector.name}`
+        : `Ativar ${connector.name}`;
+      connectorsModalActivate.classList.toggle('is-active', selected);
+    }
+
+    function openConnectorsModal() {
+      if (!connectorsModalBackdrop || !openConnectorsModalButton) return;
+      connectorsModalBackdrop.hidden = false;
+      openConnectorsModalButton.setAttribute('aria-expanded', 'true');
+      renderConnectorsModalList(connectorsModalSearch?.value || '');
+      renderConnectorsModalDetail();
+      connectorsModalSearch?.focus();
+    }
+
+    function closeConnectorsModal() {
+      if (!connectorsModalBackdrop || !openConnectorsModalButton) return;
+      connectorsModalBackdrop.hidden = true;
+      openConnectorsModalButton.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleActiveConnector() {
+      const connector = getActiveConnector();
+      const index = selectedConnectors.indexOf(connector.name);
+
+      if (index >= 0) {
+        selectedConnectors.splice(index, 1);
+      } else {
+        selectedConnectors.push(connector.name);
+      }
+
+      renderSelectedConnectors();
+      renderConnectorsModalDetail();
     }
 
     function applyModelToEditor(model) {
@@ -2701,9 +4402,36 @@
       ) {
         closeDatePicker();
       }
+
+      if (
+        knowledgeAccessSelectWrap?.classList.contains('open') &&
+        !knowledgeAccessSelectWrap.contains(event.target) &&
+        !knowledgeAccessDropdown?.contains(event.target)
+      ) {
+        closeKnowledgeAccessDropdown();
+      }
+    });
+
+    openConnectorsModalButton?.addEventListener('click', openConnectorsModal);
+    closeConnectorsModalButton?.addEventListener('click', closeConnectorsModal);
+    connectorsModalActivate?.addEventListener('click', toggleActiveConnector);
+    connectorsModalSearch?.addEventListener('input', () => {
+      renderConnectorsModalList(connectorsModalSearch.value);
+      renderConnectorsModalDetail();
+    });
+
+    connectorsModalBackdrop?.addEventListener('click', event => {
+      if (event.target === connectorsModalBackdrop) {
+        closeConnectorsModal();
+      }
     });
 
     document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && connectorsModalBackdrop && !connectorsModalBackdrop.hidden) {
+        closeConnectorsModal();
+        return;
+      }
+
       if (event.key === 'Escape' && triggerDrawerBackdrop && !triggerDrawerBackdrop.hidden) {
         if (datePickerPopover && !datePickerPopover.hidden) {
           closeDatePicker();
@@ -2724,6 +4452,17 @@
       }
 
       if (event.key === 'Escape' && knowledgeBasesDrawerBackdrop && !knowledgeBasesDrawerBackdrop.hidden) {
+        if (knowledgeAccessSelectWrap?.classList.contains('open')) {
+          closeKnowledgeAccessDropdown();
+          return;
+        }
+
+        if (knowledgeDrawerMode === 'create') {
+          showKnowledgeListView();
+          createKnowledgeBaseButton?.focus();
+          return;
+        }
+
         closeKnowledgeBasesDrawer();
       }
     });
