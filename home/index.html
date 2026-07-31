@@ -25,6 +25,9 @@
     --color-border:        #d6dbde;
     --color-border-interactive: #b2bcc1;
     --color-link:          #0077b2;
+    --color-primary-soft:  #b2f4ff;
+    --color-primary-hover: #66ebff;
+    --color-primary-icon-hover: #005580;
     --radius-xs:  4px;
     --radius-lg:  16px;
     --radius-pill: 112px;
@@ -344,12 +347,7 @@
     .home-prompt-submit img { width: 20px; height: 20px; display: block; }
 
     .home-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
+      display: none;
     }
 
     .home-chip {
@@ -377,12 +375,58 @@
       gap: var(--sp-4);
     }
 
+    .home-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-4);
+      width: 100%;
+    }
+
     .home-section-title {
       font-size: 20px;
       font-weight: 700;
       line-height: 1.5;
       letter-spacing: -0.2px;
       color: var(--color-text-high);
+      flex: 1;
+      min-width: 0;
+    }
+
+    .home-filter-btns {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-1);
+      flex-shrink: 0;
+    }
+
+    .btn-tertiary {
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px var(--sp-3);
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-link);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-tertiary:hover {
+      background: rgba(0, 119, 178, 0.06);
+      color: var(--color-primary-icon-hover);
+    }
+
+    .btn-tertiary.is-active {
+      background: var(--color-primary-soft);
+      color: var(--color-primary-icon-hover);
     }
 
     .home-templates {
@@ -390,6 +434,49 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: var(--sp-5);
       width: 100%;
+    }
+
+    .home-blank-cta {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      padding-top: var(--sp-2);
+    }
+
+    .btn-secondary {
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-2);
+      padding: var(--sp-2) var(--sp-4) var(--sp-2) var(--sp-3);
+      border: 0;
+      border-radius: var(--radius-md);
+      background: var(--color-primary-soft);
+      color: var(--color-link);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-primary-hover);
+      color: var(--color-primary-icon-hover);
+    }
+
+    .btn-secondary img {
+      width: 24px;
+      height: 24px;
+      display: block;
+      filter: invert(33%) sepia(92%) saturate(1806%) hue-rotate(175deg) brightness(89%) contrast(101%);
+    }
+
+    .btn-secondary:hover img {
+      filter: brightness(0) saturate(100%) invert(25%) sepia(56%) saturate(1163%) hue-rotate(166deg) brightness(94%) contrast(101%);
     }
 
     .agent-card {
@@ -569,10 +656,7 @@
     }
 
     .home-bottom {
-      display: flex;
-      gap: var(--sp-5);
-      align-items: stretch;
-      width: 100%;
+      display: none;
     }
 
     .help-card {
@@ -856,6 +940,13 @@
 
     @media (max-width: 720px) {
       .home-templates { grid-template-columns: 1fr; }
+      .home-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .home-filter-btns {
+        flex-wrap: wrap;
+      }
       .help-item { flex-direction: column; }
       .help-thumb { width: 100%; }
     }
@@ -976,8 +1067,21 @@
     </section>
 
     <section class="home-section">
-      <h2 class="home-section-title">Crie a partir de modelos</h2>
+      <div class="home-section-header">
+        <h2 class="home-section-title">Crie a partir de modelos</h2>
+        <div class="home-filter-btns" role="group" aria-label="Filtrar modelos por área">
+          <button type="button" class="btn-tertiary" data-tag="Marketing" aria-pressed="false">Marketing</button>
+          <button type="button" class="btn-tertiary" data-tag="Atendimento" aria-pressed="false">Atendimento</button>
+          <button type="button" class="btn-tertiary" data-tag="Vendas" aria-pressed="false">Vendas</button>
+        </div>
+      </div>
       <div class="home-templates" id="home-templates" aria-live="polite"></div>
+      <div class="home-blank-cta">
+        <button type="button" class="btn-secondary" onclick="window.location.href='../agentes/editor-novo.html'">
+          <img src="../img/svg/plus.svg" alt="">
+          Não encontrei, quero começar do zero
+        </button>
+      </div>
     </section>
 
     <section class="home-bottom">
@@ -1099,8 +1203,11 @@
   });
 
   // ── Modelos de agentes (Supabase) ─────────────────────
-  const HOME_MODELS_LIMIT = 6;
+  const HOME_SKELETON_COUNT = 6;
   const homeTemplates = document.getElementById('home-templates');
+  const homeFilterBtns = document.querySelectorAll('.home-filter-btns .btn-tertiary');
+  let homeModels = [];
+  let activeFilterTag = '';
 
   function escapeHtml(value) {
     return String(value == null ? '' : value)
@@ -1128,6 +1235,28 @@
     };
   }
 
+  function getVisibleModels() {
+    if (!activeFilterTag) return homeModels;
+    const filterKey = activeFilterTag.toLowerCase();
+    return homeModels.filter(model =>
+      String(model.tag || '').trim().toLowerCase() === filterKey
+    );
+  }
+
+  function updateFilterUi() {
+    homeFilterBtns.forEach(btn => {
+      const active = btn.getAttribute('data-tag') === activeFilterTag;
+      btn.classList.toggle('is-active', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+  }
+
+  function toggleFilterTag(tag) {
+    activeFilterTag = activeFilterTag === tag ? '' : tag;
+    updateFilterUi();
+    renderModels();
+  }
+
   function buildSkeletonCard() {
     return (
       `<article class="agent-card is-skeleton" aria-hidden="true">` +
@@ -1151,7 +1280,7 @@
   function renderSkeletonCards() {
     if (!homeTemplates) return;
     let html = '';
-    for (let i = 0; i < HOME_MODELS_LIMIT; i += 1) {
+    for (let i = 0; i < HOME_SKELETON_COUNT; i += 1) {
       html += buildSkeletonCard();
     }
     homeTemplates.innerHTML = html;
@@ -1183,13 +1312,21 @@
     homeTemplates.innerHTML = `<p class="home-templates-status">${escapeHtml(message)}</p>`;
   }
 
-  function renderModels(models) {
+  function renderModels() {
     if (!homeTemplates) return;
-    if (!models.length) {
+
+    if (!homeModels.length) {
       renderStatus('Nenhum modelo encontrado.');
       return;
     }
-    homeTemplates.innerHTML = models.map(buildAgentCard).join('');
+
+    const visible = getVisibleModels();
+    if (!visible.length) {
+      renderStatus('Nenhum modelo encontrado para esta área.');
+      return;
+    }
+
+    homeTemplates.innerHTML = visible.map(buildAgentCard).join('');
   }
 
   async function loadHomeModels() {
@@ -1206,8 +1343,7 @@
     const { data, error } = await client
       .from('lista_agentes')
       .select('ID, Nome, Tag, "Descrição curta", Descrição')
-      .order('Nome', { ascending: true })
-      .limit(HOME_MODELS_LIMIT);
+      .order('Nome', { ascending: true });
 
     if (error) {
       console.error('Erro ao carregar lista_agentes:', error);
@@ -1215,8 +1351,15 @@
       return;
     }
 
-    renderModels((data || []).map(mapAgentRow));
+    homeModels = (data || []).map(mapAgentRow);
+    renderModels();
   }
+
+  homeFilterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      toggleFilterTag(btn.getAttribute('data-tag') || '');
+    });
+  });
 
   loadHomeModels();
 </script>

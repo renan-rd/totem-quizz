@@ -58,6 +58,42 @@
       overflow: hidden;
     }
 
+    .btn-back {
+      position: absolute;
+      top: 32px;
+      left: 32px;
+      z-index: 10;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px 8px 12px;
+      border: 0;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--color-link);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-variation-settings: "opsz" 14;
+    }
+
+    .btn-back:hover {
+      background: rgba(0, 119, 178, 0.06);
+    }
+
+    .btn-back svg {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      fill: currentColor;
+    }
+
     .screen {
       width: 100%;
       height: 100%;
@@ -251,13 +287,20 @@
       font-variation-settings: "opsz" 14;
     }
 
+    .filter-btns {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
     .filter-btn {
       height: 40px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 8px 16px 8px 12px;
+      padding: 8px 16px;
       border: 0;
       border-radius: var(--radius-md);
       background: transparent;
@@ -279,6 +322,7 @@
 
     .filter-btn img,
     .filter-btn svg {
+      display: none;
       width: 24px;
       height: 24px;
       flex-shrink: 0;
@@ -533,192 +577,6 @@
       background: rgba(0, 119, 178, 0.1);
     }
 
-    /* ── Filter modal ─────────────────────────────────── */
-    .filter-modal {
-      position: absolute;
-      inset: 0;
-      z-index: 50;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 48px;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transition: opacity 0.2s ease, visibility 0.2s ease;
-    }
-
-    .filter-modal.is-open {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-    }
-
-    .filter-modal-backdrop {
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 34, 51, 0.55);
-    }
-
-    .filter-modal-panel {
-      position: relative;
-      z-index: 1;
-      width: 640px;
-      max-width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      padding: 40px;
-      background: var(--color-surface);
-      border-radius: var(--radius-lg);
-      box-shadow: 0 16px 48px rgba(0, 34, 51, 0.18);
-    }
-
-    .filter-modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .filter-modal-title {
-      color: var(--color-text-high);
-      font-size: 24px;
-      font-weight: 700;
-      line-height: 1.3;
-      letter-spacing: -0.24px;
-      font-variation-settings: "opsz" 14;
-    }
-
-    .filter-modal-close {
-      width: 40px;
-      height: 40px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: 0;
-      border-radius: var(--radius-md);
-      background: transparent;
-      color: var(--color-text-high);
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    .filter-modal-close:hover {
-      background: #f5f7f8;
-    }
-
-    .filter-modal-close svg {
-      width: 24px;
-      height: 24px;
-      fill: currentColor;
-    }
-
-    .filter-options {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .filter-option {
-      width: 100%;
-      min-height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 20px 24px;
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      background: var(--color-surface);
-      color: var(--color-text-high);
-      font-family: var(--font);
-      font-size: 18px;
-      font-weight: 700;
-      line-height: 1.4;
-      letter-spacing: -0.18px;
-      text-align: left;
-      cursor: pointer;
-      font-variation-settings: "opsz" 14;
-      transition: border-color 0.15s ease, background 0.15s ease;
-    }
-
-    .filter-option:hover {
-      border-color: var(--color-border-interactive);
-      background: #f8fafb;
-    }
-
-    .filter-option.is-selected {
-      border: 2px solid #00DBFF;
-      background: rgba(0, 219, 255, 0.06);
-    }
-
-    .filter-option-check {
-      width: 24px;
-      height: 24px;
-      flex-shrink: 0;
-      opacity: 0;
-      color: var(--color-text-high);
-    }
-
-    .filter-option.is-selected .filter-option-check {
-      opacity: 1;
-    }
-
-    .filter-option-check svg {
-      width: 24px;
-      height: 24px;
-      fill: currentColor;
-      display: block;
-    }
-
-    .filter-modal-actions {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      width: 100%;
-    }
-
-    .filter-modal-btn {
-      height: 56px;
-      min-width: 180px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 24px;
-      border-radius: var(--radius-md);
-      font-family: var(--font);
-      font-size: 16px;
-      font-weight: 700;
-      line-height: 1.5;
-      letter-spacing: -0.16px;
-      cursor: pointer;
-      font-variation-settings: "opsz" 14;
-      transition: background 0.15s ease, filter 0.15s ease, border-color 0.15s ease;
-    }
-
-    .filter-modal-btn--clear {
-      background: transparent;
-      border: 2px solid var(--color-border-interactive);
-      color: var(--color-text-high);
-    }
-
-    .filter-modal-btn--clear:hover {
-      background: #f5f7f8;
-    }
-
-    .filter-modal-btn--apply {
-      background: #00dbff;
-      border: 2px solid #00dbff;
-      color: #002233;
-      margin-left: auto;
-    }
-
-    .filter-modal-btn--apply:hover {
-      filter: brightness(1.06);
-    }
-
     .models-grid-status {
       grid-column: 1 / -1;
       color: var(--color-text-low);
@@ -735,13 +593,19 @@
 <body>
   <div class="viewport">
     <div class="totem" id="totem" data-screen="modelos">
+      <button type="button" class="btn-back" id="btn-back">
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+          <path d="M13.0475 18.0623L12.3539 18.774C12.0601 19.0753 11.5852 19.0753 11.2946 18.774L5.22029 12.545C4.92657 12.2436 4.92657 11.7564 5.22029 11.4582L11.2946 5.22601C11.5883 4.92466 12.0633 4.92466 12.3539 5.22601L13.0475 5.93771C13.3444 6.24227 13.3381 6.73918 13.035 7.03733L9.26984 10.7177H18.2501C18.6657 10.7177 19 11.0607 19 11.4871V12.5129C19 12.9393 18.6657 13.2823 18.2501 13.2823H9.26984L13.035 16.9627C13.3413 17.2608 13.3475 17.7577 13.0475 18.0623Z"/>
+        </svg>
+        Voltar
+      </button>
       <div class="screen">
         <section class="prompt-block">
           <div class="prompt-glow" aria-hidden="true">
             <img src="assets/title-glow.svg" alt="">
           </div>
 
-          <h1 class="prompt-title">O que seu agente deve fazer?</h1>
+          <h1 class="prompt-title">Selecione os agentes que são úteis para o seu dia a dia</h1>
 
           <div class="prompt-input-wrap">
             <div class="prompt-field">
@@ -768,13 +632,27 @@
 
         <section class="models-section">
           <div class="models-header">
-            <h2 class="models-title">Começar com um modelo</h2>
-            <button type="button" class="filter-btn" id="btn-filter">
-              <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-                <path d="M4.5 8.25H19.5C19.7762 8.25 20 8.02616 20 7.75V6.5C20 6.22384 19.7762 6 19.5 6H4.5C4.22384 6 4 6.22384 4 6.5V7.75C4 8.02616 4.22384 8.25 4.5 8.25ZM6.5 13.25H17.5C17.7762 13.25 18 13.0262 18 12.75V11.5C18 11.2238 17.7762 11 17.5 11H6.5C6.22384 11 6 11.2238 6 11.5V12.75C6 13.0262 6.22384 13.25 6.5 13.25ZM8.5 18.25H15.5C15.7762 18.25 16 18.0262 16 17.75V16.5C16 16.2238 15.7762 16 15.5 16H8.5C8.22384 16 8 16.2238 8 16.5V17.75C8 18.0262 8.22384 18.25 8.5 18.25Z"/>
-              </svg>
-              Filtrar por produto
-            </button>
+            <h2 class="models-title">Modelos de agentes</h2>
+            <div class="filter-btns" role="group" aria-label="Filtrar por produto">
+              <button type="button" class="filter-btn" data-tag="Marketing" aria-pressed="false">
+                <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                  <path d="M4.5 8.25H19.5C19.7762 8.25 20 8.02616 20 7.75V6.5C20 6.22384 19.7762 6 19.5 6H4.5C4.22384 6 4 6.22384 4 6.5V7.75C4 8.02616 4.22384 8.25 4.5 8.25ZM6.5 13.25H17.5C17.7762 13.25 18 13.0262 18 12.75V11.5C18 11.2238 17.7762 11 17.5 11H6.5C6.22384 11 6 11.2238 6 11.5V12.75C6 13.0262 6.22384 13.25 6.5 13.25ZM8.5 18.25H15.5C15.7762 18.25 16 18.0262 16 17.75V16.5C16 16.2238 15.7762 16 15.5 16H8.5C8.22384 16 8 16.2238 8 16.5V17.75C8 18.0262 8.22384 18.25 8.5 18.25Z"/>
+                </svg>
+                Marketing
+              </button>
+              <button type="button" class="filter-btn" data-tag="Vendas" aria-pressed="false">
+                <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                  <path d="M4.5 8.25H19.5C19.7762 8.25 20 8.02616 20 7.75V6.5C20 6.22384 19.7762 6 19.5 6H4.5C4.22384 6 4 6.22384 4 6.5V7.75C4 8.02616 4.22384 8.25 4.5 8.25ZM6.5 13.25H17.5C17.7762 13.25 18 13.0262 18 12.75V11.5C18 11.2238 17.7762 11 17.5 11H6.5C6.22384 11 6 11.2238 6 11.5V12.75C6 13.0262 6.22384 13.25 6.5 13.25ZM8.5 18.25H15.5C15.7762 18.25 16 18.0262 16 17.75V16.5C16 16.2238 15.7762 16 15.5 16H8.5C8.22384 16 8 16.2238 8 16.5V17.75C8 18.0262 8.22384 18.25 8.5 18.25Z"/>
+                </svg>
+                Vendas
+              </button>
+              <button type="button" class="filter-btn" data-tag="Atendimento" aria-pressed="false">
+                <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                  <path d="M4.5 8.25H19.5C19.7762 8.25 20 8.02616 20 7.75V6.5C20 6.22384 19.7762 6 19.5 6H4.5C4.22384 6 4 6.22384 4 6.5V7.75C4 8.02616 4.22384 8.25 4.5 8.25ZM6.5 13.25H17.5C17.7762 13.25 18 13.0262 18 12.75V11.5C18 11.2238 17.7762 11 17.5 11H6.5C6.22384 11 6 11.2238 6 11.5V12.75C6 13.0262 6.22384 13.25 6.5 13.25ZM8.5 18.25H15.5C15.7762 18.25 16 18.0262 16 17.75V16.5C16 16.2238 15.7762 16 15.5 16H8.5C8.22384 16 8 16.2238 8 16.5V17.75C8 18.0262 8.22384 18.25 8.5 18.25Z"/>
+                </svg>
+                Atendimento
+              </button>
+            </div>
           </div>
 
           <div class="models-grid" id="models-grid" aria-label="Lista de modelos"></div>
@@ -790,47 +668,6 @@
         </button>
       </div>
 
-      <div class="filter-modal" id="filter-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="filter-modal-title">
-        <div class="filter-modal-backdrop" id="filter-modal-backdrop"></div>
-        <div class="filter-modal-panel">
-          <div class="filter-modal-header">
-            <h2 class="filter-modal-title" id="filter-modal-title">Filtrar por produto</h2>
-            <button type="button" class="filter-modal-close" id="filter-modal-close" aria-label="Fechar">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M6.70711 5.29289C6.31658 4.90237 5.68342 4.90237 5.29289 5.29289C4.90237 5.68342 4.90237 6.31658 5.29289 6.70711L10.5858 12L5.29289 17.2929C4.90237 17.6834 4.90237 18.3166 5.29289 18.7071C5.68342 19.0976 6.31658 19.0976 6.70711 18.7071L12 13.4142L17.2929 18.7071C17.6834 19.0976 18.3166 19.0976 18.7071 18.7071C19.0976 18.3166 19.0976 17.6834 18.7071 17.2929L13.4142 12L18.7071 6.70711C19.0976 6.31658 19.0976 5.68342 18.7071 5.29289C18.3166 4.90237 17.6834 4.90237 17.2929 5.29289L12 10.5858L6.70711 5.29289Z"/>
-              </svg>
-            </button>
-          </div>
-          <div class="filter-options" id="filter-options">
-            <button type="button" class="filter-option" data-tag="Marketing" aria-pressed="false">
-              <span>Marketing</span>
-              <span class="filter-option-check" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M10.3964 15.3107L7.14644 12.0607C6.95119 11.8654 6.95119 11.5488 7.14644 11.3536L7.85353 10.6464C8.04879 10.4512 8.36539 10.4512 8.56064 10.6464L10.75 12.8358L15.4394 8.14644C15.6346 7.95119 15.9512 7.95119 16.1465 8.14644L16.8536 8.85355C17.0488 9.0488 17.0488 9.36539 16.8536 9.56066L11.1036 15.3107C10.9083 15.5059 10.5917 15.5059 10.3964 15.3107Z"/></svg>
-              </span>
-            </button>
-            <button type="button" class="filter-option" data-tag="Atendimento" aria-pressed="false">
-              <span>Atendimento</span>
-              <span class="filter-option-check" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M10.3964 15.3107L7.14644 12.0607C6.95119 11.8654 6.95119 11.5488 7.14644 11.3536L7.85353 10.6464C8.04879 10.4512 8.36539 10.4512 8.56064 10.6464L10.75 12.8358L15.4394 8.14644C15.6346 7.95119 15.9512 7.95119 16.1465 8.14644L16.8536 8.85355C17.0488 9.0488 17.0488 9.36539 16.8536 9.56066L11.1036 15.3107C10.9083 15.5059 10.5917 15.5059 10.3964 15.3107Z"/></svg>
-              </span>
-            </button>
-            <button type="button" class="filter-option" data-tag="Vendas" aria-pressed="false">
-              <span>Vendas</span>
-              <span class="filter-option-check" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M10.3964 15.3107L7.14644 12.0607C6.95119 11.8654 6.95119 11.5488 7.14644 11.3536L7.85353 10.6464C8.04879 10.4512 8.36539 10.4512 8.56064 10.6464L10.75 12.8358L15.4394 8.14644C15.6346 7.95119 15.9512 7.95119 16.1465 8.14644L16.8536 8.85355C17.0488 9.0488 17.0488 9.36539 16.8536 9.56066L11.1036 15.3107C10.9083 15.5059 10.5917 15.5059 10.3964 15.3107Z"/></svg>
-              </span>
-            </button>
-          </div>
-          <div class="filter-modal-actions">
-            <button type="button" class="filter-modal-btn filter-modal-btn--clear" id="filter-clear">
-              Limpar filtros
-            </button>
-            <button type="button" class="filter-modal-btn filter-modal-btn--apply" id="filter-apply">
-              Aplicar
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -846,12 +683,10 @@
 
       let models = [];
       let activeFilterTags = [];
-      let draftFilterTags = [];
       const selectedIds = new Set();
       const actionsBar = document.getElementById('actions-bar');
       const screen = document.querySelector('.screen');
-      const filterModal = document.getElementById('filter-modal');
-      const btnFilter = document.getElementById('btn-filter');
+      const filterBtns = document.querySelectorAll('.filter-btn');
 
       const TAG_CLASS_MAP = {
         marketing: 'model-tag--marketing',
@@ -939,56 +774,21 @@
         screen.classList.toggle('has-actions-bar', hasSelection);
       }
 
-      function syncFilterOptionUi(selectedTags) {
-        Array.prototype.forEach.call(document.querySelectorAll('.filter-option'), function (el) {
-          var selected = selectedTags.indexOf(el.getAttribute('data-tag')) !== -1;
-          el.classList.toggle('is-selected', selected);
-          el.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      function updateFilterUi() {
+        Array.prototype.forEach.call(filterBtns, function (btn) {
+          var active = activeFilterTags.indexOf(btn.getAttribute('data-tag')) !== -1;
+          btn.classList.toggle('is-active', active);
+          btn.setAttribute('aria-pressed', active ? 'true' : 'false');
         });
       }
 
-      function updateFilterUi() {
-        btnFilter.classList.toggle('is-active', activeFilterTags.length > 0);
-        syncFilterOptionUi(draftFilterTags);
-      }
-
-      function openFilterModal() {
-        draftFilterTags = activeFilterTags.slice();
-        updateFilterUi();
-        filterModal.classList.add('is-open');
-        filterModal.setAttribute('aria-hidden', 'false');
-      }
-
-      function closeFilterModal() {
-        filterModal.classList.remove('is-open');
-        filterModal.setAttribute('aria-hidden', 'true');
-        draftFilterTags = activeFilterTags.slice();
-        updateFilterUi();
-      }
-
-      function toggleDraftFilterTag(tag) {
-        var index = draftFilterTags.indexOf(tag);
-        if (index === -1) {
-          draftFilterTags.push(tag);
+      function toggleFilterTag(tag) {
+        if (activeFilterTags.indexOf(tag) !== -1) {
+          activeFilterTags = [];
         } else {
-          draftFilterTags.splice(index, 1);
+          activeFilterTags = [tag];
         }
-        syncFilterOptionUi(draftFilterTags);
-      }
-
-      function applyFilters() {
-        activeFilterTags = draftFilterTags.slice();
         updateFilterUi();
-        closeFilterModal();
-        renderModels();
-        screen.scrollTop = 0;
-      }
-
-      function clearFilters() {
-        draftFilterTags = [];
-        activeFilterTags = [];
-        updateFilterUi();
-        closeFilterModal();
         renderModels();
         screen.scrollTop = 0;
       }
@@ -1045,6 +845,12 @@
         renderModels();
       });
 
+      document.getElementById('btn-back').addEventListener('click', function () {
+        selectedIds.clear();
+        sessionStorage.removeItem('gameSelectedModels');
+        window.location.href = 'index.html';
+      });
+
       document.getElementById('btn-cancel').addEventListener('click', function () {
         selectedIds.clear();
         sessionStorage.removeItem('gameSelectedModels');
@@ -1073,15 +879,10 @@
         // placeholder: futura geração / busca por prompt
       });
 
-      btnFilter.addEventListener('click', openFilterModal);
-      document.getElementById('filter-modal-close').addEventListener('click', closeFilterModal);
-      document.getElementById('filter-modal-backdrop').addEventListener('click', closeFilterModal);
-      document.getElementById('filter-clear').addEventListener('click', clearFilters);
-      document.getElementById('filter-apply').addEventListener('click', applyFilters);
-      document.getElementById('filter-options').addEventListener('click', function (event) {
-        var option = event.target.closest('.filter-option');
-        if (!option) return;
-        toggleDraftFilterTag(option.getAttribute('data-tag'));
+      Array.prototype.forEach.call(filterBtns, function (btn) {
+        btn.addEventListener('click', function () {
+          toggleFilterTag(btn.getAttribute('data-tag'));
+        });
       });
 
       fitTotem();
