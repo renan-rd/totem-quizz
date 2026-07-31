@@ -472,6 +472,67 @@
       margin-left: auto;
     }
 
+    .home-templates-status {
+      grid-column: 1 / -1;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: var(--color-text-low);
+      padding: var(--sp-2) 0;
+    }
+
+    .agent-card.is-skeleton {
+      pointer-events: none;
+      min-height: 168px;
+    }
+
+    .agent-skeleton-block {
+      display: block;
+      border-radius: var(--radius-xs);
+      background: linear-gradient(90deg, var(--color-surface-low) 0%, #f5f6f7 50%, var(--color-surface-low) 100%);
+      background-size: 200% 100%;
+      animation: agent-skeleton-shimmer 1.4s ease-in-out infinite;
+    }
+
+    .agent-skeleton-tag {
+      width: 88px;
+      height: 22px;
+    }
+
+    .agent-skeleton-title {
+      width: 70%;
+      height: 20px;
+      margin-top: 2px;
+    }
+
+    .agent-skeleton-desc {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .agent-skeleton-line {
+      width: 100%;
+      height: 14px;
+    }
+
+    .agent-skeleton-line.is-short {
+      width: 55%;
+    }
+
+    .agent-skeleton-action {
+      width: 96px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      margin-left: auto;
+    }
+
+    @keyframes agent-skeleton-shimmer {
+      0% { background-position: 100% 0; }
+      100% { background-position: -100% 0; }
+    }
+
     .btn-icon {
       width: 32px;
       height: 32px;
@@ -916,91 +977,7 @@
 
     <section class="home-section">
       <h2 class="home-section-title">Crie a partir de modelos</h2>
-      <div class="home-templates">
-
-        <article class="agent-card">
-          <span class="agent-tag">Atendimento</span>
-          <h3 class="agent-card-title">Atendimento autônomo</h3>
-          <p class="agent-card-desc">Classifica cada conversa, resolve o que puder com base de conhecimento e integrações.</p>
-          <div class="agent-card-divider"></div>
-          <div class="agent-card-footer">
-            <div class="agent-card-actions">
-              <button type="button" class="btn-link">Usar modelo</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="agent-card">
-          <span class="agent-tag">Atendimento</span>
-          <h3 class="agent-card-title">Agendamento rápido</h3>
-          <p class="agent-card-desc">Realize agendamento rápido com poucas perguntas para a pessoa que está em atendimento.</p>
-          <div class="agent-card-divider"></div>
-          <div class="agent-card-footer">
-            <div class="agent-credits"><img src="../img/home/stars.svg" alt="">40 créditos</div>
-            <div class="agent-card-actions">
-              <button type="button" class="btn-icon" aria-label="Visualizar modelo"><img src="../img/home/eye-open.svg" alt=""></button>
-              <button type="button" class="btn-link">Usar modelo</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="agent-card">
-          <span class="agent-tag">Vendas</span>
-          <h3 class="agent-card-title">Enriquecimento de Lead</h3>
-          <p class="agent-card-desc">Enriquece automaticamente cada novo lead com dados firmográficos via domínio do e-mail</p>
-          <div class="agent-card-divider"></div>
-          <div class="agent-card-footer">
-            <div class="agent-credits"><img src="../img/home/stars.svg" alt="">30 créditos</div>
-            <div class="agent-card-actions">
-              <button type="button" class="btn-icon" aria-label="Visualizar modelo"><img src="../img/home/eye-open.svg" alt=""></button>
-              <button type="button" class="btn-link">Usar modelo</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="agent-card">
-          <span class="agent-tag">Marketing</span>
-          <h3 class="agent-card-title">Agente de conversão e qualificação</h3>
-          <p class="agent-card-desc">Atende, engaja, classifica e prioriza automaticamente cada lead que visita seu site.</p>
-          <div class="agent-card-divider"></div>
-          <div class="agent-card-footer">
-            <div class="agent-credits"><img src="../img/home/stars.svg" alt="">15 créditos</div>
-            <div class="agent-card-actions">
-              <button type="button" class="btn-icon" aria-label="Visualizar modelo"><img src="../img/home/eye-open.svg" alt=""></button>
-              <button type="button" class="btn-link">Usar modelo</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="agent-card">
-          <span class="agent-tag">Vendas</span>
-          <h3 class="agent-card-title">Agente de Agendamento (SDR)</h3>
-          <p class="agent-card-desc">Prospecta automaticamente novos leads com base no ICP e registra como oportunidades no RD CRM.</p>
-          <div class="agent-card-divider"></div>
-          <div class="agent-card-footer">
-            <div class="agent-credits"><img src="../img/home/stars.svg" alt="">3 créditos</div>
-            <div class="agent-card-actions">
-              <button type="button" class="btn-icon" aria-label="Visualizar modelo"><img src="../img/home/eye-open.svg" alt=""></button>
-              <button type="button" class="btn-link">Usar modelo</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="agent-card">
-          <span class="agent-tag">Produtividade</span>
-          <h3 class="agent-card-title">Agente de resumo de reunião</h3>
-          <p class="agent-card-desc">Resume suas reuniões a partir de transcrições do RD CRM.</p>
-          <div class="agent-card-divider"></div>
-          <div class="agent-card-footer">
-            <div class="agent-credits"><img src="../img/home/stars.svg" alt="">3 créditos</div>
-            <div class="agent-card-actions">
-              <button type="button" class="btn-icon" aria-label="Visualizar modelo"><img src="../img/home/eye-open.svg" alt=""></button>
-              <button type="button" class="btn-link">Usar modelo</button>
-            </div>
-          </div>
-        </article>
-
-      </div>
+      <div class="home-templates" id="home-templates" aria-live="polite"></div>
     </section>
 
     <section class="home-bottom">
@@ -1099,6 +1076,8 @@
 
 </div><!-- /layout -->
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-config.js"></script>
 <script>
   // ── Account menu dropdown ─────────────────────────────
   const accountMenu = document.getElementById('account-menu');
@@ -1119,6 +1098,127 @@
     });
   });
 
+  // ── Modelos de agentes (Supabase) ─────────────────────
+  const HOME_MODELS_LIMIT = 6;
+  const homeTemplates = document.getElementById('home-templates');
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function createSupabaseClient() {
+    const config = window.AGENT_BUILDER_SUPABASE_CONFIG || {};
+    if (!window.supabase || !config.url || !config.publishableKey) return null;
+    return window.supabase.createClient(config.url, config.publishableKey, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    });
+  }
+
+  function mapAgentRow(row) {
+    return {
+      id: row.ID,
+      tag: row.Tag || '',
+      title: row.Nome || '',
+      description: row['Descrição curta'] || row['Descrição'] || ''
+    };
+  }
+
+  function buildSkeletonCard() {
+    return (
+      `<article class="agent-card is-skeleton" aria-hidden="true">` +
+        `<span class="agent-skeleton-block agent-skeleton-tag"></span>` +
+        `<span class="agent-skeleton-block agent-skeleton-title"></span>` +
+        `<div class="agent-skeleton-desc">` +
+          `<span class="agent-skeleton-block agent-skeleton-line"></span>` +
+          `<span class="agent-skeleton-block agent-skeleton-line"></span>` +
+          `<span class="agent-skeleton-block agent-skeleton-line is-short"></span>` +
+        `</div>` +
+        `<div class="agent-card-divider"></div>` +
+        `<div class="agent-card-footer">` +
+          `<div class="agent-card-actions">` +
+            `<span class="agent-skeleton-block agent-skeleton-action"></span>` +
+          `</div>` +
+        `</div>` +
+      `</article>`
+    );
+  }
+
+  function renderSkeletonCards() {
+    if (!homeTemplates) return;
+    let html = '';
+    for (let i = 0; i < HOME_MODELS_LIMIT; i += 1) {
+      html += buildSkeletonCard();
+    }
+    homeTemplates.innerHTML = html;
+  }
+
+  function buildAgentCard(model) {
+    const tagHtml = model.tag
+      ? `<span class="agent-tag">${escapeHtml(model.tag)}</span>`
+      : '';
+    const editorUrl = `../agentes/editor-novo.html?id=${encodeURIComponent(model.id)}`;
+
+    return (
+      `<article class="agent-card" data-id="${escapeHtml(model.id)}">` +
+        tagHtml +
+        `<h3 class="agent-card-title">${escapeHtml(model.title)}</h3>` +
+        `<p class="agent-card-desc">${escapeHtml(model.description)}</p>` +
+        `<div class="agent-card-divider"></div>` +
+        `<div class="agent-card-footer">` +
+          `<div class="agent-card-actions">` +
+            `<button type="button" class="btn-link" onclick="window.location.href='${editorUrl}'">Usar modelo</button>` +
+          `</div>` +
+        `</div>` +
+      `</article>`
+    );
+  }
+
+  function renderStatus(message) {
+    if (!homeTemplates) return;
+    homeTemplates.innerHTML = `<p class="home-templates-status">${escapeHtml(message)}</p>`;
+  }
+
+  function renderModels(models) {
+    if (!homeTemplates) return;
+    if (!models.length) {
+      renderStatus('Nenhum modelo encontrado.');
+      return;
+    }
+    homeTemplates.innerHTML = models.map(buildAgentCard).join('');
+  }
+
+  async function loadHomeModels() {
+    if (!homeTemplates) return;
+
+    renderSkeletonCards();
+
+    const client = createSupabaseClient();
+    if (!client) {
+      renderStatus('Supabase não configurado.');
+      return;
+    }
+
+    const { data, error } = await client
+      .from('lista_agentes')
+      .select('ID, Nome, Tag, "Descrição curta", Descrição')
+      .order('Nome', { ascending: true })
+      .limit(HOME_MODELS_LIMIT);
+
+    if (error) {
+      console.error('Erro ao carregar lista_agentes:', error);
+      renderStatus('Não foi possível carregar os modelos.');
+      return;
+    }
+
+    renderModels((data || []).map(mapAgentRow));
+  }
+
+  loadHomeModels();
 </script>
 </body>
 </html>

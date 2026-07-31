@@ -26,6 +26,7 @@
       --color-highlight: #8800f7;
       --color-highlight-soft: #edd6ff;
       --color-danger: #c20046;
+      --radius-xs: 4px;
       --radius-sm: 8px;
       --radius-md: 12px;
       --radius-lg: 16px;
@@ -204,10 +205,26 @@
       outline-offset: 2px;
     }
 
+    .btn-primary {
+      background: var(--color-btn-inverse);
+      color: var(--color-btn-on-color);
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.08);
+    }
+
+    .btn-primary:focus-visible {
+      outline: 2px solid rgba(0, 219, 255, 0.4);
+      outline-offset: 2px;
+    }
+
     .btn-disabled {
       background: #edeff1;
       color: var(--color-text-disabled);
       cursor: default;
+      filter: none;
     }
 
     .exit-link {
@@ -541,6 +558,23 @@
       font-weight: 700;
       line-height: 1.3;
       letter-spacing: -0.12px;
+    }
+
+    .selected-connector-tag-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .selected-connector-tag-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
     }
 
     .selected-connector-tag span {
@@ -1946,7 +1980,8 @@
     }
 
     #knowledge-list-view,
-    #knowledge-create-view {
+    #knowledge-create-view,
+    #knowledge-upload-view {
       display: flex;
       flex-direction: column;
       gap: var(--sp-4);
@@ -1954,8 +1989,376 @@
     }
 
     #knowledge-list-view[hidden],
-    #knowledge-create-view[hidden] {
+    #knowledge-create-view[hidden],
+    #knowledge-upload-view[hidden] {
       display: none;
+    }
+
+    .kb-file-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .kb-drawer-helper {
+      margin-bottom: var(--sp-4);
+      color: var(--color-text-low);
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.2px;
+    }
+
+    .kb-drawer-step[hidden] {
+      display: none;
+    }
+
+    .upload-source-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+    }
+
+    .upload-source-card {
+      width: 100%;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      padding: var(--sp-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface);
+      color: var(--color-text-high);
+      font-family: var(--font);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .upload-source-card:hover,
+    .upload-source-card:focus {
+      border-color: var(--color-border-interactive);
+      outline: none;
+    }
+
+    .upload-source-card.selected {
+      border-color: var(--color-link);
+      box-shadow: 0 0 0 2px rgba(0, 119, 178, 0.16);
+    }
+
+    .source-radio {
+      width: 18px;
+      height: 18px;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: 50%;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .upload-source-card.selected .source-radio::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      background: var(--color-link);
+    }
+
+    .source-icon {
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-low);
+      flex-shrink: 0;
+    }
+
+    .source-icon img {
+      width: 24px;
+      height: 24px;
+      display: block;
+      filter: invert(31%) sepia(17%) saturate(747%) hue-rotate(166deg) brightness(92%) contrast(86%);
+    }
+
+    .source-label {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .upload-source-card.disabled {
+      background: var(--color-surface-low);
+      color: var(--color-text-disabled);
+      cursor: not-allowed;
+      opacity: 0.78;
+    }
+
+    .upload-source-card.disabled .source-label,
+    .upload-source-card.disabled .source-icon {
+      color: var(--color-text-disabled);
+    }
+
+    .upload-source-card.disabled .source-icon img {
+      filter: invert(56%) sepia(13%) saturate(486%) hue-rotate(166deg) brightness(93%) contrast(86%);
+    }
+
+    .soon-tag {
+      display: inline-flex;
+      align-items: center;
+      margin-left: auto;
+      padding: var(--sp-1) var(--sp-2);
+      border-radius: var(--radius-xs);
+      background: #8800f7;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+      white-space: nowrap;
+    }
+
+    .file-upload-dropzone {
+      width: 100%;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-6);
+      border: 1px dashed var(--color-border-interactive);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface);
+      color: var(--color-text-high);
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .file-upload-dropzone:hover,
+    .file-upload-dropzone:focus-within,
+    .file-upload-dropzone.is-dragging {
+      border-color: var(--color-link);
+      box-shadow: 0 0 0 2px rgba(0, 119, 178, 0.12);
+    }
+
+    .file-upload-dropzone.is-dragging {
+      background: rgba(178, 244, 255, 0.24);
+    }
+
+    .file-upload-dropzone.is-loading {
+      cursor: wait;
+    }
+
+    .file-upload-dropzone.is-attached {
+      border-style: solid;
+      border-color: #19c37d;
+      background: #f0fff7;
+    }
+
+    .dropzone-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--sp-4);
+    }
+
+    .dropzone-icon img {
+      width: 48px;
+      height: 48px;
+      display: block;
+      filter: invert(31%) sepia(17%) saturate(747%) hue-rotate(166deg) brightness(92%) contrast(86%);
+    }
+
+    .file-upload-dropzone.is-attached .dropzone-icon img {
+      filter: invert(55%) sepia(94%) saturate(415%) hue-rotate(103deg) brightness(89%) contrast(89%);
+    }
+
+    .dropzone-spinner {
+      width: 40px;
+      height: 40px;
+      display: block;
+      border: 3px solid var(--color-surface-low);
+      border-top-color: var(--color-link);
+      border-radius: 50%;
+      animation: kb-dropzone-spin 0.8s linear infinite;
+    }
+
+    @keyframes kb-dropzone-spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .dropzone-title {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .dropzone-title span {
+      color: var(--color-link);
+    }
+
+    .dropzone-helper {
+      margin-top: var(--sp-2);
+      color: var(--color-text-high);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+    }
+
+    .resource-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+      width: 100%;
+      margin-bottom: var(--sp-4);
+    }
+
+    .resource-form-card,
+    .resource-saved-card {
+      width: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-surface);
+    }
+
+    .resource-form-card {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+      padding: var(--sp-4);
+    }
+
+    .resource-saved-card {
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      padding: var(--sp-5);
+    }
+
+    .resource-saved-title {
+      flex: 1;
+      min-width: 0;
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .resource-edit-btn {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .resource-edit-btn:hover {
+      background: var(--color-surface-low);
+    }
+
+    .resource-edit-btn img {
+      width: 20px;
+      height: 20px;
+      display: block;
+      filter: invert(10%) sepia(50%) saturate(1202%) hue-rotate(160deg) brightness(92%) contrast(104%);
+    }
+
+    .resource-form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--sp-3);
+    }
+
+    .btn-tertiary-small,
+    .btn-secondary-small,
+    .btn-primary-small {
+      height: 32px;
+      padding: 6px 12px;
+      border: 0;
+      border-radius: var(--radius-sm);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-tertiary-small {
+      background: transparent;
+      color: var(--color-text-low);
+    }
+
+    .btn-secondary-small {
+      background: var(--color-primary-soft);
+      color: var(--color-link);
+    }
+
+    .btn-primary-small {
+      background: var(--color-btn-inverse);
+      color: var(--color-btn-on-color);
+    }
+
+    .btn-secondary-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-2);
+      height: 40px;
+      padding: var(--sp-2) var(--sp-4) var(--sp-2) var(--sp-3);
+      border: 0;
+      border-radius: var(--radius-md);
+      background: var(--color-primary-soft);
+      color: var(--color-link);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-secondary-action:hover {
+      filter: brightness(0.97);
+    }
+
+    .btn-secondary-action img {
+      width: 24px;
+      height: 24px;
+      display: block;
+      filter: invert(33%) sepia(92%) saturate(1806%) hue-rotate(175deg) brightness(89%) contrast(101%);
+    }
+
+    .btn-secondary-action[hidden],
+    .resource-form-card[hidden] {
+      display: none;
+    }
+
+    .resource-add-btn {
+      align-self: flex-start;
+      margin-top: var(--sp-4);
     }
 
     .kb-form-field {
@@ -2235,6 +2638,60 @@
 
     .connectors-modal-backdrop[hidden] {
       display: none;
+    }
+
+    .agent-details-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 45;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-5);
+      background: rgba(0, 34, 51, 0.4);
+    }
+
+    .agent-details-modal-backdrop[hidden] {
+      display: none;
+    }
+
+    .agent-details-modal {
+      width: min(560px, 100%);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-5);
+      padding: var(--sp-5);
+      border-radius: 24px;
+      background: var(--color-surface);
+      box-shadow: 0 12px 24px rgba(0, 34, 51, 0.2);
+    }
+
+    .agent-details-modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--sp-3);
+    }
+
+    .agent-details-modal-title {
+      color: var(--color-text-high);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.2px;
+    }
+
+    .agent-details-modal-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+    }
+
+    .agent-details-modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: var(--sp-4);
     }
 
     .connectors-modal {
@@ -2614,8 +3071,8 @@
         <button type="button" class="btn-icon btn-icon-tertiary" aria-label="Histórico de salvamento">
           <img src="../img/svg/calendar-clock-sharp-solid.svg" alt="">
         </button>
-        <button type="button" class="btn-small btn-secondary">Salvar</button>
-        <button type="button" class="btn-small btn-disabled" disabled>Criar</button>
+        <button type="button" class="btn-small btn-secondary" id="save-agent-button">Salvar</button>
+        <button type="button" class="btn-small btn-disabled" id="create-agent-button" disabled>Criar</button>
         <span class="header-divider" aria-hidden="true"></span>
         <a class="exit-link" href="index.html">Sair do editor</a>
       </div>
@@ -2686,9 +3143,9 @@
           <div class="agent-avatar" aria-hidden="true">AB</div>
           <div class="agent-heading">
             <h1 id="agent-editor-title">Novo agente</h1>
-            <p>Adicione uma descrição para identificar seu agente</p>
+            <p id="agent-editor-description">Adicione uma descrição para identificar seu agente</p>
           </div>
-          <button type="button" class="btn-icon btn-icon-tertiary edit-button" aria-label="Editar dados do agente">
+          <button type="button" class="btn-icon btn-icon-tertiary edit-button" id="edit-agent-details-button" aria-label="Editar dados do agente" aria-haspopup="dialog" aria-controls="agent-details-modal">
             <img src="../img/svg/pen.svg" alt="">
           </button>
         </header>
@@ -3051,6 +3508,105 @@
               </div>
             </form>
           </div>
+
+          <div id="knowledge-upload-view" hidden>
+            <div class="kb-drawer-step" id="kb-upload-source-step">
+              <p class="kb-drawer-helper">Escolha o tipo de arquivo que você deseja enviar</p>
+
+              <div class="upload-source-list" role="radiogroup" aria-label="Tipo de arquivo">
+                <button type="button" class="upload-source-card selected" role="radio" aria-checked="true" data-upload-source="file">
+                  <span class="source-radio" aria-hidden="true"></span>
+                  <span class="source-icon" aria-hidden="true">
+                    <img src="../img/svg/paperclip.svg" alt="">
+                  </span>
+                  <span class="source-label">Carregar arquivo</span>
+                </button>
+
+                <button type="button" class="upload-source-card" role="radio" aria-checked="false" data-upload-source="qa">
+                  <span class="source-radio" aria-hidden="true"></span>
+                  <span class="source-icon" aria-hidden="true">
+                    <img src="../img/svg/question.svg" alt="">
+                  </span>
+                  <span class="source-label">Adicionar perguntas e respostas</span>
+                </button>
+
+                <button type="button" class="upload-source-card" role="radio" aria-checked="false" data-upload-source="site">
+                  <span class="source-radio" aria-hidden="true"></span>
+                  <span class="source-icon" aria-hidden="true">
+                    <img src="../img/svg/desktop.svg" alt="">
+                  </span>
+                  <span class="source-label">Adicionar site e blog</span>
+                </button>
+
+                <button type="button" class="upload-source-card" role="radio" aria-checked="false" data-upload-source="pages">
+                  <span class="source-radio" aria-hidden="true"></span>
+                  <span class="source-icon" aria-hidden="true">
+                    <img src="../img/svg/page.svg" alt="">
+                  </span>
+                  <span class="source-label">Páginas individuais</span>
+                </button>
+
+                <button type="button" class="upload-source-card" role="radio" aria-checked="false" data-upload-source="youtube">
+                  <span class="source-radio" aria-hidden="true"></span>
+                  <span class="source-icon" aria-hidden="true">
+                    <img src="../img/svg/youtube.svg" alt="">
+                  </span>
+                  <span class="source-label">YouTube</span>
+                </button>
+
+                <button type="button" class="upload-source-card disabled" role="radio" aria-checked="false" aria-disabled="true" data-upload-source="audio">
+                  <span class="source-radio" aria-hidden="true"></span>
+                  <span class="source-icon" aria-hidden="true">
+                    <img src="../img/svg/microphone.svg" alt="">
+                  </span>
+                  <span class="source-label">Áudios</span>
+                  <span class="soon-tag">EM BREVE</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="kb-drawer-step" id="kb-upload-file-step" hidden>
+              <p class="kb-drawer-helper">Adicione arquivos à sua base de conhecimento.</p>
+              <label class="file-upload-dropzone" for="kb-knowledge-file-input" tabindex="0">
+                <span class="dropzone-icon" id="kb-dropzone-icon" aria-hidden="true">
+                  <img src="../img/svg/import.svg" alt="">
+                </span>
+                <span class="dropzone-title" id="kb-dropzone-title">Arraste e solte seu arquivo aqui ou <span>clique para selecionar</span></span>
+                <span class="dropzone-helper" id="kb-dropzone-helper">Formatos aceitos: .xls .csv .xlsx</span>
+              </label>
+            </div>
+
+            <div class="kb-drawer-step" id="kb-upload-resource-step" hidden>
+              <p class="kb-drawer-helper" id="kb-resource-step-helper">Adicione informações à sua base de conhecimento.</p>
+
+              <div class="resource-list" id="kb-resource-list"></div>
+
+              <div class="resource-form-card" id="kb-resource-form-card">
+                <label class="kb-form-field">
+                  <span class="kb-form-label" id="kb-resource-primary-label">URL</span>
+                  <input class="kb-text-input" type="text" id="kb-resource-primary-input" placeholder="Adicione a URL">
+                </label>
+
+                <label class="kb-form-field">
+                  <span class="kb-form-label" id="kb-resource-secondary-label">Nome</span>
+                  <input class="kb-text-input" type="text" id="kb-resource-secondary-input" placeholder="Adicione um nome para exibir na listagem">
+                </label>
+
+                <div class="resource-form-actions">
+                  <button type="button" class="btn-tertiary-small" id="kb-remove-resource-entry">Remover</button>
+                  <button type="button" class="btn-secondary-small" id="kb-cancel-resource-entry">Cancelar</button>
+                  <button type="button" class="btn-primary-small" id="kb-save-resource-entry">Salvar</button>
+                </div>
+              </div>
+
+              <button type="button" class="btn-secondary-action resource-add-btn" id="kb-add-resource-entry" hidden>
+                <img src="../img/svg/plus.svg" alt="">
+                Adicionar
+              </button>
+            </div>
+
+            <input class="kb-file-input" id="kb-knowledge-file-input" type="file" multiple>
+          </div>
         </div>
 
         <footer class="drawer-footer">
@@ -3063,10 +3619,42 @@
           </div>
           <div class="drawer-actions drawer-actions--split" id="knowledge-create-footer" hidden>
             <button type="button" class="drawer-back-button" id="back-knowledge-create">Voltar</button>
-            <button type="submit" class="drawer-save-button" id="submit-knowledge-create" form="knowledge-create-form">Criar</button>
+            <button type="submit" class="drawer-save-button" id="submit-knowledge-create" form="knowledge-create-form">Criar e avançar</button>
+          </div>
+          <div class="drawer-actions drawer-actions--split" id="knowledge-upload-footer" hidden>
+            <button type="button" class="drawer-back-button" id="back-knowledge-upload">Cancelar</button>
+            <button type="button" class="drawer-save-button" id="advance-knowledge-upload">Avançar</button>
           </div>
         </footer>
       </aside>
+    </div>
+
+    <div class="agent-details-modal-backdrop" id="agent-details-modal-backdrop" hidden>
+      <div class="agent-details-modal" id="agent-details-modal" role="dialog" aria-modal="true" aria-labelledby="agent-details-modal-title">
+        <header class="agent-details-modal-header">
+          <h2 class="agent-details-modal-title" id="agent-details-modal-title">Editar dados do agente</h2>
+          <button type="button" class="connectors-modal-close" id="close-agent-details-modal" aria-label="Fechar">
+            <img src="../img/svg/times.svg" alt="">
+          </button>
+        </header>
+        <form class="agent-details-modal-form" id="agent-details-form">
+          <label class="kb-form-field">
+            <span class="kb-form-label">
+              Nome
+              <span class="kb-required-mark" aria-hidden="true">*</span>
+            </span>
+            <input class="kb-text-input" type="text" id="agent-details-name" name="agent-name" placeholder="Informe o nome do agente" required>
+          </label>
+          <label class="kb-form-field">
+            <span class="kb-form-label">Descrição</span>
+            <textarea class="kb-text-area" id="agent-details-description" name="agent-description" placeholder="Adicione uma descrição para identificar seu agente"></textarea>
+          </label>
+          <div class="agent-details-modal-footer">
+            <button type="button" class="drawer-back-button" id="cancel-agent-details-modal">Cancelar</button>
+            <button type="submit" class="drawer-save-button" id="save-agent-details">Salvar</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <div class="connectors-modal-backdrop" id="connectors-modal-backdrop" hidden>
@@ -3131,10 +3719,14 @@
     const createKnowledgeBaseButton = document.getElementById('create-knowledge-base');
     const knowledgeListView = document.getElementById('knowledge-list-view');
     const knowledgeCreateView = document.getElementById('knowledge-create-view');
+    const knowledgeUploadView = document.getElementById('knowledge-upload-view');
     const knowledgeListFooter = document.getElementById('knowledge-list-footer');
     const knowledgeCreateFooter = document.getElementById('knowledge-create-footer');
+    const knowledgeUploadFooter = document.getElementById('knowledge-upload-footer');
     const backKnowledgeCreateButton = document.getElementById('back-knowledge-create');
     const submitKnowledgeCreateButton = document.getElementById('submit-knowledge-create');
+    const backKnowledgeUploadButton = document.getElementById('back-knowledge-upload');
+    const advanceKnowledgeUploadButton = document.getElementById('advance-knowledge-upload');
     const knowledgeCreateForm = document.getElementById('knowledge-create-form');
     const knowledgeCreateNameInput = document.getElementById('knowledge-create-name');
     const knowledgeCreateDescriptionInput = document.getElementById('knowledge-create-description');
@@ -3148,12 +3740,102 @@
       : [];
     const knowledgeBaseSelectionList = document.getElementById('knowledge-base-selection-list');
     const selectedKnowledgeTags = document.getElementById('selected-knowledge-tags');
+    const kbUploadSourceStep = document.getElementById('kb-upload-source-step');
+    const kbUploadFileStep = document.getElementById('kb-upload-file-step');
+    const kbUploadResourceStep = document.getElementById('kb-upload-resource-step');
+    const kbUploadSourceCards = knowledgeUploadView
+      ? Array.from(knowledgeUploadView.querySelectorAll('.upload-source-card'))
+      : [];
+    const kbFileUploadDropzone = knowledgeUploadView?.querySelector('.file-upload-dropzone');
+    const kbKnowledgeFileInput = document.getElementById('kb-knowledge-file-input');
+    const kbDropzoneIcon = document.getElementById('kb-dropzone-icon');
+    const kbDropzoneTitle = document.getElementById('kb-dropzone-title');
+    const kbDropzoneHelper = document.getElementById('kb-dropzone-helper');
+    const kbResourceStepHelper = document.getElementById('kb-resource-step-helper');
+    const kbResourceList = document.getElementById('kb-resource-list');
+    const kbResourceFormCard = document.getElementById('kb-resource-form-card');
+    const kbResourcePrimaryLabel = document.getElementById('kb-resource-primary-label');
+    const kbResourcePrimaryInput = document.getElementById('kb-resource-primary-input');
+    const kbResourceSecondaryLabel = document.getElementById('kb-resource-secondary-label');
+    const kbResourceSecondaryInput = document.getElementById('kb-resource-secondary-input');
+    const kbRemoveResourceEntryBtn = document.getElementById('kb-remove-resource-entry');
+    const kbCancelResourceEntryBtn = document.getElementById('kb-cancel-resource-entry');
+    const kbSaveResourceEntryBtn = document.getElementById('kb-save-resource-entry');
+    const kbAddResourceEntryBtn = document.getElementById('kb-add-resource-entry');
     const knowledgeService = window.KnowledgeBaseService;
     const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
     const availableKnowledgeBases = [];
     const selectedKnowledgeBaseIds = new Set();
     const draftKnowledgeBaseIds = new Set();
     let knowledgeDrawerMode = 'list';
+    let currentCreatedKnowledgeBaseId = null;
+    let selectedUploadSource = 'file';
+    let selectedUploadFiles = [];
+    let dropzoneLoadingTimer = null;
+    let uploadDrawerStep = 'source';
+    let editingResourceIndex = null;
+    const uploadTypeLabels = {
+      file: 'Arquivo',
+      qa: 'Pergunta',
+      site: 'Site/Blog',
+      pages: 'Página',
+      youtube: 'YouTube',
+      audio: 'Áudio'
+    };
+    const uploadResourceConfigs = {
+      qa: {
+        title: 'Perguntas e respostas',
+        helper: 'Adicione perguntas e respostas para orientar os agentes de IA.',
+        primaryLabel: 'Pergunta',
+        primaryPlaceholder: 'Adicione a pergunta',
+        secondaryLabel: 'Resposta',
+        secondaryPlaceholder: 'Adicione a resposta',
+        fallbackTitle: 'Pergunta sem título'
+      },
+      site: {
+        title: 'Site e Blog',
+        helper: 'Adicione todas as páginas de um site ou blog na sua base de conhecimento.',
+        primaryLabel: 'URL',
+        primaryPlaceholder: 'Adicione a URL do site ou blog',
+        secondaryLabel: 'Nome',
+        secondaryPlaceholder: 'Adicione um nome para exibir na listagem',
+        fallbackTitle: 'Site sem nome'
+      },
+      pages: {
+        title: 'Páginas individuais',
+        helper: 'Adicione páginas específicas que devem entrar na base de conhecimento.',
+        primaryLabel: 'URL da página',
+        primaryPlaceholder: 'Adicione a URL da página',
+        secondaryLabel: 'Nome',
+        secondaryPlaceholder: 'Adicione um nome para exibir na listagem',
+        fallbackTitle: 'Página sem nome'
+      },
+      youtube: {
+        title: 'YouTube',
+        helper: 'Adicione vídeos do YouTube para compor a base de conhecimento.',
+        primaryLabel: 'URL do vídeo',
+        primaryPlaceholder: 'Adicione a URL do vídeo no YouTube',
+        secondaryLabel: 'Nome',
+        secondaryPlaceholder: 'Adicione um nome para exibir na listagem',
+        fallbackTitle: 'Vídeo sem nome'
+      },
+      audio: {
+        title: 'Áudios',
+        helper: 'Adicione áudios para compor a base de conhecimento.',
+        primaryLabel: 'URL do áudio',
+        primaryPlaceholder: 'Adicione a URL do áudio',
+        secondaryLabel: 'Nome',
+        secondaryPlaceholder: 'Adicione um nome para exibir na listagem',
+        fallbackTitle: 'Áudio sem nome'
+      }
+    };
+    const uploadResourceEntries = {
+      qa: [],
+      site: [],
+      pages: [],
+      youtube: [],
+      audio: []
+    };
     let selectedScheduleDate = new Date(2026, 3, 29);
     let visibleScheduleMonth = new Date(selectedScheduleDate.getFullYear(), selectedScheduleDate.getMonth(), 1);
 
@@ -3294,13 +3976,472 @@
       }
     }
 
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatCurrentDate() {
+      return new Intl.DateTimeFormat('pt-BR').format(new Date());
+    }
+
+    function formatFileSize(bytes) {
+      if (!bytes) return '1.2 MB';
+      const sizeInMb = bytes / (1024 * 1024);
+      return `${sizeInMb.toFixed(1)} MB`;
+    }
+
+    function getDefaultFileName(source) {
+      const defaults = {
+        file: 'FAQ',
+        qa: 'Perguntas e respostas',
+        site: 'Site institucional',
+        pages: 'Página individual',
+        youtube: 'Vídeo do YouTube',
+        audio: 'Áudio'
+      };
+
+      return defaults[source] || 'Arquivo adicionado';
+    }
+
+    function getCurrentResourceConfig() {
+      return uploadResourceConfigs[selectedUploadSource] || uploadResourceConfigs.site;
+    }
+
+    function getCurrentResourceEntries() {
+      return uploadResourceEntries[selectedUploadSource] || [];
+    }
+
+    function getResourceDisplayTitle(entry) {
+      const config = getCurrentResourceConfig();
+      return entry.secondary || entry.primary || config.fallbackTitle;
+    }
+
+    function getSelectedFileLabel(files) {
+      if (!files?.length) return '';
+      if (files.length === 1) return files[0].name;
+      return `${files[0].name} + ${files.length - 1} ${files.length === 2 ? 'arquivo' : 'arquivos'}`;
+    }
+
+    function resetDropzoneState() {
+      selectedUploadFiles = [];
+      if (dropzoneLoadingTimer) {
+        clearTimeout(dropzoneLoadingTimer);
+        dropzoneLoadingTimer = null;
+      }
+      if (kbKnowledgeFileInput) kbKnowledgeFileInput.value = '';
+      kbFileUploadDropzone?.classList.remove('is-dragging', 'is-loading', 'is-attached');
+      if (kbDropzoneIcon) kbDropzoneIcon.innerHTML = '<img src="../img/svg/import.svg" alt="">';
+      if (kbDropzoneTitle) kbDropzoneTitle.innerHTML = 'Arraste e solte seu arquivo aqui ou <span>clique para selecionar</span>';
+      if (kbDropzoneHelper) kbDropzoneHelper.textContent = 'Formatos aceitos: .xls .csv .xlsx';
+    }
+
+    function setDropzoneLoading(files) {
+      kbFileUploadDropzone?.classList.remove('is-dragging', 'is-attached');
+      kbFileUploadDropzone?.classList.add('is-loading');
+      if (kbDropzoneIcon) kbDropzoneIcon.innerHTML = '<span class="dropzone-spinner"></span>';
+      if (kbDropzoneTitle) kbDropzoneTitle.textContent = 'Carregando arquivo...';
+      if (kbDropzoneHelper) kbDropzoneHelper.textContent = getSelectedFileLabel(files);
+    }
+
+    function setDropzoneAttached(files) {
+      kbFileUploadDropzone?.classList.remove('is-dragging', 'is-loading');
+      kbFileUploadDropzone?.classList.add('is-attached');
+      if (kbDropzoneIcon) kbDropzoneIcon.innerHTML = '<img src="../img/svg/checkmark-circle.svg" alt="">';
+      if (kbDropzoneTitle) kbDropzoneTitle.textContent = 'Arquivo anexado com sucesso, clique em adicionar para concluir';
+      if (kbDropzoneHelper) kbDropzoneHelper.textContent = getSelectedFileLabel(files);
+    }
+
+    function handleSelectedUploadFiles(files) {
+      selectedUploadFiles = Array.from(files || []);
+      if (!selectedUploadFiles.length) {
+        resetDropzoneState();
+        return;
+      }
+
+      setDropzoneLoading(selectedUploadFiles);
+      if (dropzoneLoadingTimer) clearTimeout(dropzoneLoadingTimer);
+      dropzoneLoadingTimer = window.setTimeout(() => {
+        setDropzoneAttached(selectedUploadFiles);
+        dropzoneLoadingTimer = null;
+      }, 700);
+    }
+
+    function createKnowledgeFileFromResourceEntry(entry) {
+      const title = getResourceDisplayTitle(entry);
+      const sourceType = selectedUploadSource === 'pages' ? 'page' : selectedUploadSource;
+      const metadata = {
+        primary: entry.primary || '',
+        secondary: entry.secondary || ''
+      };
+
+      return {
+        name: title,
+        type: uploadTypeLabels[selectedUploadSource] || 'Arquivo',
+        size: selectedUploadSource === 'qa' ? '0.9 MB' : '1.1 MB',
+        updatedAt: formatCurrentDate(),
+        sourceType,
+        sourceUrl: selectedUploadSource === 'qa' ? null : entry.primary || null,
+        metadata,
+        sourceInput: {
+          type: sourceType,
+          title,
+          sourceUrl: selectedUploadSource === 'qa' ? null : entry.primary || null,
+          status: selectedUploadSource === 'qa' ? 'ready' : 'queued',
+          metadata
+        }
+      };
+    }
+
+    function addKnowledgeFilesFromCurrentStep() {
+      if (selectedUploadSource === 'file') {
+        const selectedFiles = selectedUploadFiles.length
+          ? selectedUploadFiles
+          : Array.from(kbKnowledgeFileInput?.files || []);
+        const filesToAdd = selectedFiles.length
+          ? selectedFiles.map(file => ({
+            name: file.name.replace(/\.[^/.]+$/, '') || file.name,
+            type: uploadTypeLabels.file,
+            size: formatFileSize(file.size),
+            updatedAt: formatCurrentDate(),
+            sourceType: 'file',
+            sourceInput: {
+              type: 'file',
+              title: file.name.replace(/\.[^/.]+$/, '') || file.name,
+              mimeType: file.type || null,
+              sizeBytes: file.size || null,
+              status: 'queued',
+              metadata: {
+                original_filename: file.name
+              }
+            }
+          }))
+          : [{
+            name: getDefaultFileName('file'),
+            type: uploadTypeLabels.file,
+            size: '1.2 MB',
+            updatedAt: formatCurrentDate(),
+            sourceType: 'file',
+            sourceInput: {
+              type: 'file',
+              title: getDefaultFileName('file'),
+              status: 'queued',
+              metadata: {
+                prototype: true
+              }
+            }
+          }];
+
+        resetDropzoneState();
+        return filesToAdd;
+      }
+
+      const entries = getCurrentResourceEntries();
+      if (!entries.length) {
+        const primaryValue = kbResourcePrimaryInput?.value.trim() || '';
+        const secondaryValue = kbResourceSecondaryInput?.value.trim() || '';
+        if (primaryValue || secondaryValue) entries.push({ primary: primaryValue, secondary: secondaryValue });
+      }
+
+      const entriesToAdd = entries.length
+        ? entries
+        : [{ primary: '', secondary: getDefaultFileName(selectedUploadSource) }];
+      const filesToAdd = entriesToAdd.map(entry => createKnowledgeFileFromResourceEntry(entry));
+
+      uploadResourceEntries[selectedUploadSource] = [];
+      resetResourceForm();
+      renderResourceEntries();
+      return filesToAdd;
+    }
+
+    async function persistAddedSources(addedFiles) {
+      if (!currentCreatedKnowledgeBaseId || !knowledgeService?.isConfigured() || !addedFiles?.length) return;
+      if (String(currentCreatedKnowledgeBaseId).startsWith('local-')) return;
+
+      for (const file of addedFiles) {
+        if (!file.sourceInput) continue;
+
+        try {
+          await knowledgeService.createSource(currentCreatedKnowledgeBaseId, file.sourceInput);
+        } catch (error) {
+          console.warn('Supabase source persistence skipped:', error);
+        }
+      }
+    }
+
+    function renderResourceEntries() {
+      if (!kbResourceList) return;
+      const entries = getCurrentResourceEntries();
+      const config = getCurrentResourceConfig();
+
+      kbResourceList.innerHTML = entries.map((entry, index) => {
+        if (editingResourceIndex === index) {
+          return `
+      <article class="resource-form-card" data-editing-resource-index="${index}">
+        <label class="kb-form-field">
+          <span class="kb-form-label">${escapeHtml(config.primaryLabel)}</span>
+          <input class="kb-text-input inline-resource-primary" type="text" value="${escapeHtml(entry.primary)}" placeholder="${escapeHtml(config.primaryPlaceholder)}">
+        </label>
+
+        <label class="kb-form-field">
+          <span class="kb-form-label">${escapeHtml(config.secondaryLabel)}</span>
+          <input class="kb-text-input inline-resource-secondary" type="text" value="${escapeHtml(entry.secondary)}" placeholder="${escapeHtml(config.secondaryPlaceholder)}">
+        </label>
+
+        <div class="resource-form-actions">
+          <button type="button" class="btn-tertiary-small inline-resource-remove">Remover</button>
+          <button type="button" class="btn-secondary-small inline-resource-cancel">Cancelar</button>
+          <button type="button" class="btn-primary-small inline-resource-save">Salvar</button>
+        </div>
+      </article>
+    `;
+        }
+
+        const title = getResourceDisplayTitle(entry);
+        return `
+      <article class="resource-saved-card">
+        <h3 class="resource-saved-title">${escapeHtml(title)}</h3>
+        <button type="button" class="resource-edit-btn" data-resource-index="${index}" aria-label="Editar ${escapeHtml(title)}">
+          <img src="../img/svg/pen.svg" alt="">
+        </button>
+      </article>
+    `;
+      }).join('');
+
+      kbResourceList.querySelectorAll('.resource-edit-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          const index = Number(button.dataset.resourceIndex);
+          openInlineResourceForm(index);
+        });
+      });
+
+      const inlineForm = kbResourceList.querySelector('[data-editing-resource-index]');
+      if (inlineForm) {
+        const index = Number(inlineForm.dataset.editingResourceIndex);
+        inlineForm.querySelector('.inline-resource-save')?.addEventListener('click', () => saveInlineResourceEntry(index));
+        inlineForm.querySelector('.inline-resource-cancel')?.addEventListener('click', cancelInlineResourceEdit);
+        inlineForm.querySelector('.inline-resource-remove')?.addEventListener('click', () => removeInlineResourceEntry(index));
+        inlineForm.querySelector('.inline-resource-primary')?.focus();
+      }
+    }
+
+    function resetResourceForm() {
+      if (kbResourcePrimaryInput) kbResourcePrimaryInput.value = '';
+      if (kbResourceSecondaryInput) kbResourceSecondaryInput.value = '';
+      editingResourceIndex = null;
+    }
+
+    function openResourceForm(index = null) {
+      const entries = getCurrentResourceEntries();
+      editingResourceIndex = index;
+
+      if (index !== null && entries[index]) {
+        if (kbResourcePrimaryInput) kbResourcePrimaryInput.value = entries[index].primary;
+        if (kbResourceSecondaryInput) kbResourceSecondaryInput.value = entries[index].secondary;
+      } else {
+        resetResourceForm();
+      }
+
+      if (kbResourceFormCard) kbResourceFormCard.hidden = false;
+      if (kbAddResourceEntryBtn) kbAddResourceEntryBtn.hidden = true;
+      renderResourceEntries();
+      kbResourcePrimaryInput?.focus();
+    }
+
+    function openInlineResourceForm(index) {
+      editingResourceIndex = index;
+      if (kbResourceFormCard) kbResourceFormCard.hidden = true;
+      if (kbAddResourceEntryBtn) kbAddResourceEntryBtn.hidden = true;
+      renderResourceEntries();
+    }
+
+    function cancelInlineResourceEdit() {
+      editingResourceIndex = null;
+      renderResourceEntries();
+      if (kbAddResourceEntryBtn) kbAddResourceEntryBtn.hidden = false;
+    }
+
+    function saveInlineResourceEntry(index) {
+      const inlineForm = kbResourceList?.querySelector(`[data-editing-resource-index="${index}"]`);
+      const entries = getCurrentResourceEntries();
+
+      if (!inlineForm || !entries[index]) return;
+
+      entries[index] = {
+        primary: inlineForm.querySelector('.inline-resource-primary')?.value.trim() || '',
+        secondary: inlineForm.querySelector('.inline-resource-secondary')?.value.trim() || ''
+      };
+
+      editingResourceIndex = null;
+      renderResourceEntries();
+      if (kbAddResourceEntryBtn) kbAddResourceEntryBtn.hidden = false;
+    }
+
+    function removeInlineResourceEntry(index) {
+      const entries = getCurrentResourceEntries();
+      if (entries[index]) entries.splice(index, 1);
+
+      editingResourceIndex = null;
+      renderResourceEntries();
+
+      if (entries.length) {
+        if (kbAddResourceEntryBtn) kbAddResourceEntryBtn.hidden = false;
+        if (kbResourceFormCard) kbResourceFormCard.hidden = true;
+      } else {
+        openResourceForm();
+      }
+    }
+
+    function closeResourceForm() {
+      resetResourceForm();
+      if (kbResourceFormCard) kbResourceFormCard.hidden = true;
+      if (kbAddResourceEntryBtn) kbAddResourceEntryBtn.hidden = false;
+    }
+
+    function configureResourceStep() {
+      const config = getCurrentResourceConfig();
+      const entries = getCurrentResourceEntries();
+
+      if (kbResourceStepHelper) kbResourceStepHelper.textContent = config.helper;
+      if (kbResourcePrimaryLabel) kbResourcePrimaryLabel.textContent = config.primaryLabel;
+      if (kbResourcePrimaryInput) kbResourcePrimaryInput.placeholder = config.primaryPlaceholder;
+      if (kbResourceSecondaryLabel) kbResourceSecondaryLabel.textContent = config.secondaryLabel;
+      if (kbResourceSecondaryInput) kbResourceSecondaryInput.placeholder = config.secondaryPlaceholder;
+
+      renderResourceEntries();
+
+      if (entries.length) {
+        closeResourceForm();
+      } else {
+        openResourceForm();
+      }
+    }
+
+    function saveResourceEntry() {
+      const entries = getCurrentResourceEntries();
+      const entry = {
+        primary: kbResourcePrimaryInput?.value.trim() || '',
+        secondary: kbResourceSecondaryInput?.value.trim() || ''
+      };
+
+      if (editingResourceIndex !== null && entries[editingResourceIndex]) {
+        entries[editingResourceIndex] = entry;
+      } else {
+        entries.push(entry);
+      }
+
+      renderResourceEntries();
+      closeResourceForm();
+    }
+
+    function removeResourceEntry() {
+      const entries = getCurrentResourceEntries();
+
+      if (editingResourceIndex !== null && entries[editingResourceIndex]) {
+        entries.splice(editingResourceIndex, 1);
+        renderResourceEntries();
+        if (entries.length) {
+          closeResourceForm();
+        } else {
+          openResourceForm();
+        }
+        return;
+      }
+
+      closeResourceForm();
+    }
+
+    function setSelectedUploadSource(source) {
+      selectedUploadSource = source;
+      kbUploadSourceCards.forEach(card => {
+        const isSelected = card.dataset.uploadSource === source;
+        card.classList.toggle('selected', isSelected);
+        card.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+      });
+    }
+
+    function setUploadDrawerStep(step) {
+      uploadDrawerStep = step;
+      const isFileStep = step === 'file';
+      const isResourceStep = step === 'resource';
+      const resourceConfig = getCurrentResourceConfig();
+
+      if (knowledgeBasesDrawerTitle) {
+        knowledgeBasesDrawerTitle.textContent = isFileStep
+          ? 'Carregar arquivo'
+          : (isResourceStep ? resourceConfig.title : 'Adicionar arquivos');
+      }
+      if (kbUploadSourceStep) kbUploadSourceStep.hidden = isFileStep || isResourceStep;
+      if (kbUploadFileStep) kbUploadFileStep.hidden = !isFileStep;
+      if (kbUploadResourceStep) kbUploadResourceStep.hidden = !isResourceStep;
+      if (backKnowledgeUploadButton) {
+        backKnowledgeUploadButton.textContent = isFileStep || isResourceStep ? 'Voltar' : 'Cancelar';
+      }
+      if (advanceKnowledgeUploadButton) {
+        advanceKnowledgeUploadButton.textContent = isFileStep || isResourceStep ? 'Adicionar na base' : 'Avançar';
+      }
+
+      if (isFileStep) {
+        resetDropzoneState();
+        kbFileUploadDropzone?.focus();
+      } else if (isResourceStep) {
+        configureResourceStep();
+      } else {
+        kbUploadSourceCards[0]?.focus();
+      }
+    }
+
+    function handleUploadDrawerSecondaryAction() {
+      if (uploadDrawerStep === 'file' || uploadDrawerStep === 'resource') {
+        if (uploadDrawerStep === 'file') resetDropzoneState();
+        setUploadDrawerStep('source');
+        return;
+      }
+
+      showKnowledgeListView();
+    }
+
+    async function advanceUploadFlow() {
+      if (uploadDrawerStep === 'source') {
+        if (selectedUploadSource === 'file') {
+          setUploadDrawerStep('file');
+        } else {
+          setUploadDrawerStep('resource');
+        }
+        return;
+      }
+
+      if (uploadDrawerStep === 'file' || uploadDrawerStep === 'resource') {
+        if (advanceKnowledgeUploadButton) {
+          advanceKnowledgeUploadButton.disabled = true;
+          advanceKnowledgeUploadButton.textContent = 'Adicionando…';
+        }
+
+        const addedFiles = addKnowledgeFilesFromCurrentStep();
+        await persistAddedSources(addedFiles);
+        showKnowledgeListView();
+
+        if (advanceKnowledgeUploadButton) {
+          advanceKnowledgeUploadButton.disabled = false;
+          advanceKnowledgeUploadButton.textContent = 'Avançar';
+        }
+      }
+    }
+
     function showKnowledgeListView() {
       knowledgeDrawerMode = 'list';
       closeKnowledgeAccessDropdown();
+      resetDropzoneState();
       if (knowledgeListView) knowledgeListView.hidden = false;
       if (knowledgeCreateView) knowledgeCreateView.hidden = true;
+      if (knowledgeUploadView) knowledgeUploadView.hidden = true;
       if (knowledgeListFooter) knowledgeListFooter.hidden = false;
       if (knowledgeCreateFooter) knowledgeCreateFooter.hidden = true;
+      if (knowledgeUploadFooter) knowledgeUploadFooter.hidden = true;
       if (knowledgeBasesDrawerTitle) knowledgeBasesDrawerTitle.textContent = 'Bases de conhecimento';
     }
 
@@ -3311,10 +4452,29 @@
       closeKnowledgeAccessDropdown();
       if (knowledgeListView) knowledgeListView.hidden = true;
       if (knowledgeCreateView) knowledgeCreateView.hidden = false;
+      if (knowledgeUploadView) knowledgeUploadView.hidden = true;
       if (knowledgeListFooter) knowledgeListFooter.hidden = true;
       if (knowledgeCreateFooter) knowledgeCreateFooter.hidden = false;
+      if (knowledgeUploadFooter) knowledgeUploadFooter.hidden = true;
       if (knowledgeBasesDrawerTitle) knowledgeBasesDrawerTitle.textContent = 'Nova base de conhecimento';
       knowledgeCreateNameInput?.focus();
+    }
+
+    function showKnowledgeUploadView() {
+      knowledgeDrawerMode = 'upload';
+      closeKnowledgeAccessDropdown();
+      setSelectedUploadSource('file');
+      Object.keys(uploadResourceEntries).forEach(key => {
+        uploadResourceEntries[key] = [];
+      });
+      resetResourceForm();
+      if (knowledgeListView) knowledgeListView.hidden = true;
+      if (knowledgeCreateView) knowledgeCreateView.hidden = true;
+      if (knowledgeUploadView) knowledgeUploadView.hidden = false;
+      if (knowledgeListFooter) knowledgeListFooter.hidden = true;
+      if (knowledgeCreateFooter) knowledgeCreateFooter.hidden = true;
+      if (knowledgeUploadFooter) knowledgeUploadFooter.hidden = false;
+      setUploadDrawerStep('source');
     }
 
     function formatKnowledgeBaseDate(value) {
@@ -3605,6 +4765,59 @@
       showKnowledgeListView();
       createKnowledgeBaseButton?.focus();
     });
+    backKnowledgeUploadButton?.addEventListener('click', handleUploadDrawerSecondaryAction);
+    advanceKnowledgeUploadButton?.addEventListener('click', advanceUploadFlow);
+
+    kbUploadSourceCards.forEach(card => {
+      card.addEventListener('click', () => {
+        if (card.classList.contains('disabled')) return;
+        setSelectedUploadSource(card.dataset.uploadSource || 'file');
+      });
+    });
+
+    kbFileUploadDropzone?.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        kbKnowledgeFileInput?.click();
+      }
+    });
+    kbFileUploadDropzone?.addEventListener('dragenter', event => {
+      event.preventDefault();
+      kbFileUploadDropzone.classList.add('is-dragging');
+    });
+    kbFileUploadDropzone?.addEventListener('dragover', event => {
+      event.preventDefault();
+      kbFileUploadDropzone.classList.add('is-dragging');
+    });
+    kbFileUploadDropzone?.addEventListener('dragleave', event => {
+      if (!kbFileUploadDropzone.contains(event.relatedTarget)) {
+        kbFileUploadDropzone.classList.remove('is-dragging');
+      }
+    });
+    kbFileUploadDropzone?.addEventListener('drop', event => {
+      event.preventDefault();
+      kbFileUploadDropzone.classList.remove('is-dragging');
+
+      const droppedFiles = Array.from(event.dataTransfer?.files || []);
+      if (!droppedFiles.length) return;
+
+      try {
+        const dataTransfer = new DataTransfer();
+        droppedFiles.forEach(file => dataTransfer.items.add(file));
+        if (kbKnowledgeFileInput) kbKnowledgeFileInput.files = dataTransfer.files;
+      } catch (error) {
+        console.warn('Could not sync dropped files to input:', error);
+      }
+
+      handleSelectedUploadFiles(droppedFiles);
+    });
+    kbKnowledgeFileInput?.addEventListener('change', event => {
+      handleSelectedUploadFiles(event.target.files);
+    });
+    kbAddResourceEntryBtn?.addEventListener('click', () => openResourceForm());
+    kbSaveResourceEntryBtn?.addEventListener('click', saveResourceEntry);
+    kbCancelResourceEntryBtn?.addEventListener('click', closeResourceForm);
+    kbRemoveResourceEntryBtn?.addEventListener('click', removeResourceEntry);
 
     knowledgeAccessSelect?.addEventListener('click', event => {
       event.preventDefault();
@@ -3635,12 +4848,13 @@
 
       upsertAvailableKnowledgeBase(baseToRender);
       draftKnowledgeBaseIds.add(baseToRender.id);
+      currentCreatedKnowledgeBaseId = baseToRender.id;
       renderKnowledgeBaseDrawerList();
-      showKnowledgeListView();
+      showKnowledgeUploadView();
 
       if (submitKnowledgeCreateButton) {
         submitKnowledgeCreateButton.disabled = false;
-        submitKnowledgeCreateButton.textContent = 'Criar';
+        submitKnowledgeCreateButton.textContent = 'Criar e avançar';
       }
     });
 
@@ -3675,10 +4889,134 @@
     const widgetReplaceFileBtn = document.getElementById('widget-replace-file-btn');
 
     function setSelectedChannel(channel) {
+      selectedChannel = channel === 'widget' ? 'widget' : 'interno';
       document.querySelectorAll('.channel-card').forEach(item => {
-        const selected = item.getAttribute('data-channel') === channel;
+        const selected = item.getAttribute('data-channel') === selectedChannel;
         item.classList.toggle('is-selected', selected);
       });
+    }
+
+    function isUuid(value) {
+      return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || ''));
+    }
+
+    function collectAgentCardPayload(status) {
+      const nome = (agentEditorTitle?.textContent || agentNameNav?.textContent || 'Novo agente').trim() || 'Novo agente';
+      const knowledgeBaseIds = Array.from(selectedKnowledgeBaseIds).filter(isUuid);
+
+      return {
+        status,
+        nome,
+        descricao: agentDescription || null,
+        canal: selectedChannel === 'widget' ? 'widget' : 'interno',
+        conectores: [...selectedConnectors],
+        prompt: instructionTextarea?.value.trim() || null,
+        knowledgeBaseIds
+      };
+    }
+
+    function formatSaveStatus(date = new Date()) {
+      const formatted = new Intl.DateTimeFormat('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(date);
+      return `Salvo às ${formatted}`;
+    }
+
+    function setSaveStatus(message) {
+      if (saveStatusLabel) saveStatusLabel.textContent = message;
+    }
+
+    async function linkAgentKnowledgeBases(client, agentId, knowledgeBaseIds) {
+      if (!client || !agentId) return;
+
+      const { error: deleteError } = await client
+        .from('agent_knowledge_bases')
+        .delete()
+        .eq('agent_id', agentId);
+      if (deleteError) throw deleteError;
+
+      if (!knowledgeBaseIds.length) return;
+
+      const rows = knowledgeBaseIds.map(knowledgeBaseId => ({
+        agent_id: agentId,
+        knowledge_base_id: knowledgeBaseId
+      }));
+
+      const { error } = await client.from('agent_knowledge_bases').insert(rows);
+      if (error) throw error;
+    }
+
+    async function persistAgent(status) {
+      if (isPersistingAgent) return null;
+
+      const payload = collectAgentCardPayload(status);
+      if (status === 'ativo' && !payload.prompt) {
+        instructionTextarea?.focus();
+        return null;
+      }
+
+      const client = createSupabaseClient();
+      if (!client) {
+        window.alert('Não foi possível salvar porque o Supabase não está configurado nesta página.');
+        return null;
+      }
+
+      isPersistingAgent = true;
+      if (saveAgentButton) saveAgentButton.disabled = true;
+      if (createAgentButton) createAgentButton.disabled = true;
+      setSaveStatus(status === 'ativo' ? 'Criando…' : 'Salvando…');
+
+      try {
+        const agentFields = {
+          nome: payload.nome,
+          descricao: payload.descricao,
+          canal: payload.canal,
+          conectores: payload.conectores,
+          prompt: payload.prompt,
+          status: payload.status
+        };
+
+        let data;
+        if (currentAgentId) {
+          const { data: updated, error } = await client
+            .from('agentes')
+            .update(agentFields)
+            .eq('id', currentAgentId)
+            .select('id, status, created_at, updated_at')
+            .single();
+
+          if (error) throw error;
+          data = updated;
+        } else {
+          const { data: created, error } = await client
+            .from('agentes')
+            .insert(agentFields)
+            .select('id, status, created_at, updated_at')
+            .single();
+
+          if (error) throw error;
+          data = created;
+          currentAgentId = data.id;
+        }
+
+        await linkAgentKnowledgeBases(client, data.id, payload.knowledgeBaseIds);
+        const savedAt = data.updated_at || data.created_at;
+        setSaveStatus(formatSaveStatus(savedAt ? new Date(savedAt) : new Date()));
+        return data;
+      } catch (error) {
+        console.error('Erro ao persistir agente:', error);
+        setSaveStatus('Falha ao salvar');
+        window.alert('Não foi possível salvar o agente no Supabase. Tente novamente.');
+        return null;
+      } finally {
+        isPersistingAgent = false;
+        if (saveAgentButton) saveAgentButton.disabled = false;
+        syncCreateAgentButton();
+      }
     }
 
     function openWidgetView() {
@@ -3772,12 +5110,19 @@
 
     const instructionTextarea = document.getElementById('instruction-textarea');
     const instructionWrap = document.getElementById('instruction-wrap') || instructionTextarea?.closest('.textarea-wrap');
+    const createAgentButton = document.getElementById('create-agent-button');
+    const saveAgentButton = document.getElementById('save-agent-button');
+    const saveStatusLabel = document.querySelector('.save-status');
     const agentEditorTitle = document.getElementById('agent-editor-title');
     const agentNameNav = document.querySelector('.agent-name');
     const selectedConnectorTags = document.getElementById('selected-connector-tags');
     const connectorsSkeleton = document.getElementById('connectors-skeleton');
     const promptSkeleton = document.getElementById('prompt-skeleton');
     const selectedConnectors = [];
+    let selectedChannel = 'interno';
+    let agentDescription = '';
+    let currentAgentId = null;
+    let isPersistingAgent = false;
     const openConnectorsModalButton = document.getElementById('open-connectors-modal');
     const connectorsModalBackdrop = document.getElementById('connectors-modal-backdrop');
     const closeConnectorsModalButton = document.getElementById('close-connectors-modal');
@@ -3789,7 +5134,7 @@
       {
         id: 'rd-marketing',
         name: 'RD Marketing',
-        icon: null,
+        icon: '../img/conectores/rd-symbol.svg',
         avatar: '../img/conectores/rd-symbol.svg',
         avatarBrand: false,
         description: 'Analise campanhas, leads e conversões; ideal para descobrir gargalos e oportunidades no funil.',
@@ -3810,7 +5155,7 @@
       {
         id: 'rd-vendas',
         name: 'RD Vendas',
-        icon: null,
+        icon: '../img/conectores/rd-symbol.svg',
         avatar: '../img/conectores/rd-symbol.svg',
         avatarBrand: false,
         description: 'Analisar e gerenciar cadastros, negociações, vendas, funções e tarefas.',
@@ -3828,7 +5173,7 @@
       {
         id: 'rd-atendimento',
         name: 'RD Atendimento',
-        icon: null,
+        icon: '../img/conectores/rd-symbol.svg',
         avatar: '../img/conectores/rd-symbol.svg',
         avatarBrand: false,
         description: 'Análise de dados sobre eficiência operacional, filas, satisfação e desempenho do chatbot.',
@@ -3874,8 +5219,8 @@
       {
         id: 'busca-web',
         name: 'Busca na Web',
-        icon: null,
-        avatar: '../img/conectores/rd-symbol.svg',
+        icon: '../img/svg/compass.svg',
+        avatar: '../img/svg/compass.svg',
         avatarBrand: false,
         description: 'Pesquise informações atualizadas na web para enriquecer respostas e análises.',
         resources: [
@@ -3887,9 +5232,9 @@
       },
       {
         id: 'enviar-email',
-        name: 'Enviar e-mail',
-        icon: null,
-        avatar: '../img/conectores/logo-gmail.png',
+        name: 'Gmail',
+        icon: '../img/conectores/logo-gmail.svg',
+        avatar: '../img/conectores/logo-gmail.svg',
         avatarBrand: true,
         description: 'Permite que o agente envie e-mails como parte de automações e follow-ups.',
         resources: [
@@ -4005,6 +5350,15 @@
       instructionWrap.classList.toggle('is-filled', instructionTextarea.value.trim().length > 0);
     }
 
+    function syncCreateAgentButton() {
+      if (!createAgentButton) return;
+      const canCreate = Boolean(instructionTextarea?.value.trim()) && !instructionTextarea?.disabled;
+
+      createAgentButton.disabled = !canCreate;
+      createAgentButton.classList.toggle('btn-disabled', !canCreate);
+      createAgentButton.classList.toggle('btn-primary', canCreate);
+    }
+
     function autosizeInstructionTextarea() {
       if (!instructionTextarea) return;
 
@@ -4017,16 +5371,19 @@
 
     function syncInstructionField() {
       syncInstructionPlaceholder();
+      syncCreateAgentButton();
       requestAnimationFrame(() => {
         autosizeInstructionTextarea();
       });
     }
 
     function createSupabaseClient() {
+      if (window.KnowledgeBaseService?.client) return window.KnowledgeBaseService.client;
+
       const config = window.AGENT_BUILDER_SUPABASE_CONFIG || {};
       if (!window.supabase || !config.url || !config.publishableKey) return null;
       return window.supabase.createClient(config.url, config.publishableKey, {
-        auth: { persistSession: false, autoRefreshToken: false }
+        auth: { persistSession: true, autoRefreshToken: true }
       });
     }
 
@@ -4034,6 +5391,92 @@
       const title = name || 'Novo agente';
       if (agentEditorTitle) agentEditorTitle.textContent = title;
       if (agentNameNav) agentNameNav.textContent = title;
+    }
+
+    function syncAgentDescriptionDisplay() {
+      const descriptionEl = document.getElementById('agent-editor-description');
+      if (!descriptionEl) return;
+      descriptionEl.textContent = agentDescription.trim() || 'Adicione uma descrição para identificar seu agente';
+    }
+
+    const editAgentDetailsButton = document.getElementById('edit-agent-details-button');
+    const agentDetailsModalBackdrop = document.getElementById('agent-details-modal-backdrop');
+    const closeAgentDetailsModalButton = document.getElementById('close-agent-details-modal');
+    const cancelAgentDetailsModalButton = document.getElementById('cancel-agent-details-modal');
+    const agentDetailsForm = document.getElementById('agent-details-form');
+    const agentDetailsNameInput = document.getElementById('agent-details-name');
+    const agentDetailsDescriptionInput = document.getElementById('agent-details-description');
+    const saveAgentDetailsButton = document.getElementById('save-agent-details');
+
+    function openAgentDetailsModal() {
+      if (!agentDetailsModalBackdrop) return;
+      if (agentDetailsNameInput) {
+        agentDetailsNameInput.value = (agentEditorTitle?.textContent || 'Novo agente').trim();
+      }
+      if (agentDetailsDescriptionInput) {
+        agentDetailsDescriptionInput.value = agentDescription || '';
+      }
+      agentDetailsModalBackdrop.hidden = false;
+      editAgentDetailsButton?.setAttribute('aria-expanded', 'true');
+      agentDetailsNameInput?.focus();
+      agentDetailsNameInput?.select();
+    }
+
+    function closeAgentDetailsModal(restoreFocus = true) {
+      if (!agentDetailsModalBackdrop) return;
+      agentDetailsModalBackdrop.hidden = true;
+      editAgentDetailsButton?.setAttribute('aria-expanded', 'false');
+      if (restoreFocus) editAgentDetailsButton?.focus();
+    }
+
+    async function persistAgentDetailsToSupabase(nome, descricao) {
+      const client = createSupabaseClient();
+      if (!client) {
+        window.alert('Não foi possível salvar porque o Supabase não está configurado nesta página.');
+        return false;
+      }
+
+      setSaveStatus('Salvando…');
+
+      try {
+        if (currentAgentId) {
+          const { error } = await client
+            .from('agentes')
+            .update({
+              nome,
+              descricao: descricao || null
+            })
+            .eq('id', currentAgentId);
+
+          if (error) throw error;
+        } else {
+          const payload = collectAgentCardPayload('rascunho');
+          const { data, error } = await client
+            .from('agentes')
+            .insert({
+              nome,
+              descricao: descricao || null,
+              canal: payload.canal,
+              conectores: payload.conectores,
+              prompt: payload.prompt,
+              status: 'rascunho'
+            })
+            .select('id, created_at')
+            .single();
+
+          if (error) throw error;
+          currentAgentId = data.id;
+          await linkAgentKnowledgeBases(client, data.id, payload.knowledgeBaseIds);
+        }
+
+        setSaveStatus(formatSaveStatus());
+        return true;
+      } catch (error) {
+        console.error('Erro ao salvar dados do agente:', error);
+        setSaveStatus('Falha ao salvar');
+        window.alert('Não foi possível salvar nome e descrição no Supabase. Tente novamente.');
+        return false;
+      }
     }
 
     function setModelLoading(isLoading) {
@@ -4069,6 +5512,8 @@
       if (instructionTextarea) {
         instructionTextarea.disabled = isLoading;
       }
+
+      syncCreateAgentButton();
     }
 
     function renderSelectedConnectors() {
@@ -4077,8 +5522,19 @@
       selectedConnectorTags.hidden = selectedConnectors.length === 0;
 
       selectedConnectors.forEach((connector, index) => {
+        const catalogItem = CONNECTORS_CATALOG.find(item => item.name === connector);
+        const iconSrc = catalogItem?.icon || catalogItem?.avatar || null;
+
         const tag = document.createElement('span');
         tag.className = 'selected-connector-tag';
+
+        if (iconSrc) {
+          const icon = document.createElement('span');
+          icon.className = 'selected-connector-tag-icon';
+          icon.setAttribute('aria-hidden', 'true');
+          icon.innerHTML = `<img src="${iconSrc}" alt="">`;
+          tag.appendChild(icon);
+        }
 
         const label = document.createElement('span');
         label.textContent = connector;
@@ -4237,6 +5693,8 @@
         : [];
 
       setAgentTitle(name);
+      agentDescription = model?.['Descrição'] || model?.Descricao || '';
+      syncAgentDescriptionDisplay();
 
       selectedConnectors.splice(0, selectedConnectors.length, ...connectors);
       renderSelectedConnectors();
@@ -4249,10 +5707,70 @@
       }
     }
 
+    function applyCreatedAgentToEditor(agent) {
+      setAgentTitle(agent?.nome || 'Novo agente');
+      agentDescription = agent?.descricao || '';
+      syncAgentDescriptionDisplay();
+      selectedChannel = agent?.canal === 'widget' ? 'widget' : 'interno';
+      setSelectedChannel(selectedChannel);
+
+      const connectors = Array.isArray(agent?.conectores)
+        ? agent.conectores.filter(Boolean)
+        : [];
+      selectedConnectors.splice(0, selectedConnectors.length, ...connectors);
+      renderSelectedConnectors();
+
+      if (instructionTextarea) {
+        instructionTextarea.value = agent?.prompt || '';
+        syncInstructionField();
+        setTimeout(autosizeInstructionTextarea, 50);
+      }
+    }
+
     async function loadSelectedModel() {
-      const modelId = new URLSearchParams(window.location.search).get('id');
+      const params = new URLSearchParams(window.location.search);
+      const agentId = params.get('agent');
+      const modelId = params.get('id');
+
+      if (agentId) {
+        setModelLoading(true);
+        const client = createSupabaseClient();
+        if (!client) {
+          console.error('Supabase não configurado.');
+          setModelLoading(false);
+          setAgentTitle('Novo agente');
+          return;
+        }
+
+        const { data, error } = await client
+          .from('agentes')
+          .select('id, nome, descricao, canal, conectores, prompt, status')
+          .eq('id', agentId)
+          .maybeSingle();
+
+        setModelLoading(false);
+
+        if (error) {
+          console.error('Erro ao carregar agente:', error);
+          setAgentTitle('Novo agente');
+          return;
+        }
+
+        if (!data) {
+          console.warn('Agente não encontrado:', agentId);
+          setAgentTitle('Novo agente');
+          return;
+        }
+
+        currentAgentId = data.id;
+        applyCreatedAgentToEditor(data);
+        return;
+      }
+
       if (!modelId) {
         setAgentTitle('Novo agente');
+        agentDescription = '';
+        syncAgentDescriptionDisplay();
         renderSelectedConnectors();
         syncInstructionField();
         return;
@@ -4270,7 +5788,7 @@
 
       const { data, error } = await client
         .from('lista_agentes')
-        .select('ID, Nome, Conectores, Prompt')
+        .select('ID, Nome, Descrição, Conectores, Prompt')
         .eq('ID', modelId)
         .maybeSingle();
 
@@ -4293,6 +5811,50 @@
 
     instructionTextarea?.addEventListener('input', syncInstructionField);
     window.addEventListener('resize', autosizeInstructionTextarea);
+    saveAgentButton?.addEventListener('click', () => {
+      persistAgent('rascunho');
+    });
+    createAgentButton?.addEventListener('click', async () => {
+      const data = await persistAgent('ativo');
+      if (data) {
+        window.location.href = 'index.html';
+      }
+    });
+    editAgentDetailsButton?.addEventListener('click', openAgentDetailsModal);
+    closeAgentDetailsModalButton?.addEventListener('click', () => closeAgentDetailsModal());
+    cancelAgentDetailsModalButton?.addEventListener('click', () => closeAgentDetailsModal());
+    agentDetailsModalBackdrop?.addEventListener('click', event => {
+      if (event.target === agentDetailsModalBackdrop) closeAgentDetailsModal();
+    });
+    agentDetailsForm?.addEventListener('submit', async event => {
+      event.preventDefault();
+      const nome = agentDetailsNameInput?.value.trim() || '';
+      if (!nome) {
+        agentDetailsNameInput?.focus();
+        return;
+      }
+
+      const descricao = agentDetailsDescriptionInput?.value.trim() || '';
+      if (saveAgentDetailsButton) {
+        saveAgentDetailsButton.disabled = true;
+        saveAgentDetailsButton.textContent = 'Salvando…';
+      }
+
+      const saved = await persistAgentDetailsToSupabase(nome, descricao);
+      if (saved) {
+        setAgentTitle(nome);
+        agentDescription = descricao;
+        syncAgentDescriptionDisplay();
+        closeAgentDetailsModal();
+      }
+
+      if (saveAgentDetailsButton) {
+        saveAgentDetailsButton.disabled = false;
+        saveAgentDetailsButton.textContent = 'Salvar';
+      }
+    });
+    setSelectedChannel(selectedChannel);
+    syncAgentDescriptionDisplay();
     syncInstructionField();
     loadSelectedModel();
 
@@ -4427,6 +5989,11 @@
     });
 
     document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && agentDetailsModalBackdrop && !agentDetailsModalBackdrop.hidden) {
+        closeAgentDetailsModal();
+        return;
+      }
+
       if (event.key === 'Escape' && connectorsModalBackdrop && !connectorsModalBackdrop.hidden) {
         closeConnectorsModal();
         return;
@@ -4454,6 +6021,11 @@
       if (event.key === 'Escape' && knowledgeBasesDrawerBackdrop && !knowledgeBasesDrawerBackdrop.hidden) {
         if (knowledgeAccessSelectWrap?.classList.contains('open')) {
           closeKnowledgeAccessDropdown();
+          return;
+        }
+
+        if (knowledgeDrawerMode === 'upload') {
+          handleUploadDrawerSecondaryAction();
           return;
         }
 

@@ -15,9 +15,15 @@
       --color-surface-low: #eceeef;
       --color-text-high:   #002233;
       --color-text-low:    #405466;
+      --color-text-disabled: #8ca0ad;
       --color-danger:      #e60f57;
+      --color-danger-text: #c20046;
+      --color-primary-soft: #b2f4ff;
+      --color-primary-hover: #66ebff;
+      --color-primary-icon-hover: #005580;
       --radius-sm:  8px;
       --radius-md:  12px;
+      --radius-xxl: 24px;
       --sp-2: 8px;
       --sp-3: 12px;
       --sp-4: 16px;
@@ -234,6 +240,18 @@
       flex-shrink: 0;
     }
 
+    .page-header-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-4);
+      width: 100%;
+    }
+
+    .page-header-action[hidden] {
+      display: none;
+    }
+
     .page-header-title {
       font-size: 28px;
       font-weight: 700;
@@ -257,6 +275,7 @@
       gap: var(--sp-2);
       flex: 1 0 auto;
       width: 100%;
+      min-height: 0;
     }
 
     .agents-toolbar {
@@ -264,6 +283,427 @@
       gap: var(--sp-2);
       align-items: flex-start;
       flex-shrink: 0;
+    }
+
+    .empty-state[hidden] {
+      display: none;
+    }
+
+    .agents-list-view {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-5);
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .agents-list-view[hidden] {
+      display: none;
+    }
+
+    .agents-list-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .agents-list-table {
+      width: 100%;
+      min-width: 820px;
+      border-collapse: collapse;
+      color: var(--color-text-high);
+    }
+
+    .agents-list-table th,
+    .agents-list-table td {
+      padding: var(--sp-3) var(--sp-4);
+      border-bottom: 1px solid var(--color-border);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .agents-list-table thead th {
+      border-bottom-color: var(--color-border-interactive);
+      color: var(--color-text-low);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+      text-transform: uppercase;
+    }
+
+    .agents-list-table td {
+      color: var(--color-text-high);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+    }
+
+    .agents-list-table tr.is-skeleton {
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .agents-table-skeleton-block {
+      display: block;
+      border-radius: var(--radius-xs);
+      background: linear-gradient(
+        90deg,
+        var(--color-surface-low) 0%,
+        #f5f6f7 50%,
+        var(--color-surface-low) 100%
+      );
+      background-size: 200% 100%;
+      animation: template-skeleton-shimmer 1.4s ease-in-out infinite;
+    }
+
+    .agents-table-skeleton-name {
+      width: 56%;
+      min-width: 140px;
+      height: 16px;
+      border-radius: 6px;
+    }
+
+    .agents-table-skeleton-tag {
+      width: 72px;
+      height: 22px;
+      border-radius: var(--radius-xs);
+    }
+
+    .agents-table-skeleton-date {
+      width: 88px;
+      height: 14px;
+      border-radius: 6px;
+    }
+
+    .agents-table-skeleton-action {
+      width: 20px;
+      height: 20px;
+      margin-left: auto;
+      border-radius: 6px;
+    }
+
+    .agents-list-view.is-loading .agents-toolbar {
+      pointer-events: none;
+    }
+
+    .agents-list-view.is-loading .search-field,
+    .agents-list-view.is-loading .filter-select {
+      opacity: 0.72;
+    }
+
+    .agent-name-link {
+      border: 0;
+      background: transparent;
+      color: var(--color-link);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.14px;
+      cursor: pointer;
+      text-align: left;
+      padding: 0;
+    }
+
+    .agent-name-link:hover,
+    .agent-name-link:focus {
+      text-decoration: underline;
+      outline: none;
+    }
+
+    .agent-status-tag,
+    .agent-channel-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: var(--sp-1) var(--sp-2);
+      border-radius: var(--radius-xs);
+      background: var(--color-surface-low);
+      color: var(--color-text-high);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+    }
+
+    .agent-status-tag.is-ativo {
+      background: #e5f8ec;
+      color: #0a7a3a;
+    }
+
+    .table-checkbox {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: 3px;
+      background: #fff;
+    }
+
+    .agents-row-actions {
+      position: relative;
+      display: inline-flex;
+      justify-content: flex-end;
+    }
+
+    .agents-row-actions .agents-row-dropdown {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: auto;
+      z-index: 2000;
+      display: none;
+      flex-direction: column;
+      width: 220px;
+      padding: var(--sp-2);
+      border: 0;
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      box-shadow: 0 4px 12px rgba(0, 34, 51, 0.14);
+    }
+
+    .agents-row-actions.open .agents-row-dropdown {
+      display: flex;
+    }
+
+    .agents-row-action-item {
+      width: 100%;
+      min-height: 40px;
+      display: flex;
+      align-items: flex-start;
+      border: 0;
+      background: transparent;
+      text-align: left;
+      padding: var(--sp-2) var(--sp-3);
+      border-radius: var(--radius-sm);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      color: var(--color-text-high);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .agents-row-action-item:hover,
+    .agents-row-action-item:focus {
+      background: var(--color-surface-low);
+      outline: none;
+    }
+
+    .agents-row-action-item:disabled,
+    .agents-row-action-item[aria-disabled="true"] {
+      color: var(--color-text-disabled);
+      cursor: not-allowed;
+    }
+
+    .agents-row-action-item:disabled:hover,
+    .agents-row-action-item:disabled:focus,
+    .agents-row-action-item[aria-disabled="true"]:hover,
+    .agents-row-action-item[aria-disabled="true"]:focus {
+      background: transparent;
+    }
+
+    .agents-row-action-item.critical {
+      color: var(--color-danger-text);
+    }
+
+    .files-more-btn,
+    .files-config-btn {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .files-more-btn:hover,
+    .files-config-btn:hover {
+      background: var(--color-surface-low);
+    }
+
+    .files-more-btn img,
+    .files-config-btn img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .confirm-dialog-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-5);
+      background: rgba(0, 34, 51, 0.4);
+    }
+
+    .confirm-dialog-backdrop[hidden] {
+      display: none;
+    }
+
+    .confirm-dialog {
+      width: min(560px, 100%);
+      display: flex;
+      flex-direction: column;
+      padding: var(--sp-5);
+      border-radius: var(--radius-xxl);
+      background: var(--color-surface);
+      box-shadow: 0 12px 24px rgba(0, 34, 51, 0.2);
+    }
+
+    .confirm-dialog-header {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-3);
+      padding-bottom: var(--sp-4);
+    }
+
+    .confirm-dialog-title {
+      flex: 1;
+      min-width: 0;
+      color: var(--color-text-high);
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.28px;
+      word-break: break-word;
+    }
+
+    .confirm-dialog-close {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: var(--radius-md);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .confirm-dialog-close:hover {
+      background: var(--color-surface-low);
+    }
+
+    .confirm-dialog-close img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .confirm-dialog-description {
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .confirm-dialog-description strong {
+      font-weight: 700;
+    }
+
+    .confirm-dialog-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-3);
+      padding-top: var(--sp-5);
+      cursor: pointer;
+    }
+
+    .confirm-dialog-checkbox input {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      margin-top: 3px;
+      flex-shrink: 0;
+      border: 1px solid var(--color-border-interactive);
+      border-radius: var(--radius-xs);
+      background: var(--color-surface);
+      cursor: pointer;
+    }
+
+    .confirm-dialog-checkbox input:checked {
+      border-color: var(--color-link);
+      background: var(--color-link);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3.5 8.2 6.4 11l6.1-6.5' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-size: 14px 14px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .confirm-dialog-checkbox input:focus-visible {
+      outline: 2px solid rgba(0, 119, 178, 0.35);
+      outline-offset: 2px;
+    }
+
+    .confirm-dialog-checkbox span {
+      flex: 1;
+      min-width: 0;
+      color: var(--color-text-high);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+    }
+
+    .confirm-dialog-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: var(--sp-3);
+      padding-top: var(--sp-5);
+    }
+
+    .confirm-dialog-btn {
+      height: 40px;
+      padding: var(--sp-2) var(--sp-4);
+      border: 0;
+      border-radius: var(--radius-md);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.16px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .confirm-dialog-btn-cancel {
+      background: var(--color-primary-soft);
+      color: var(--color-link);
+    }
+
+    .confirm-dialog-btn-cancel:hover {
+      background: var(--color-primary-hover);
+      color: var(--color-primary-icon-hover);
+    }
+
+    .confirm-dialog-btn-danger {
+      background: var(--color-danger);
+      color: #fff;
+    }
+
+    .confirm-dialog-btn-danger:hover:not(:disabled) {
+      filter: brightness(0.96);
+    }
+
+    .confirm-dialog-btn-danger:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      filter: none;
+    }
+
+    body.confirm-dialog-open {
+      overflow: hidden;
     }
 
     .search-field {
@@ -696,7 +1136,8 @@
     }
 
     .btn-tertiary:hover {
-      background: var(--color-surface-low);
+      background: var(--color-primary-soft);
+      color: var(--color-primary-icon-hover);
     }
 
     .template-card.is-skeleton {
@@ -944,27 +1385,18 @@
   <main class="content">
     <section class="agents-view" id="agents-empty-view" aria-label="Agentes">
       <header class="page-header">
-        <h1 class="page-header-title">Agentes</h1>
+        <div class="page-header-main">
+          <h1 class="page-header-title">Agentes</h1>
+          <button type="button" class="btn-primary-inverse page-header-action" id="new-agent-btn-list" hidden>
+            <img src="../img/agentes/plus.svg" alt="">
+            Novo agente
+          </button>
+        </div>
         <p class="page-header-desc">Crie, ative e acompanhe os agentes de IA da sua empresa em um só lugar.</p>
       </header>
 
       <div class="agents-body">
-        <div class="agents-toolbar">
-          <label class="search-field">
-            <input type="search" placeholder="Buscar" aria-label="Buscar agentes">
-            <button type="button" class="search-field-btn" aria-label="Buscar">
-              <img src="../img/agentes/search.svg" alt="">
-            </button>
-          </label>
-
-          <button type="button" class="filter-select" aria-haspopup="listbox" aria-label="Filtro rápido">
-            <img class="icon" src="../img/agentes/calendar.svg" alt="">
-            <span>Filtro rápido</span>
-            <img class="caret" src="../img/agentes/caret.svg" alt="">
-          </button>
-        </div>
-
-        <div class="empty-state">
+        <div class="empty-state" id="agents-empty-state" hidden>
           <img class="empty-illustration" src="../img/agentes/empty-illustration.svg" width="743" height="319" alt="">
           <div class="empty-copy">
             <h2>Sem agentes por aqui...</h2>
@@ -974,6 +1406,90 @@
             <img src="../img/agentes/plus.svg" alt="">
             Novo agente
           </button>
+        </div>
+
+        <div class="agents-list-view is-loading" id="agents-list-view" aria-busy="true">
+          <div class="agents-toolbar">
+            <label class="search-field">
+              <input type="search" id="agents-search-input" placeholder="Buscar" aria-label="Buscar agentes" disabled>
+              <button type="button" class="search-field-btn" id="agents-search-btn" aria-label="Buscar" disabled>
+                <img src="../img/agentes/search.svg" alt="">
+              </button>
+            </label>
+
+            <button type="button" class="filter-select" aria-haspopup="listbox" aria-label="Filtro rápido" disabled>
+              <img class="icon" src="../img/agentes/calendar.svg" alt="">
+              <span>Filtro rápido</span>
+              <img class="caret" src="../img/agentes/caret.svg" alt="">
+            </button>
+          </div>
+
+          <div class="agents-list-table-wrap">
+            <table class="agents-list-table" aria-label="Agentes criados">
+              <thead>
+                <tr>
+                  <th scope="col"><span class="table-checkbox" aria-hidden="true"></span></th>
+                  <th scope="col">Agente</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Canal</th>
+                  <th scope="col">Criação</th>
+                  <th scope="col">Última atualização</th>
+                  <th scope="col">
+                    <button type="button" class="files-config-btn" aria-label="Configurar tabela" disabled>
+                      <img src="../img/svg/cog.svg" alt="">
+                    </button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="agents-table-body">
+                <tr class="is-skeleton" aria-hidden="true">
+                  <td><span class="table-checkbox"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-name"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-tag"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-tag"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-date"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-date"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-action"></span></td>
+                </tr>
+                <tr class="is-skeleton" aria-hidden="true">
+                  <td><span class="table-checkbox"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-name"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-tag"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-tag"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-date"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-date"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-action"></span></td>
+                </tr>
+                <tr class="is-skeleton" aria-hidden="true">
+                  <td><span class="table-checkbox"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-name"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-tag"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-tag"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-date"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-date"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-action"></span></td>
+                </tr>
+                <tr class="is-skeleton" aria-hidden="true">
+                  <td><span class="table-checkbox"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-name"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-tag"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-tag"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-date"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-date"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-action"></span></td>
+                </tr>
+                <tr class="is-skeleton" aria-hidden="true">
+                  <td><span class="table-checkbox"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-name"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-tag"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-tag"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-date"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-date"></span></td>
+                  <td><span class="agents-table-skeleton-block agents-table-skeleton-action"></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>
@@ -1057,6 +1573,26 @@
 
 </div><!-- /layout -->
 
+<div class="confirm-dialog-backdrop" id="delete-agent-modal-backdrop" hidden>
+  <div class="confirm-dialog" id="delete-agent-modal" role="dialog" aria-modal="true" aria-labelledby="delete-agent-modal-title" aria-describedby="delete-agent-modal-description">
+    <header class="confirm-dialog-header">
+      <h2 class="confirm-dialog-title" id="delete-agent-modal-title">Remover agente?</h2>
+      <button type="button" class="confirm-dialog-close" id="close-delete-agent-modal" aria-label="Fechar">
+        <img src="../img/svg/times.svg" alt="">
+      </button>
+    </header>
+    <p class="confirm-dialog-description" id="delete-agent-modal-description"></p>
+    <label class="confirm-dialog-checkbox" for="delete-agent-ack">
+      <input type="checkbox" id="delete-agent-ack">
+      <span>Estou ciente de que essa ação é permanente e não poderá ser desfeita.</span>
+    </label>
+    <div class="confirm-dialog-footer">
+      <button type="button" class="confirm-dialog-btn confirm-dialog-btn-cancel" id="cancel-delete-agent-modal">Cancelar</button>
+      <button type="button" class="confirm-dialog-btn confirm-dialog-btn-danger" id="confirm-delete-agent" disabled>Excluir</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase-config.js"></script>
 <script>
@@ -1073,22 +1609,38 @@
   const agentsEmptyView = document.getElementById('agents-empty-view');
   const agentTemplateView = document.getElementById('agent-template-view');
   const newAgentBtn = document.getElementById('new-agent-btn');
+  const newAgentBtnList = document.getElementById('new-agent-btn-list');
   const backToAgentsBtn = document.getElementById('back-to-agents-btn');
+  const agentsEmptyState = document.getElementById('agents-empty-state');
+  const agentsListView = document.getElementById('agents-list-view');
+  const agentsTableBody = document.getElementById('agents-table-body');
+  const agentsSearchInput = document.getElementById('agents-search-input');
 
-  if (agentsEmptyView && agentTemplateView && newAgentBtn) {
-    newAgentBtn.addEventListener('click', () => {
-      agentsEmptyView.hidden = true;
-      agentTemplateView.hidden = false;
-      loadTemplateModels();
-    });
+  const createdAgents = [];
+  let agentsSearchQuery = '';
+  let agentsLoading = true;
+
+  function openTemplatePicker() {
+    if (!agentsEmptyView || !agentTemplateView) return;
+    agentsEmptyView.hidden = true;
+    agentTemplateView.hidden = false;
+    loadTemplateModels();
   }
 
-  if (agentsEmptyView && agentTemplateView && backToAgentsBtn) {
-    backToAgentsBtn.addEventListener('click', () => {
-      agentTemplateView.hidden = true;
-      agentsEmptyView.hidden = false;
-    });
+  function showAgentsList() {
+    if (!agentsEmptyView || !agentTemplateView) return;
+    agentTemplateView.hidden = true;
+    agentsEmptyView.hidden = false;
+    if (agentsLoading) {
+      renderAgentsSkeleton();
+      return;
+    }
+    renderCreatedAgents();
   }
+
+  newAgentBtn?.addEventListener('click', openTemplatePicker);
+  newAgentBtnList?.addEventListener('click', openTemplatePicker);
+  backToAgentsBtn?.addEventListener('click', showAgentsList);
 
   document.querySelectorAll('.template-nav-item').forEach(item => {
     item.addEventListener('click', () => {
@@ -1151,6 +1703,330 @@
       auth: { persistSession: false, autoRefreshToken: false }
     });
   }
+
+  function formatDisplayDate(value) {
+    if (!value) return '—';
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) return '—';
+    return new Intl.DateTimeFormat('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).format(date);
+  }
+
+  function getStatusLabel(status) {
+    if (status === 'ativo') return 'Ativo';
+    if (status === 'rascunho') return 'Rascunho';
+    return status || '—';
+  }
+
+  function getChannelLabel(canal) {
+    if (canal === 'widget') return 'Widget';
+    if (canal === 'interno') return 'Interno';
+    return canal || '—';
+  }
+
+  function mapCreatedAgentRow(row) {
+    return {
+      id: row.id,
+      nome: row.nome || 'Agente sem nome',
+      descricao: row.descricao || '',
+      status: row.status || 'rascunho',
+      canal: row.canal || 'interno',
+      createdAt: row.created_at,
+      updatedAt: row.updated_at
+    };
+  }
+
+  function getVisibleCreatedAgents() {
+    const query = agentsSearchQuery.trim().toLowerCase();
+    if (!query) return createdAgents;
+    return createdAgents.filter(agent => {
+      const nome = String(agent.nome || '').toLowerCase();
+      const descricao = String(agent.descricao || '').toLowerCase();
+      return nome.includes(query) || descricao.includes(query);
+    });
+  }
+
+  function closeAgentsRowActionsDropdowns(except = null) {
+    document.querySelectorAll('.agents-row-actions.open').forEach(actions => {
+      if (actions === except) return;
+      actions.classList.remove('open');
+      actions.querySelector('.agents-row-actions-toggle')?.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  function positionAgentsRowDropdown(actions) {
+    const button = actions?.querySelector('.agents-row-actions-toggle');
+    const dropdown = actions?.querySelector('.agents-row-dropdown');
+    if (!button || !dropdown) return;
+
+    const rect = button.getBoundingClientRect();
+    const dropdownWidth = dropdown.offsetWidth || 220;
+    const left = Math.max(16, Math.min(rect.right - dropdownWidth, window.innerWidth - dropdownWidth - 16));
+    dropdown.style.top = `${rect.bottom + 4}px`;
+    dropdown.style.left = `${left}px`;
+  }
+
+  function toggleAgentsRowActions(button) {
+    const actions = button.closest('.agents-row-actions');
+    if (!actions) return;
+
+    const isOpen = actions.classList.toggle('open');
+    button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    closeAgentsRowActionsDropdowns(actions);
+    if (isOpen) positionAgentsRowDropdown(actions);
+  }
+
+  function openAgentEditor(agentId) {
+    if (!agentId) return;
+    window.location.href = `editor-novo.html?agent=${encodeURIComponent(agentId)}`;
+  }
+
+  const deleteAgentModalBackdrop = document.getElementById('delete-agent-modal-backdrop');
+  const deleteAgentModalTitle = document.getElementById('delete-agent-modal-title');
+  const deleteAgentModalDescription = document.getElementById('delete-agent-modal-description');
+  const deleteAgentAck = document.getElementById('delete-agent-ack');
+  const confirmDeleteAgentBtn = document.getElementById('confirm-delete-agent');
+  const closeDeleteAgentModalBtn = document.getElementById('close-delete-agent-modal');
+  const cancelDeleteAgentModalBtn = document.getElementById('cancel-delete-agent-modal');
+  let pendingDeleteAgentId = null;
+  let isDeletingAgent = false;
+
+  function syncDeleteConfirmButton() {
+    if (!confirmDeleteAgentBtn) return;
+    confirmDeleteAgentBtn.disabled = !deleteAgentAck?.checked || isDeletingAgent;
+  }
+
+  function closeDeleteAgentModal() {
+    if (!deleteAgentModalBackdrop || isDeletingAgent) return;
+    deleteAgentModalBackdrop.hidden = true;
+    document.body.classList.remove('confirm-dialog-open');
+    pendingDeleteAgentId = null;
+    if (deleteAgentAck) deleteAgentAck.checked = false;
+    syncDeleteConfirmButton();
+  }
+
+  function openDeleteAgentModal(agentId) {
+    const agent = createdAgents.find(item => item.id === agentId);
+    if (!agent || !deleteAgentModalBackdrop) return;
+
+    pendingDeleteAgentId = agent.id;
+    if (deleteAgentModalTitle) {
+      deleteAgentModalTitle.textContent = `Remover ${agent.nome}?`;
+    }
+    if (deleteAgentModalDescription) {
+      deleteAgentModalDescription.innerHTML =
+        `Remover este agente fará com que <strong>${escapeHtml(agent.nome)}</strong> seja excluído permanentemente. Configurações, prompt, conectores e vínculos com bases de conhecimento serão perdidos.`;
+    }
+    if (deleteAgentAck) deleteAgentAck.checked = false;
+    if (confirmDeleteAgentBtn) confirmDeleteAgentBtn.textContent = 'Excluir';
+    isDeletingAgent = false;
+    syncDeleteConfirmButton();
+    deleteAgentModalBackdrop.hidden = false;
+    document.body.classList.add('confirm-dialog-open');
+    deleteAgentAck?.focus();
+  }
+
+  async function confirmDeleteCreatedAgent() {
+    if (!pendingDeleteAgentId || !deleteAgentAck?.checked || isDeletingAgent) return;
+
+    const agentId = pendingDeleteAgentId;
+    const client = createSupabaseClient();
+    if (!client) {
+      window.alert('Não foi possível excluir porque o Supabase não está configurado.');
+      return;
+    }
+
+    isDeletingAgent = true;
+    if (confirmDeleteAgentBtn) {
+      confirmDeleteAgentBtn.disabled = true;
+      confirmDeleteAgentBtn.textContent = 'Excluindo…';
+    }
+
+    const { error } = await client.from('agentes').delete().eq('id', agentId);
+    isDeletingAgent = false;
+
+    if (error) {
+      console.error('Erro ao excluir agente:', error);
+      if (confirmDeleteAgentBtn) confirmDeleteAgentBtn.textContent = 'Excluir';
+      syncDeleteConfirmButton();
+      window.alert('Não foi possível excluir o agente. Tente novamente.');
+      return;
+    }
+
+    const index = createdAgents.findIndex(item => item.id === agentId);
+    if (index >= 0) createdAgents.splice(index, 1);
+
+    pendingDeleteAgentId = null;
+    if (deleteAgentAck) deleteAgentAck.checked = false;
+    if (confirmDeleteAgentBtn) confirmDeleteAgentBtn.textContent = 'Excluir';
+    syncDeleteConfirmButton();
+    deleteAgentModalBackdrop.hidden = true;
+    document.body.classList.remove('confirm-dialog-open');
+    renderCreatedAgents();
+  }
+
+  deleteAgentAck?.addEventListener('change', syncDeleteConfirmButton);
+  closeDeleteAgentModalBtn?.addEventListener('click', closeDeleteAgentModal);
+  cancelDeleteAgentModalBtn?.addEventListener('click', closeDeleteAgentModal);
+  confirmDeleteAgentBtn?.addEventListener('click', confirmDeleteCreatedAgent);
+  deleteAgentModalBackdrop?.addEventListener('click', event => {
+    if (event.target === deleteAgentModalBackdrop) closeDeleteAgentModal();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && deleteAgentModalBackdrop && !deleteAgentModalBackdrop.hidden) {
+      closeDeleteAgentModal();
+    }
+  });
+
+  function setAgentsListControlsDisabled(disabled) {
+    if (agentsSearchInput) agentsSearchInput.disabled = disabled;
+    document.getElementById('agents-search-btn')?.toggleAttribute('disabled', disabled);
+    agentsListView?.querySelectorAll('.filter-select, .files-config-btn').forEach(control => {
+      control.toggleAttribute('disabled', disabled);
+    });
+  }
+
+  function renderAgentsSkeleton(rowCount = 5) {
+    if (!agentsEmptyState || !agentsListView || !agentsTableBody) return;
+
+    agentsEmptyState.hidden = true;
+    agentsListView.hidden = false;
+    agentsListView.classList.add('is-loading');
+    agentsListView.setAttribute('aria-busy', 'true');
+    if (newAgentBtnList) newAgentBtnList.hidden = true;
+    setAgentsListControlsDisabled(true);
+
+    agentsTableBody.innerHTML = Array.from({ length: rowCount }, () => `
+      <tr class="is-skeleton" aria-hidden="true">
+        <td><span class="table-checkbox"></span></td>
+        <td><span class="agents-table-skeleton-block agents-table-skeleton-name"></span></td>
+        <td><span class="agents-table-skeleton-block agents-table-skeleton-tag"></span></td>
+        <td><span class="agents-table-skeleton-block agents-table-skeleton-tag"></span></td>
+        <td><span class="agents-table-skeleton-block agents-table-skeleton-date"></span></td>
+        <td><span class="agents-table-skeleton-block agents-table-skeleton-date"></span></td>
+        <td><span class="agents-table-skeleton-block agents-table-skeleton-action"></span></td>
+      </tr>
+    `).join('');
+  }
+
+  function renderCreatedAgents() {
+    if (!agentsEmptyState || !agentsListView || !agentsTableBody) return;
+
+    if (agentsLoading) {
+      renderAgentsSkeleton();
+      return;
+    }
+
+    const hasAgents = createdAgents.length > 0;
+    agentsEmptyState.hidden = hasAgents;
+    agentsListView.hidden = !hasAgents;
+    agentsListView.classList.remove('is-loading');
+    agentsListView.removeAttribute('aria-busy');
+    if (newAgentBtnList) newAgentBtnList.hidden = !hasAgents;
+    setAgentsListControlsDisabled(false);
+
+    if (!hasAgents) {
+      agentsTableBody.innerHTML = '';
+      return;
+    }
+
+    const visibleAgents = getVisibleCreatedAgents();
+    agentsTableBody.innerHTML = visibleAgents.map(agent => `
+      <tr>
+        <td><span class="table-checkbox" aria-hidden="true"></span></td>
+        <td>
+          <button type="button" class="agent-name-link" data-agent-id="${escapeHtml(agent.id)}">
+            ${escapeHtml(agent.nome)}
+          </button>
+        </td>
+        <td>
+          <span class="agent-status-tag${agent.status === 'ativo' ? ' is-ativo' : ''}">
+            ${escapeHtml(getStatusLabel(agent.status))}
+          </span>
+        </td>
+        <td><span class="agent-channel-tag">${escapeHtml(getChannelLabel(agent.canal))}</span></td>
+        <td>${escapeHtml(formatDisplayDate(agent.createdAt))}</td>
+        <td>${escapeHtml(formatDisplayDate(agent.updatedAt))}</td>
+        <td>
+          <div class="agents-row-actions">
+            <button type="button" class="files-more-btn agents-row-actions-toggle" data-agent-id="${escapeHtml(agent.id)}" aria-label="Mais opções para ${escapeHtml(agent.nome)}" aria-haspopup="menu" aria-expanded="false">
+              <img src="../img/svg/elipsis-v.svg" alt="">
+            </button>
+            <div class="agents-row-dropdown" role="menu">
+              <button type="button" class="agents-row-action-item agents-row-edit" data-agent-id="${escapeHtml(agent.id)}" role="menuitem">Editar agente</button>
+              <button type="button" class="agents-row-action-item" role="menuitem" disabled aria-disabled="true">Usar agente</button>
+              <button type="button" class="agents-row-action-item" role="menuitem" disabled aria-disabled="true">Atividades</button>
+              <button type="button" class="agents-row-action-item critical agents-row-delete" data-agent-id="${escapeHtml(agent.id)}" role="menuitem">Excluir</button>
+            </div>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+
+    agentsTableBody.querySelectorAll('.agent-name-link, .agents-row-edit').forEach(button => {
+      button.addEventListener('click', event => {
+        event.stopPropagation();
+        closeAgentsRowActionsDropdowns();
+        openAgentEditor(button.dataset.agentId);
+      });
+    });
+
+    agentsTableBody.querySelectorAll('.agents-row-delete').forEach(button => {
+      button.addEventListener('click', event => {
+        event.stopPropagation();
+        closeAgentsRowActionsDropdowns();
+        openDeleteAgentModal(button.dataset.agentId);
+      });
+    });
+
+    agentsTableBody.querySelectorAll('.agents-row-actions-toggle').forEach(button => {
+      button.addEventListener('click', event => {
+        event.stopPropagation();
+        toggleAgentsRowActions(button);
+      });
+    });
+  }
+
+  async function loadCreatedAgents() {
+    agentsLoading = true;
+    renderAgentsSkeleton();
+
+    const client = createSupabaseClient();
+    if (!client) {
+      agentsLoading = false;
+      renderCreatedAgents();
+      return;
+    }
+
+    try {
+      const { data, error } = await client
+        .from('agentes')
+        .select('id, nome, descricao, status, canal, created_at, updated_at')
+        .order('updated_at', { ascending: false });
+
+      if (error) throw error;
+
+      createdAgents.splice(0, createdAgents.length, ...(data || []).map(mapCreatedAgentRow));
+    } catch (error) {
+      console.error('Erro ao carregar agentes:', error);
+    } finally {
+      agentsLoading = false;
+      renderCreatedAgents();
+    }
+  }
+
+  agentsSearchInput?.addEventListener('input', () => {
+    if (agentsLoading) return;
+    agentsSearchQuery = agentsSearchInput.value || '';
+    renderCreatedAgents();
+  });
+
+  document.addEventListener('click', () => closeAgentsRowActionsDropdowns());
+  window.addEventListener('resize', () => closeAgentsRowActionsDropdowns());
+  loadCreatedAgents();
 
   function mapAgentRow(row) {
     return {
@@ -1227,7 +2103,7 @@
         `<div class="template-card-footer">` +
           `<div class="template-card-divider"></div>` +
           `<div class="template-card-actions">` +
-            `<button type="button" class="btn-tertiary" onclick="window.location.href='editor-novo.html?id=${encodeURIComponent(model.id)}'">Ver detalhes</button>` +
+            `<button type="button" class="btn-tertiary" onclick="window.location.href='editor-novo.html?id=${encodeURIComponent(model.id)}'">Usar modelo</button>` +
           `</div>` +
         `</div>` +
       `</article>`
