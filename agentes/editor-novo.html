@@ -744,12 +744,21 @@
       width: 100%;
     }
 
+    .section-title-row:has(.section-desc) {
+      align-items: flex-start;
+    }
+
     .section-icon {
       width: 20px;
       height: 20px;
       flex-shrink: 0;
       display: block;
       filter: brightness(0) saturate(100%) invert(9%) sepia(78%) saturate(1117%) hue-rotate(164deg) brightness(94%) contrast(103%);
+    }
+
+    .section-title-row:has(.section-desc) .section-icon {
+      /* alinha o ícone com a linha do título (16px / 1.5 = 24px) */
+      margin-top: 2px;
     }
 
     .section-content {
@@ -784,13 +793,13 @@
     }
 
     .channel-cards {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: var(--sp-4);
       width: 100%;
     }
 
     .channel-card {
-      flex: 1;
       min-width: 0;
       display: flex;
       align-items: flex-start;
@@ -2621,7 +2630,7 @@
       }
 
       .channel-cards {
-        flex-direction: column;
+        grid-template-columns: 1fr;
       }
     }
 
@@ -3154,7 +3163,10 @@
           <section class="editor-section is-stack">
             <div class="section-title-row">
               <img class="section-icon" src="../img/svg/channels.svg" alt="">
-              <h2 class="section-title">Canal</h2>
+              <div class="section-content">
+                <h2 class="section-title">Canal</h2>
+                <p class="section-desc">Escolha onde as pessoas poderão conversar com este agente.</p>
+              </div>
             </div>
             <div class="channel-cards">
               <button type="button" class="channel-card" data-channel="widget">
@@ -3173,6 +3185,24 @@
                 <span class="channel-card-copy">
                   <span class="channel-card-title">Interno</span>
                   <span class="channel-card-desc">Converse com seu agente dentro do Construtor de Agentes de IA</span>
+                </span>
+              </button>
+              <button type="button" class="channel-card" data-channel="whatsapp">
+                <span class="channel-card-icon" aria-hidden="true">
+                  <img src="../img/svg/whatsapp.svg" alt="">
+                </span>
+                <span class="channel-card-copy">
+                  <span class="channel-card-title">WhatsApp</span>
+                  <span class="channel-card-desc">Conecte o agente ao WhatsApp para conversar com seus clientes</span>
+                </span>
+              </button>
+              <button type="button" class="channel-card" data-channel="slack">
+                <span class="channel-card-icon" aria-hidden="true">
+                  <img src="../img/svg/slack.svg" alt="">
+                </span>
+                <span class="channel-card-copy">
+                  <span class="channel-card-title">Slack</span>
+                  <span class="channel-card-desc">Disponibilize o agente no Slack para conversar com sua equipe</span>
                 </span>
               </button>
             </div>
@@ -4874,9 +4904,7 @@
           return;
         }
 
-        if (channel === 'interno') {
-          setSelectedChannel('interno');
-        }
+        setSelectedChannel(channel);
       });
     });
 
@@ -4887,9 +4915,10 @@
     const widgetDropzoneIdle = document.getElementById('widget-dropzone-idle');
     const widgetDropzoneSuccess = document.getElementById('widget-dropzone-success');
     const widgetReplaceFileBtn = document.getElementById('widget-replace-file-btn');
+    const AGENT_CHANNELS = new Set(['widget', 'interno', 'whatsapp', 'slack']);
 
     function setSelectedChannel(channel) {
-      selectedChannel = channel === 'widget' ? 'widget' : 'interno';
+      selectedChannel = AGENT_CHANNELS.has(channel) ? channel : 'interno';
       document.querySelectorAll('.channel-card').forEach(item => {
         const selected = item.getAttribute('data-channel') === selectedChannel;
         item.classList.toggle('is-selected', selected);
@@ -4908,7 +4937,7 @@
         status,
         nome,
         descricao: agentDescription || null,
-        canal: selectedChannel === 'widget' ? 'widget' : 'interno',
+        canal: AGENT_CHANNELS.has(selectedChannel) ? selectedChannel : 'interno',
         conectores: [...selectedConnectors],
         prompt: instructionTextarea?.value.trim() || null,
         knowledgeBaseIds
@@ -5711,7 +5740,7 @@
       setAgentTitle(agent?.nome || 'Novo agente');
       agentDescription = agent?.descricao || '';
       syncAgentDescriptionDisplay();
-      selectedChannel = agent?.canal === 'widget' ? 'widget' : 'interno';
+      selectedChannel = AGENT_CHANNELS.has(agent?.canal) ? agent.canal : 'interno';
       setSelectedChannel(selectedChannel);
 
       const connectors = Array.isArray(agent?.conectores)
